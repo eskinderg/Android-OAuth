@@ -4,6 +4,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 
 public interface GetDataService {
@@ -18,6 +19,9 @@ public interface GetDataService {
             @Field("username") String username,
             @Field("password") String password
     );
+
+    @POST("/realms/master/protocol/openid-connect/userinfo")
+    Call<User> getUserInfo(@Header("Authorization") String authHeader);
 
     @FormUrlEncoded
     @POST("/realms/master/protocol/openid-connect/logout")

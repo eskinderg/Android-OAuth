@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.drawer.ui.notes.NotesFragment;
@@ -23,6 +24,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.drawer.databinding.ActivityMainBinding;
+
+import org.w3c.dom.Text;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -62,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
+        this.setUserInfo();
 
         navigationView.getMenu().findItem(R.id.nav_logout).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
@@ -110,5 +115,34 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
+    }
+
+    private void setUserInfo() {
+
+        GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+
+        Call<User> call = service.getUserInfo("Bearer " + Constants.ACCESS_TOKEN);
+
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if(response.isSuccessful()){
+                    NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
+                    View headerView = navView.getHeaderView(0);
+                    TextView navUsername = (TextView) headerView.findViewById(R.id.userName);
+                    TextView navEmail = (TextView) headerView.findViewById(R.id.userEmail);
+                    User user = response.body();
+                    navUsername.setText(user.getGivenName());
+                    navEmail.setText(user.getUserEmail());
+                } else {
+                    Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

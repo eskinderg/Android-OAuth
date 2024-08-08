@@ -1,0 +1,125 @@
+package com.example.drawer.ui.notes;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.drawer.Constants;
+import com.example.drawer.Note;
+import com.example.drawer.NotesAdapter;
+import com.example.drawer.NotesAdapter.OnNoteItemClickListener;
+import com.example.drawer.NotesDataService;
+import com.example.drawer.R;
+import com.example.drawer.Utils;
+import com.example.drawer.databinding.FragmentNotesBinding;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+public class NotesFragment extends Fragment implements OnNoteItemClickListener {
+
+    public NotesFragment() { }
+
+    public List<Note> notesList;
+    public RecyclerView recyclerView;
+    private FragmentNotesBinding binding;
+
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
+        NotesViewModel notesViewModel =
+                new ViewModelProvider(this).get(NotesViewModel.class);
+
+        binding = FragmentNotesBinding.inflate(inflater, container, false);
+        View root = binding.getRoot();
+
+//        final TextView textView = binding.textHome;
+//        notesViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+
+        return root;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+
+        recyclerView = view.findViewById(R.id.recyclerview);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        notesList = new ArrayList<>();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constants.BASE_API_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        NotesDataService notesApi = retrofit.create(NotesDataService.class);
+
+        Call<Note[]> call = notesApi.getNotes("Bearer " + Constants.ACCESS_TOKEN);
+
+        call.enqueue(new Callback<Note[]>() {
+            @Override
+            public void onResponse(@NonNull Call<Note[]> call, @NonNull Response<Note[]> response) {
+                notesList = Arrays.asList(response.body());
+                NotesFragment.this.dataView (notesList);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Note[]> call, @NonNull Throwable t) {
+                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void dataView(List<Note> notes) {
+        List<Note> list = notes.stream().filter(n -> !n.isArchived()).toList();
+        NotesAdapter notesAdapter = new NotesAdapter(getContext(), list, this);
+        recyclerView.setAdapter(notesAdapter);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+
+    @Override
+    public void onNoteItemClick(View view, Note note) {
+        Bundle bundle = new Bundle();
+        String noteJsonString = Utils.getGsonParser().toJson(note);
+        bundle.putString("note", noteJsonString);
+
+        NavController navController = Navigation.findNavController(view);
+        navController.navigate(R.id.action_nav_notes_to_nav_note, bundle);
+
+//        NoteFragment frag = new NoteFragment(note);
+//        FragmentManager fragmentManager = getFragmentManager();
+//        FragmentTransaction fragmentTransaction =fragmentManager.beginTransaction();
+//        fragmentTransaction.replace(R.id.nav_host_fragment_content_main,frag);
+//        fragmentTransaction.commit();
+
+        //Put the value
+//        NoteFragment ldf = new NoteFragment();
+//        Bundle args = new Bundle();
+//        args.putString("YourKey", "YourValue");
+//        ldf.setArguments(args);
+//
+//        getFragmentManager().beginTransaction().add(R.id.nav_host_fragment_content_main, ldf).commit();
+    }
+}

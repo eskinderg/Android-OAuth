@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_notes">
+
+    <fragment
+        android:id="@+id/nav_notes"
+        android:name="com.example.drawer.ui.notes.NotesFragment"
+        android:label="@string/menu_notes"
+        tools:layout="@layout/fragment_notes" >
+        <action
+            android:id="@+id/action_nav_notes_to_nav_note"
+            app:destination="@id/nav_note" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_note"
+        android:name="com.example.drawer.ui.notes.NoteFragment"
+        android:label="@string/menu_note"
+        tools:layout="@layout/fragment_note" >
+        <action
+            android:id="@+id/action_nav_note_to_nav_notes"
+            app:destination="@id/nav_notes" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/nav_gallery"
+        android:name="com.example.drawer.ui.gallery.GalleryFragment"
+        android:label="@string/menu_gallery"
+        tools:layout="@layout/fragment_gallery" />
+
+    <fragment
+        android:id="@+id/nav_logout"
+        android:name="com.example.drawer.ui.logout.SlideshowFragment"
+        android:label="@string/menu_logout"
+        tools:layout="@layout/fragment_logout" />
+</navigation>

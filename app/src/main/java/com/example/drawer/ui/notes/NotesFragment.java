@@ -8,8 +8,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
+import com.google.android.material.snackbar.Snackbar;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -24,6 +23,7 @@ import com.example.drawer.NotesDataService;
 import com.example.drawer.R;
 import com.example.drawer.Utils;
 import com.example.drawer.databinding.FragmentNotesBinding;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,9 +39,12 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener {
 
     public NotesFragment() { }
 
-    public List<Note> notesList;
+    public ArrayList<Note> notesList;
     public RecyclerView recyclerView;
     private FragmentNotesBinding binding;
+    public FloatingActionButton fab;
+    public NotesAdapter notesAdapter;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -51,9 +54,6 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener {
         binding = FragmentNotesBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-//        final TextView textView = binding.textHome;
-//        notesViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
-
         return root;
     }
 
@@ -62,7 +62,45 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener {
 
         recyclerView = view.findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        notesList = new ArrayList<>();
+        this.fab = view.findViewById(R.id.fab);
+
+        this.fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(Constants.BASE_API_URL)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+
+                NotesDataService notesApi = retrofit.create(NotesDataService.class);
+
+                Call<Note> call = notesApi.addNote("Bearer " + Constants.ACCESS_TOKEN, new Note());
+
+                call.enqueue(new Callback<Note>() {
+                    @Override
+                    public void onResponse(Call<Note> call, Response<Note> response) {
+                        Note newNote = response.body();
+                        Bundle bundle = new Bundle();
+                        String noteJsonString = Utils.getGsonParser().toJson(newNote);
+                        bundle.putString("note", noteJsonString);
+
+                        NotesFragment.this.notesList.add(0, response.body());
+                        notesAdapter.notifyDataSetChanged();
+
+                        NavController navController = Navigation.findNavController(view);
+                        navController.navigate(R.id.action_nav_notes_to_nav_note, bundle);
+                    }
+
+                    @Override
+                    public void onFailure(Call<Note> call, Throwable t) {
+                        Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
+
+            }
+        });
+
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constants.BASE_API_URL)
@@ -76,8 +114,8 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener {
         call.enqueue(new Callback<Note[]>() {
             @Override
             public void onResponse(@NonNull Call<Note[]> call, @NonNull Response<Note[]> response) {
-                notesList = Arrays.asList(response.body());
-                NotesFragment.this.dataView (notesList);
+                notesList = new ArrayList(Arrays.asList(response.body()));
+                NotesFragment.this.dataView(notesList);
             }
 
             @Override
@@ -88,9 +126,9 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener {
     }
 
     private void dataView(List<Note> notes) {
-        List<Note> list = notes.stream().filter(n -> !n.isArchived()).toList();
-        NotesAdapter notesAdapter = new NotesAdapter(getContext(), list, this);
-        recyclerView.setAdapter(notesAdapter);
+//        List<Note> list = notes.stream().filter(n -> !n.isArchived()).toList();
+         this.notesAdapter = new NotesAdapter(getContext(), this.notesList, this);
+        recyclerView.setAdapter(this.notesAdapter);
     }
 
     @Override

@@ -79,12 +79,14 @@ public class Note implements Serializable {
     @Expose
     private String text;
 
+    public Note(){}
 
-    public Note(Number id, String header, String text, Boolean archived) {
-        this.id = id;
-        this.header = header;
-        this.archived = archived;
-    }
+//    public Note(Number id, String header, String text, Boolean archived) {
+//        this.id = id;
+//        this.header = header;
+//        this.archived = archived;
+//        this.text = text;
+//    }
 
     public boolean isArchived() {
         return archived;
@@ -104,6 +106,10 @@ public class Note implements Serializable {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public void setHeader(String header) {
+        this.header = header;
     }
 
     public String getHeader() {

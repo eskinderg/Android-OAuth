@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -21,10 +22,10 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteRecycler
     }
 
     Context context;
-    List<Note> notesList;
+    ArrayList<Note> notesList;
     private final OnNoteItemClickListener mListener;
 
-    public NotesAdapter(Context context, List<Note> notesList, OnNoteItemClickListener listener) {
+    public NotesAdapter(Context context, ArrayList<Note> notesList, OnNoteItemClickListener listener) {
         this.notesList = notesList;
         this.context = context;
         this.mListener = listener;

@@ -3,15 +3,17 @@ package com.example.drawer.ui.notes;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.text.HtmlCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 import android.text.Editable;
 import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,8 +35,11 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 public class NoteFragment extends Fragment implements Callback<Note> {
+    public EditText txtNoteText;
+    public EditText txtNoteHeader;
 
     Note note;
+
     public NoteFragment() {
     }
 
@@ -57,39 +62,22 @@ public class NoteFragment extends Fragment implements Callback<Note> {
         String personJsonString = args.getString("note");
         this.note = Utils.getGsonParser().fromJson(personJsonString, Note.class);
 
-        EditText txtNote = view.findViewById(R.id.txtEdit);
-        txtNote.setText(Html.fromHtml(this.note.getText(), Html.FROM_HTML_MODE_COMPACT).toString());
-//
-        txtNote.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
+        this.txtNoteText = view.findViewById(R.id.txtNoteText);
+        this.txtNoteHeader = view.findViewById(R.id.txtNoteHeader);
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
+        if(this.note.getHeader() != null) {
+            txtNoteHeader.setText(this.note.getHeader());
+        }
 
-            @Override
-            public void afterTextChanged(Editable s) {
+        if(this.note.getText() != null) {
+            NoteFragment.this.txtNoteText.setText(Html.fromHtml(this.note.getText(), Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV).toString());
+        }
 
-//                NoteActivity.this.note.setText(NoteActivity.this.txtNote.getText().toString());
-                NoteFragment.this.note.setText(Html.toHtml(txtNote.getText(),Html.FROM_HTML_MODE_COMPACT));
-
-                Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl(Constants.BASE_API_URL)
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
-
-                NotesDataService notesApi = retrofit.create(NotesDataService.class);
-                Call<Note> call = notesApi.updateNote("Bearer " + Constants.ACCESS_TOKEN, NoteFragment.this.note);
-                call.enqueue(NoteFragment.this);
-            }
-        });
     }
 
     @Override
     public void onResponse(Call<Note> call, Response<Note> response) {
-        Toast.makeText(getContext(),"Success", Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(),"Saved", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -99,13 +87,27 @@ public class NoteFragment extends Fragment implements Callback<Note> {
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-       inflater.inflate(R.menu.note, menu);
+        inflater.inflate(R.menu.note, menu);
     }
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if(item.getItemId() == R.id.action_back) {
             NavController navController = NavHostFragment.findNavController(this);
             navController.navigate(R.id.action_nav_note_to_nav_notes );
+            return true;
+        }
+        if(item.getItemId() == R.id.action_save) {
+            note.setText(Html.toHtml(txtNoteText.getText(),Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV));
+            note.setHeader(txtNoteHeader.getText().toString());
+
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(Constants.BASE_API_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            NotesDataService notesApi = retrofit.create(NotesDataService.class);
+            Call<Note> call = notesApi.updateNote("Bearer " + Constants.ACCESS_TOKEN, NoteFragment.this.note);
+            call.enqueue(NoteFragment.this);
             return true;
         }
         return super.onContextItemSelected(item);

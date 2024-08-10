@@ -85,8 +85,8 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener {
                         String noteJsonString = Utils.getGsonParser().toJson(newNote);
                         bundle.putString("note", noteJsonString);
 
-                        NotesFragment.this.notesList.add(0, response.body());
-                        notesAdapter.notifyDataSetChanged();
+//                        NotesFragment.this.notesList.add(0, response.body());
+//                        notesAdapter.notifyDataSetChanged();
 
                         NavController navController = Navigation.findNavController(view);
                         navController.navigate(R.id.action_nav_notes_to_nav_note, bundle);

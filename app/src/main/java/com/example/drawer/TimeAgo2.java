@@ -29,7 +29,10 @@ public class TimeAgo2 {
             long hour   = TimeUnit.MILLISECONDS.toHours(dateDiff);
             long day  = TimeUnit.MILLISECONDS.toDays(dateDiff);
 
-            if (second < 60) {
+            if( second < 6 ){
+                convTime = " just now ";
+            }
+            else if (second < 60) {
                 convTime = second + " Seconds " + suffix;
             } else if (minute < 60) {
                 convTime = minute + " Minutes "+suffix;

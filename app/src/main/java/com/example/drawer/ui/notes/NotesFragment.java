@@ -14,6 +14,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.drawer.Constants;
 import com.example.drawer.Note;
@@ -35,7 +36,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class NotesFragment extends Fragment implements OnNoteItemClickListener {
+public class NotesFragment extends Fragment implements OnNoteItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     public NotesFragment() { }
 
@@ -44,6 +45,7 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener {
     private FragmentNotesBinding binding;
     public FloatingActionButton fab;
     public NotesAdapter notesAdapter;
+    public SwipeRefreshLayout mSwipeRefreshLayout;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -101,34 +103,21 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener {
             }
         });
 
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.teal_200,
+                android.R.color.holo_green_dark,
+                android.R.color.holo_orange_dark,
+                android.R.color.holo_blue_dark);
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.BASE_API_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        NotesDataService notesApi = retrofit.create(NotesDataService.class);
-
-        Call<Note[]> call = notesApi.getNotes("Bearer " + Constants.ACCESS_TOKEN);
-
-        call.enqueue(new Callback<Note[]>() {
-            @Override
-            public void onResponse(@NonNull Call<Note[]> call, @NonNull Response<Note[]> response) {
-                notesList = new ArrayList(Arrays.asList(response.body()));
-                NotesFragment.this.dataView(notesList);
-            }
+        mSwipeRefreshLayout.post(new Runnable() {
 
             @Override
-            public void onFailure(@NonNull Call<Note[]> call, @NonNull Throwable t) {
-                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+            public void run() {
+                fetchNotes();
             }
         });
-    }
 
-    private void dataView(List<Note> notes) {
-//        List<Note> list = notes.stream().filter(n -> !n.isArchived()).toList();
-         this.notesAdapter = new NotesAdapter(getContext(), this.notesList, this);
-        recyclerView.setAdapter(this.notesAdapter);
     }
 
     @Override
@@ -160,4 +149,43 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener {
 //
 //        getFragmentManager().beginTransaction().add(R.id.nav_host_fragment_content_main, ldf).commit();
     }
+
+    @Override
+    public void onRefresh() {
+        mSwipeRefreshLayout.setRefreshing(true);
+        fetchNotes();
+    }
+
+    private void fetchNotes() {
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constants.BASE_API_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        NotesDataService notesApi = retrofit.create(NotesDataService.class);
+
+        Call<Note[]> call = notesApi.getNotes("Bearer " + Constants.ACCESS_TOKEN);
+
+        call.enqueue(new Callback<Note[]>() {
+            @Override
+            public void onResponse(@NonNull Call<Note[]> call, @NonNull Response<Note[]> response) {
+                mSwipeRefreshLayout.setRefreshing(false);
+                notesList = new ArrayList(Arrays.asList(response.body()));
+                NotesFragment.this.dataView(notesList);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Note[]> call, @NonNull Throwable t) {
+                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void dataView(List<Note> notes) {
+//        List<Note> list = notes.stream().filter(n -> !n.isArchived()).toList();
+        this.notesAdapter = new NotesAdapter(getContext(), this.notesList, this);
+        recyclerView.setAdapter(this.notesAdapter);
+    }
+
 }

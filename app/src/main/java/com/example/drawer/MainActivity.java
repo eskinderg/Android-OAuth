@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         this.setUserInfo();
 
         navigationView.getMenu().findItem(R.id.nav_logout).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
@@ -84,13 +85,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
 //        navigationView.getMenu().findItem(R.id.nav_notes).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
 //            @Override
 //            public boolean onMenuItemClick(@NonNull MenuItem item) {
 //
 //                NavController navController = Navigation.findNavController(MainActivity.this, R.id.nav_host_fragment_content_main);
 //                navController.navigate(R.id.action_nav_note_to_nav_notes);
-//                return true;
+//                return false;
 //            }
 //        });
     }

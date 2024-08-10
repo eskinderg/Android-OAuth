@@ -51,7 +51,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteRecycler
             holder.header.setText(noteItem.getHeader());
         }
 
-        holder.description.setText("Last Modified " + TimeAgo2.covertTimeToText(noteItem.getDateModified()));
+        holder.description.setText("Modified " + TimeAgo2.covertTimeToText(noteItem.getDateModified()));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

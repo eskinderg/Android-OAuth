@@ -75,7 +75,8 @@ public class EventsFragment extends Fragment implements EventsAdapter.OnEventIte
                     @Override
                     public void onResponse(Call<Event> call, Response<Event> response) {
                         if(response.isSuccessful()){
-                            eventsAdapter.eventsList.get(position).setIsComplete(response.body().getIsComplete());
+                            eventsAdapter.eventsList.set(position, response.body());
+                            eventsAdapter.notifyDataSetChanged();
                         }
                     }
 

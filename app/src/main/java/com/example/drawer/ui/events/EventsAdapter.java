@@ -1,4 +1,4 @@
-package com.example.drawer.ui.notes;
+package com.example.drawer.ui.events;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -34,7 +34,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventRecyc
     }
 
     Context context;
-    ArrayList<Event> eventsList;
+    public ArrayList<Event> eventsList;
     private final OnEventItemClickListener mListener;
 
     public EventsAdapter(Context context, ArrayList<Event> eventsList, OnEventItemClickListener listener) {

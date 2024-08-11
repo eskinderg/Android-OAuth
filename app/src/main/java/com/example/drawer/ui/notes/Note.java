@@ -1,4 +1,4 @@
-package com.example.drawer;
+package com.example.drawer.ui.notes;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

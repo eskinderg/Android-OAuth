@@ -27,7 +27,7 @@
 
 
     <fragment
-        android:id="@+id/nav_gallery"
+        android:id="@+id/nav_events"
         android:name="com.example.drawer.ui.events.EventsFragment"
         android:label="@string/menu_events"
         tools:layout="@layout/fragment_events" />

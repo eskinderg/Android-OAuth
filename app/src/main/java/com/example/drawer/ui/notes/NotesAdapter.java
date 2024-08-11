@@ -1,4 +1,4 @@
-package com.example.drawer;
+package com.example.drawer.ui.notes;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,9 +10,10 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.example.drawer.R;
+import com.example.drawer.TimeAgo2;
 
+import java.util.ArrayList;
 
 
 public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteRecyclerViewHolder>{

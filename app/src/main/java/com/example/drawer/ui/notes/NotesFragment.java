@@ -8,7 +8,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import com.google.android.material.snackbar.Snackbar;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -17,10 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.drawer.Constants;
-import com.example.drawer.Note;
-import com.example.drawer.NotesAdapter;
-import com.example.drawer.NotesAdapter.OnNoteItemClickListener;
-import com.example.drawer.NotesDataService;
+import com.example.drawer.ui.notes.NotesAdapter.OnNoteItemClickListener;
 import com.example.drawer.R;
 import com.example.drawer.Utils;
 import com.example.drawer.databinding.FragmentNotesBinding;

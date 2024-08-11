@@ -164,15 +164,15 @@ class SwipeController extends ItemTouchHelper.Callback {
         Paint p = new Paint();
 
         RectF leftButton = new RectF(itemView.getLeft(), itemView.getTop(), itemView.getLeft() + buttonWidthWithoutPadding, itemView.getBottom());
-        p.setColor(Color.GRAY);
-        c.drawRoundRect(leftButton, corners, corners, p);
-        drawText("EDIT", c, leftButton, p);
-
-        RectF rightButton = new RectF(itemView.getRight() - buttonWidthWithoutPadding, itemView.getTop(), itemView.getRight(), itemView.getBottom());
         int color = ContextCompat.getColor( context, R.color.teal_700 );
         p.setColor(color);
+        c.drawRoundRect(leftButton, corners, corners, p);
+        drawText("Toggle", c, leftButton, p);
+
+        RectF rightButton = new RectF(itemView.getRight() - buttonWidthWithoutPadding, itemView.getTop(), itemView.getRight(), itemView.getBottom());
+        p.setColor(Color.RED);
         c.drawRoundRect(rightButton, corners, corners, p);
-        drawText("Toggle", c, rightButton, p);
+        drawText("Delete", c, rightButton, p);
 
         buttonInstance = null;
         if (buttonShowedState == ButtonsState.LEFT_VISIBLE) {

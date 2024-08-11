@@ -59,7 +59,7 @@ public class EventsFragment extends Fragment implements EventsAdapter.OnEventIte
 
         SwipeController swipeController = new SwipeController(new SwipeControllerActions() {
             @Override
-            public void onRightClicked(int position) {
+            public void onLeftClicked(int position) {
                 super.onRightClicked(position);
 
                 Retrofit retrofit = new Retrofit.Builder()
@@ -69,14 +69,14 @@ public class EventsFragment extends Fragment implements EventsAdapter.OnEventIte
 
                 EventsDataService eventsApi = retrofit.create(EventsDataService.class);
 
-                Call<Event> call = eventsApi.toggleEvent("Bearer " + Constants.ACCESS_TOKEN, eventsAdapter.eventsList.get(position) );
+                Call<Event> call = eventsApi.toggleEvent("Bearer " + Constants.ACCESS_TOKEN, eventsList.get(position));
 
                 call.enqueue(new Callback<Event>() {
                     @Override
                     public void onResponse(Call<Event> call, Response<Event> response) {
                         if(response.isSuccessful()){
-                            eventsAdapter.eventsList.set(position, response.body());
-                            eventsAdapter.notifyDataSetChanged();
+                            eventsList.set(position, (Event)response.body());
+                            eventsAdapter.notifyItemChanged(position);
                         }
                     }
 
@@ -89,8 +89,33 @@ public class EventsFragment extends Fragment implements EventsAdapter.OnEventIte
             }
 
             @Override
-            public void onLeftClicked(int position) {
+            public void onRightClicked(int position) {
                 super.onLeftClicked(position);
+
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(Constants.BASE_API_URL)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+
+                EventsDataService eventsApi = retrofit.create(EventsDataService.class);
+
+                Call<Event> call = eventsApi.deleteEvent("Bearer " + Constants.ACCESS_TOKEN, eventsAdapter.eventsList.get(position).getEventId());
+
+                call.enqueue(new Callback<Event>() {
+                    @Override
+                    public void onResponse(Call<Event> call, Response<Event> response) {
+                        if(response.isSuccessful()){
+                            eventsAdapter.eventsList.remove(position);
+                            eventsAdapter.notifyItemRemoved(position);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Event> call, Throwable t) {
+                        Toast.makeText(getContext(), t.getMessage(),Toast.LENGTH_LONG).show();
+
+                    }
+                });
             }
         }, getContext());
 

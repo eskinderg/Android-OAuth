@@ -92,7 +92,7 @@ public class EventsFragment extends Fragment implements EventsAdapter.OnEventIte
             public void onLeftClicked(int position) {
                 super.onLeftClicked(position);
             }
-        });
+        }, getContext());
 
         ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeController);
         itemTouchhelper.attachToRecyclerView(recyclerView);

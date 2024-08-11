@@ -1,5 +1,6 @@
 package com.example.drawer.ui.events;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -11,6 +12,7 @@ import static androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_SWIPE;
 import static androidx.recyclerview.widget.ItemTouchHelper.LEFT;
 import static androidx.recyclerview.widget.ItemTouchHelper.RIGHT;
 
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -36,8 +38,11 @@ class SwipeController extends ItemTouchHelper.Callback {
 
     private static final float buttonWidth = 300;
 
-    public SwipeController(SwipeControllerActions buttonsActions) {
+    private Context context;
+
+    public SwipeController(SwipeControllerActions buttonsActions, Context context) {
         this.buttonsActions = buttonsActions;
+        this.context = context;
     }
 
     @Override
@@ -164,7 +169,8 @@ class SwipeController extends ItemTouchHelper.Callback {
         drawText("EDIT", c, leftButton, p);
 
         RectF rightButton = new RectF(itemView.getRight() - buttonWidthWithoutPadding, itemView.getTop(), itemView.getRight(), itemView.getBottom());
-        p.setColor(Color.GREEN);
+        int color = ContextCompat.getColor( context, R.color.teal_700 );
+        p.setColor(color);
         c.drawRoundRect(rightButton, corners, corners, p);
         drawText("Toggle", c, rightButton, p);
 

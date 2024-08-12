@@ -131,10 +131,10 @@ public class EventsFragment extends Fragment implements EventsAdapter.OnEventIte
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
         mSwipeRefreshLayout.setOnRefreshListener(this);
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.teal_200,
-                android.R.color.holo_green_dark,
-                android.R.color.holo_orange_dark,
-                android.R.color.holo_blue_dark);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.primary_light,
+                R.color.primary_light,
+                R.color.primary_light,
+                R.color.primary_light);
 
         mSwipeRefreshLayout.post(new Runnable() {
             @Override

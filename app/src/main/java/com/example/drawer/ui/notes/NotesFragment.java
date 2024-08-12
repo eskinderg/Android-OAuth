@@ -1,5 +1,6 @@
 package com.example.drawer.ui.notes;
 
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -36,7 +38,6 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
 
     public NotesFragment() { }
 
-    public ArrayList<Note> notesList;
     public RecyclerView recyclerView;
     private FragmentNotesBinding binding;
     public FloatingActionButton fab;
@@ -60,6 +61,62 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
 
         recyclerView = view.findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        NoteSwipeController swipeController = new NoteSwipeController(new NoteSwipeControllerActions() {
+            @Override
+            public void onEditBtnClicked(int position) {
+                super.onEditBtnClicked(position);
+
+                Bundle bundle = new Bundle();
+                String noteJsonString = Utils.getGsonParser().toJson(notesAdapter.notesList.get(position));
+                bundle.putString("note", noteJsonString);
+
+                NavController navController = Navigation.findNavController(view);
+                navController.navigate(R.id.action_nav_notes_to_nav_note, bundle);
+            }
+
+            @Override
+            public void onArchiveBtnClicked(int position) {
+                super.onArchiveBtnClicked(position);
+
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(Constants.BASE_API_URL)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+
+                NotesDataService notesDataService = retrofit.create(NotesDataService.class);
+
+                Note noteItem = notesAdapter.notesList.get(position);
+                noteItem.setArchived(true);
+
+                Call<Note> call = notesDataService.updateNote("Bearer " + Constants.ACCESS_TOKEN, noteItem);
+                call.enqueue(new Callback<Note>() {
+                    @Override
+                    public void onResponse(Call<Note> call, Response<Note> response) {
+                        if(response.isSuccessful()){
+                           notesAdapter.notesList.remove(position);
+                            notesAdapter.notifyItemRemoved(position);
+                            Toast.makeText(getContext(), "Note archived", Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Note> call, Throwable t) {
+                        Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        }, getContext());
+
+        ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeController);
+        itemTouchhelper.attachToRecyclerView(recyclerView);
+
+        recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+                swipeController.onDraw(c);
+            }
+        });
         this.fab = view.findViewById(R.id.fab);
 
         this.fab.setOnClickListener(new View.OnClickListener() {
@@ -101,10 +158,10 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
         mSwipeRefreshLayout.setOnRefreshListener(this);
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.teal_200,
-                android.R.color.holo_green_dark,
-                android.R.color.holo_orange_dark,
-                android.R.color.holo_blue_dark);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.primary_light,
+                R.color.primary_light,
+                R.color.primary_light,
+                R.color.primary_light);
 
         mSwipeRefreshLayout.post(new Runnable() {
 
@@ -166,9 +223,9 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
         call.enqueue(new Callback<Note[]>() {
             @Override
             public void onResponse(@NonNull Call<Note[]> call, @NonNull Response<Note[]> response) {
+
+                NotesFragment.this.dataView(new ArrayList(Arrays.asList(response.body())));
                 mSwipeRefreshLayout.setRefreshing(false);
-                notesList = new ArrayList(Arrays.asList(response.body()));
-                NotesFragment.this.dataView(notesList);
             }
 
             @Override
@@ -180,7 +237,7 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
 
     private void dataView(List<Note> notes) {
 //        List<Note> list = notes.stream().filter(n -> !n.isArchived()).toList();
-        this.notesAdapter = new NotesAdapter(getContext(), this.notesList, this);
+        this.notesAdapter = new NotesAdapter(getContext(), notes, this);
         recyclerView.setAdapter(this.notesAdapter);
     }
 

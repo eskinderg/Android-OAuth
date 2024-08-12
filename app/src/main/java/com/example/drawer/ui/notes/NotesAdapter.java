@@ -14,6 +14,7 @@ import com.example.drawer.R;
 import com.example.drawer.TimeAgo2;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteRecyclerViewHolder>{
@@ -23,11 +24,11 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteRecycler
     }
 
     Context context;
-    ArrayList<Note> notesList;
+    public ArrayList<Note> notesList;
     private final OnNoteItemClickListener mListener;
 
-    public NotesAdapter(Context context, ArrayList<Note> notesList, OnNoteItemClickListener listener) {
-        this.notesList = notesList;
+    public NotesAdapter(Context context, List<Note> notesList, OnNoteItemClickListener listener) {
+        this.notesList = getActiveNotes(notesList);
         this.context = context;
         this.mListener = listener;
     }
@@ -80,5 +81,10 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteRecycler
             description = itemView.findViewById(R.id.description);
             card = itemView.findViewById(R.id.card);
         }
+    }
+
+    private ArrayList<Note> getActiveNotes(List<Note> list){
+        List<Note> activeNotes = list.stream().filter(n -> !n.isArchived()).toList();
+        return new ArrayList<Note>(activeNotes);
     }
 }

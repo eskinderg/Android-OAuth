@@ -81,13 +81,6 @@ public class Note implements Serializable {
 
     public Note(){}
 
-//    public Note(Number id, String header, String text, Boolean archived) {
-//        this.id = id;
-//        this.header = header;
-//        this.archived = archived;
-//        this.text = text;
-//    }
-
     public boolean isArchived() {
         return archived;
     }
@@ -118,5 +111,9 @@ public class Note implements Serializable {
 
     public Number getId() {
         return id;
+    }
+
+    public void setArchived(boolean value) {
+        this.archived = value;
     }
 }

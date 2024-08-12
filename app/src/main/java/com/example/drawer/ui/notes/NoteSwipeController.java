@@ -1,4 +1,4 @@
-package com.example.drawer.ui.events;
+package com.example.drawer.ui.notes;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -7,12 +7,9 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.view.MotionEvent;
 import android.view.View;
-
+import androidx.core.content.ContextCompat;
 import static androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_SWIPE;
 import static androidx.recyclerview.widget.ItemTouchHelper.LEFT;
-import static androidx.recyclerview.widget.ItemTouchHelper.RIGHT;
-
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,30 +21,31 @@ enum ButtonsState {
     RIGHT_VISIBLE
 }
 
-class SwipeController extends ItemTouchHelper.Callback {
+class NoteSwipeController extends ItemTouchHelper.Callback {
 
     private boolean swipeBack = false;
 
     private ButtonsState buttonShowedState = ButtonsState.GONE;
 
-    private RectF buttonInstance = null;
+    private RectF buttonArchive = null;
+    private RectF buttonEdit = null;
 
     private RecyclerView.ViewHolder currentItemViewHolder = null;
 
-    private SwipeControllerActions buttonsActions = null;
+    private NoteSwipeControllerActions buttonsActions = null;
 
     private static final float buttonWidth = 300;
 
     private Context context;
 
-    public SwipeController(SwipeControllerActions buttonsActions, Context context) {
+    public NoteSwipeController(NoteSwipeControllerActions buttonsActions, Context context) {
         this.buttonsActions = buttonsActions;
         this.context = context;
     }
 
     @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-        return makeMovementFlags(0, LEFT | RIGHT);
+        return makeMovementFlags(0, LEFT);
     }
 
     @Override
@@ -74,7 +72,7 @@ class SwipeController extends ItemTouchHelper.Callback {
         if (actionState == ACTION_STATE_SWIPE) {
             if (buttonShowedState != ButtonsState.GONE) {
                 if (buttonShowedState == ButtonsState.LEFT_VISIBLE) dX = Math.max(dX, buttonWidth);
-                if (buttonShowedState == ButtonsState.RIGHT_VISIBLE) dX = Math.min(dX, -buttonWidth);
+                if (buttonShowedState == ButtonsState.RIGHT_VISIBLE) dX = Math.min(dX, -buttonWidth * 2);
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
             }
             else {
@@ -124,7 +122,7 @@ class SwipeController extends ItemTouchHelper.Callback {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_UP) {
-                    SwipeController.super.onChildDraw(c, recyclerView, viewHolder, 0F, dY, actionState, isCurrentlyActive);
+                    NoteSwipeController.super.onChildDraw(c, recyclerView, viewHolder, 0F, dY, actionState, isCurrentlyActive);
                     recyclerView.setOnTouchListener(new View.OnTouchListener() {
                         @Override
                         public boolean onTouch(View v, MotionEvent event) {
@@ -134,12 +132,16 @@ class SwipeController extends ItemTouchHelper.Callback {
                     setItemsClickable(recyclerView, true);
                     swipeBack = false;
 
-                    if (buttonsActions != null && buttonInstance != null && buttonInstance.contains(event.getX(), event.getY())) {
-                        if (buttonShowedState == ButtonsState.LEFT_VISIBLE) {
-                            buttonsActions.onLeftClicked(viewHolder.getAdapterPosition());
+                    if(buttonEdit.contains(event.getX(), event.getY())) {
+                        if(buttonShowedState == ButtonsState.RIGHT_VISIBLE) {
+                            buttonsActions.onEditBtnClicked(viewHolder.getAdapterPosition());
+
                         }
-                        else if (buttonShowedState == ButtonsState.RIGHT_VISIBLE) {
-                            buttonsActions.onRightClicked(viewHolder.getAdapterPosition());
+                    }
+
+                    if (buttonsActions != null && buttonArchive != null && buttonArchive.contains(event.getX(), event.getY())) {
+                        if (buttonShowedState == ButtonsState.RIGHT_VISIBLE) {
+                            buttonsActions.onArchiveBtnClicked(viewHolder.getAdapterPosition());
                         }
                     }
                     buttonShowedState = ButtonsState.GONE;
@@ -163,23 +165,21 @@ class SwipeController extends ItemTouchHelper.Callback {
         View itemView = viewHolder.itemView;
         Paint p = new Paint();
 
-        RectF leftButton = new RectF(itemView.getLeft(), itemView.getTop(), itemView.getLeft() + buttonWidthWithoutPadding, itemView.getBottom());
-        int color = ContextCompat.getColor( context, R.color.primary);
-        p.setColor(color);
-        c.drawRoundRect(leftButton, corners, corners, p);
-        drawText("Toggle", c, leftButton, p);
+        RectF rightEdit= new RectF(itemView.getRight() - buttonWidthWithoutPadding- buttonWidthWithoutPadding, itemView.getTop(), itemView.getRight() - buttonWidthWithoutPadding - 15, itemView.getBottom());
+        int colorEdit = ContextCompat.getColor( context, R.color.purple_200 );
+        p.setColor(colorEdit);
+        c.drawRoundRect(rightEdit, corners, corners, p);
+        drawText("Edit", c, rightEdit, p);
 
-        RectF rightButton = new RectF(itemView.getRight() - buttonWidthWithoutPadding, itemView.getTop(), itemView.getRight(), itemView.getBottom());
-        p.setColor(Color.RED);
-        c.drawRoundRect(rightButton, corners, corners, p);
-        drawText("Delete", c, rightButton, p);
+        RectF rightArchive = new RectF(itemView.getRight() - buttonWidthWithoutPadding, itemView.getTop(), itemView.getRight(), itemView.getBottom());
+        int colorArchive = ContextCompat.getColor(context, R.color.orange);
+        p.setColor(colorArchive);
+        c.drawRoundRect(rightArchive, corners, corners, p);
+        drawText("Archive", c, rightArchive, p);
 
-        buttonInstance = null;
-        if (buttonShowedState == ButtonsState.LEFT_VISIBLE) {
-            buttonInstance = leftButton;
-        }
-        else if (buttonShowedState == ButtonsState.RIGHT_VISIBLE) {
-            buttonInstance = rightButton;
+        if (buttonShowedState == ButtonsState.RIGHT_VISIBLE) {
+            buttonArchive = rightArchive;
+            buttonEdit = rightEdit;
         }
     }
 

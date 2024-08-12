@@ -20,6 +20,7 @@ import retrofit2.Response;
 public class LoginActivity extends AppCompatActivity {
 
     private ActivityLoginBinding binding;
+    private ProgressBar loadingProgressBar = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -27,6 +28,7 @@ public class LoginActivity extends AppCompatActivity {
 
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        loadingProgressBar = binding.loading;
 
         final EditText usernameEditText = binding.username;
         final EditText passwordEditText = binding.password;
@@ -59,12 +61,15 @@ public class LoginActivity extends AppCompatActivity {
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     LoginActivity.this.startActivity(intent);
                 } else {
-                    Toast.makeText(LoginActivity.this, "Error", Toast.LENGTH_LONG).show();
+                    LoginActivity.this.loadingProgressBar.setVisibility(View.INVISIBLE);
+                    Toast.makeText(LoginActivity.this, response.message(), Toast.LENGTH_LONG).show();
+
                 }
             }
 
             @Override
             public void onFailure(Call<AccessToken> call, Throwable t) {
+                LoginActivity.this.loadingProgressBar.setVisibility(View.INVISIBLE);
                 Toast.makeText(LoginActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });

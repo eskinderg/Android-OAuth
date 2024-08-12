@@ -13,11 +13,8 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.drawer.Constants;
 import com.example.drawer.R;
 import com.example.drawer.RetroInstance;
-import com.example.drawer.ui.events.Event;
-import com.example.drawer.ui.events.EventsDataService;
 
 import java.util.ArrayList;
 
@@ -25,7 +22,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventRecyclerViewHolder>{

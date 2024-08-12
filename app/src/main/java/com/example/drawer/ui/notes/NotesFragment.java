@@ -17,12 +17,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.drawer.Constants;
-import com.example.drawer.RetroInstance;
-import com.example.drawer.ui.notes.NotesAdapter.OnNoteItemClickListener;
 import com.example.drawer.R;
+import com.example.drawer.RetroInstance;
 import com.example.drawer.Utils;
 import com.example.drawer.databinding.FragmentNotesBinding;
+import com.example.drawer.ui.notes.NotesAdapter.OnNoteItemClickListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -33,7 +32,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class NotesFragment extends Fragment implements OnNoteItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 

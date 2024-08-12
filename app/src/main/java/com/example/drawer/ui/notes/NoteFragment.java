@@ -1,13 +1,6 @@
 package com.example.drawer.ui.notes;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.fragment.NavHostFragment;
-
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,7 +11,12 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.drawer.Constants;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+
 import com.example.drawer.R;
 import com.example.drawer.RetroInstance;
 import com.example.drawer.Utils;
@@ -27,7 +25,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 public class NoteFragment extends Fragment implements Callback<Note> {
     public EditText txtNoteText;
     public EditText txtNoteHeader;

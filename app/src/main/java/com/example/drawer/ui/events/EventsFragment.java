@@ -13,10 +13,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.drawer.Constants;
 import com.example.drawer.R;
 import com.example.drawer.RetroInstance;
 import com.example.drawer.databinding.FragmentEventsBinding;
@@ -29,7 +27,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class EventsFragment extends Fragment implements EventsAdapter.OnEventItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 

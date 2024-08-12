@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.drawer.Constants;
 import com.example.drawer.R;
+import com.example.drawer.RetroInstance;
 import com.example.drawer.ui.events.Event;
 import com.example.drawer.ui.events.EventsDataService;
 
@@ -64,14 +65,11 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventRecyc
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl(Constants.BASE_API_URL)
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
+                Retrofit retrofit = RetroInstance.getRetrofitInstance();
 
                 EventsDataService eventsApi = retrofit.create(EventsDataService.class);
 
-                Call<Event> call = eventsApi.toggleEvent("Bearer " + Constants.ACCESS_TOKEN, eventItem );
+                Call<Event> call = eventsApi.toggleEvent(eventItem );
 
                 call.enqueue(new Callback<Event>() {
                     @Override

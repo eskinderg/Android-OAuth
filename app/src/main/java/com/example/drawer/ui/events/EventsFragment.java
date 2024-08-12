@@ -18,6 +18,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.drawer.Constants;
 import com.example.drawer.R;
+import com.example.drawer.RetroInstance;
 import com.example.drawer.databinding.FragmentEventsBinding;
 
 import java.util.ArrayList;
@@ -62,14 +63,11 @@ public class EventsFragment extends Fragment implements EventsAdapter.OnEventIte
             public void onLeftClicked(int position) {
                 super.onRightClicked(position);
 
-                Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl(Constants.BASE_API_URL)
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
+                Retrofit retrofit = RetroInstance.getRetrofitInstance();
 
                 EventsDataService eventsApi = retrofit.create(EventsDataService.class);
 
-                Call<Event> call = eventsApi.toggleEvent("Bearer " + Constants.ACCESS_TOKEN, eventsList.get(position));
+                Call<Event> call = eventsApi.toggleEvent(eventsList.get(position));
 
                 call.enqueue(new Callback<Event>() {
                     @Override
@@ -92,14 +90,11 @@ public class EventsFragment extends Fragment implements EventsAdapter.OnEventIte
             public void onRightClicked(int position) {
                 super.onLeftClicked(position);
 
-                Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl(Constants.BASE_API_URL)
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
+                Retrofit retrofit = RetroInstance.getRetrofitInstance();
 
                 EventsDataService eventsApi = retrofit.create(EventsDataService.class);
 
-                Call<Event> call = eventsApi.deleteEvent("Bearer " + Constants.ACCESS_TOKEN, eventsAdapter.eventsList.get(position).getEventId());
+                Call<Event> call = eventsApi.deleteEvent(eventsAdapter.eventsList.get(position).getEventId());
 
                 call.enqueue(new Callback<Event>() {
                     @Override
@@ -163,14 +158,11 @@ public class EventsFragment extends Fragment implements EventsAdapter.OnEventIte
 
     private void fetchEvents() {
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.BASE_API_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+        Retrofit retrofit = RetroInstance.getRetrofitInstance();
 
         EventsDataService eventsApi = retrofit.create(EventsDataService.class);
 
-        Call<Event[]> call = eventsApi.getEvents("Bearer " + Constants.ACCESS_TOKEN);
+        Call<Event[]> call = eventsApi.getEvents();
 
         call.enqueue(new Callback<Event[]>() {
             @Override

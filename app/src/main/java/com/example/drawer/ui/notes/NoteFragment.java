@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.example.drawer.Constants;
 import com.example.drawer.R;
+import com.example.drawer.RetroInstance;
 import com.example.drawer.Utils;
 
 import retrofit2.Call;
@@ -97,13 +98,9 @@ public class NoteFragment extends Fragment implements Callback<Note> {
             note.setText(Html.toHtml(txtNoteText.getText(),Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV));
             note.setHeader(txtNoteHeader.getText().toString());
 
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(Constants.BASE_API_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-
+            Retrofit retrofit = RetroInstance.getRetrofitInstance();
             NotesDataService notesApi = retrofit.create(NotesDataService.class);
-            Call<Note> call = notesApi.updateNote("Bearer " + Constants.ACCESS_TOKEN, NoteFragment.this.note);
+            Call<Note> call = notesApi.updateNote(NoteFragment.this.note);
             call.enqueue(NoteFragment.this);
             return true;
         }

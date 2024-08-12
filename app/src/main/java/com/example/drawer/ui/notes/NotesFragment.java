@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.drawer.Constants;
+import com.example.drawer.RetroInstance;
 import com.example.drawer.ui.notes.NotesAdapter.OnNoteItemClickListener;
 import com.example.drawer.R;
 import com.example.drawer.Utils;
@@ -79,17 +80,14 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
             public void onArchiveBtnClicked(int position) {
                 super.onArchiveBtnClicked(position);
 
-                Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl(Constants.BASE_API_URL)
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
+                Retrofit retrofit = RetroInstance.getRetrofitInstance();
 
                 NotesDataService notesDataService = retrofit.create(NotesDataService.class);
 
                 Note noteItem = notesAdapter.notesList.get(position);
                 noteItem.setArchived(true);
 
-                Call<Note> call = notesDataService.updateNote("Bearer " + Constants.ACCESS_TOKEN, noteItem);
+                Call<Note> call = notesDataService.updateNote(noteItem);
                 call.enqueue(new Callback<Note>() {
                     @Override
                     public void onResponse(Call<Note> call, Response<Note> response) {
@@ -123,14 +121,11 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
             @Override
             public void onClick(View view) {
 
-                Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl(Constants.BASE_API_URL)
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
+                Retrofit retrofit = RetroInstance.getRetrofitInstance();
 
                 NotesDataService notesApi = retrofit.create(NotesDataService.class);
 
-                Call<Note> call = notesApi.addNote("Bearer " + Constants.ACCESS_TOKEN, new Note());
+                Call<Note> call = notesApi.addNote(new Note());
 
                 call.enqueue(new Callback<Note>() {
                     @Override
@@ -211,14 +206,11 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
 
     private void fetchNotes() {
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.BASE_API_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+        Retrofit retrofit = RetroInstance.getRetrofitInstance();
 
         NotesDataService notesApi = retrofit.create(NotesDataService.class);
 
-        Call<Note[]> call = notesApi.getNotes("Bearer " + Constants.ACCESS_TOKEN);
+        Call<Note[]> call = notesApi.getNotes();
 
         call.enqueue(new Callback<Note[]>() {
             @Override

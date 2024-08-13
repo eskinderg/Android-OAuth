@@ -49,7 +49,7 @@ public class ArchivedNotesAdapter extends RecyclerView.Adapter<ArchivedNotesAdap
         Note noteItem = notesList.get(position);
 
         if(noteItem.getHeader() == null || noteItem.getHeader().isEmpty()) {
-            holder.header.setText("Untitled");
+            holder.header.setText("");
         } else {
             holder.header.setText(noteItem.getHeader());
         }

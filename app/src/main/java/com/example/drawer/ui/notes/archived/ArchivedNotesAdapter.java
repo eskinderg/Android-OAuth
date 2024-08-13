@@ -1,4 +1,4 @@
-package com.example.drawer.ui.notes;
+package com.example.drawer.ui.notes.archived;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,12 +12,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.drawer.R;
 import com.example.drawer.TimeAgo2;
+import com.example.drawer.ui.notes.Note;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteRecyclerViewHolder> {
+public class ArchivedNotesAdapter extends RecyclerView.Adapter<ArchivedNotesAdapter.ArchivedNoteRecyclerViewHolder>{
 
     public interface OnNoteItemClickListener {
         void onNoteItemClick(View view, Note note);
@@ -27,23 +28,23 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteRecycler
     public ArrayList<Note> notesList;
     private final OnNoteItemClickListener mListener;
 
-    public NotesAdapter(Context context, List<Note> notesList, OnNoteItemClickListener listener) {
-        this.notesList = getActiveNotes(notesList);
+    public ArchivedNotesAdapter(Context context, List<Note> notesList, OnNoteItemClickListener listener) {
+        this.notesList = getArchivedNotes(notesList);
         this.context = context;
         this.mListener = listener;
     }
 
     @NonNull
     @Override
-    public NoteRecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ArchivedNoteRecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
         LayoutInflater layoutInflater = LayoutInflater.from(context);
-        view = layoutInflater.inflate(R.layout.note_list,parent, false);
-        return new NoteRecyclerViewHolder(view);
+        view = layoutInflater.inflate(R.layout.archived_note_list,parent, false);
+        return new ArchivedNoteRecyclerViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull NoteRecyclerViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ArchivedNoteRecyclerViewHolder holder, int position) {
 
         Note noteItem = notesList.get(position);
 
@@ -53,7 +54,8 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteRecycler
             holder.header.setText(noteItem.getHeader());
         }
 
-        holder.description.setText("Modified " + TimeAgo2.covertTimeToText(noteItem.getDateModified()));
+        holder.txtDateModified.setText("Last modified " + TimeAgo2.covertTimeToText(noteItem.getDateModified()));
+        holder.txtDateArchived.setText("Archived " + TimeAgo2.covertTimeToText(noteItem.getDateArchived()));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,22 +71,24 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteRecycler
         return notesList.size();
     }
 
-    public static class NoteRecyclerViewHolder extends RecyclerView.ViewHolder{
+    public static class ArchivedNoteRecyclerViewHolder extends RecyclerView.ViewHolder{
 
         TextView header;
-        TextView description;
+        TextView txtDateModified;
+        TextView txtDateArchived;
         CardView card;
 
-        public NoteRecyclerViewHolder(@NonNull View itemView) {
+        public ArchivedNoteRecyclerViewHolder(@NonNull View itemView) {
             super(itemView);
             header = itemView.findViewById(R.id.header);
-            description = itemView.findViewById(R.id.description);
+            txtDateModified = itemView.findViewById(R.id.txtdatemodified);
+            txtDateArchived = itemView.findViewById(R.id.txtdatearchived);
             card = itemView.findViewById(R.id.card);
         }
     }
 
-    private ArrayList<Note> getActiveNotes(List<Note> list){
-        List<Note> activeNotes = list.stream().filter(n -> !n.isArchived()).toList();
-        return new ArrayList<Note>(activeNotes);
+    private ArrayList<Note> getArchivedNotes(List<Note> list){
+        List<Note> archivedNotes = list.stream().filter(n -> n.isArchived()).toList();
+        return new ArrayList<Note>(archivedNotes);
     }
 }

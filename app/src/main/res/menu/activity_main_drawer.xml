@@ -13,6 +13,10 @@
             android:icon="@drawable/ic_menu_gallery"
             android:title="@string/menu_events" />
         <item
+            android:id="@+id/nav_archived_notes"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="@string/menu_archived_notes" />
+        <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_menu_slideshow"
             android:title="@string/menu_logout" />

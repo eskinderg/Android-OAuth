@@ -33,6 +33,12 @@
         tools:layout="@layout/fragment_events" />
 
     <fragment
+        android:id="@+id/nav_archived_notes"
+        android:name="com.example.drawer.ui.notes.archived.ArchivedNotesFragment"
+        android:label="@string/menu_archived_notes"
+        tools:layout="@layout/fragment_archived_notes" />
+
+    <fragment
         android:id="@+id/nav_logout"
         android:name="com.example.drawer.ui.logout.SlideshowFragment"
         android:label="@string/menu_logout"

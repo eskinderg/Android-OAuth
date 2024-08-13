@@ -116,4 +116,6 @@ public class Note implements Serializable {
     public void setArchived(boolean value) {
         this.archived = value;
     }
+
+    public String getDateArchived() { return this.dateArchived; }
 }

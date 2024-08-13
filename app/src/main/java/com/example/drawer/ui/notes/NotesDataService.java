@@ -12,6 +12,9 @@ public interface NotesDataService {
     @GET("notes")
     Call<Note[]> getNotes();
 
+    @GET("notes/archived")
+    Call<Note[]> getArchivedNotes();
+
     @Headers({"Content-Type: application/json"})
     @PUT("notes")
     Call<Note> updateNote(@Body Note note);

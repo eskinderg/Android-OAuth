@@ -12,13 +12,6 @@ public class User {
     @SerializedName("email")
     private String email;
 
-    public User(String name, String preferredUsername, String givenName, String email) {
-        this.name = name;
-        this.preferredUsername = preferredUsername;
-        this.givenName = givenName;
-        this.email = email;
-    }
-
     public String getGivenName() {
         return this.givenName;
     }

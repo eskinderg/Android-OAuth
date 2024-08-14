@@ -15,7 +15,9 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.example.drawer.auth.AuthDataService;
 import com.example.drawer.databinding.ActivityMainBinding;
+import com.example.drawer.service.RetroInstance;
 import com.google.android.material.navigation.NavigationView;
 
 import okhttp3.ResponseBody;
@@ -55,7 +57,8 @@ public class MainActivity extends AppCompatActivity {
         navigationView.getMenu().findItem(R.id.nav_logout).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(@NonNull MenuItem item) {
-                GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+                AuthDataService service = RetroInstance.getRetrofitInstance(Constants.KEYCLOAK_URL)
+                        .create(AuthDataService.class);
                 Call<ResponseBody> call = service.logout(Constants.CLIENT_ID,Constants.CLIENT_SECRET,Constants.REFRESH_TOKEN);
                 call.enqueue(new Callback<ResponseBody>() {
                     @Override
@@ -104,9 +107,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void setUserInfo() {
 
-        GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+        AuthDataService service = RetroInstance.getRetrofitInstance(Constants.KEYCLOAK_URL)
+                .create(AuthDataService.class);
 
-        Call<User> call = service.getUserInfo("Bearer " + Constants.ACCESS_TOKEN);
+        Call<User> call = service.getUserInfo();
 
         call.enqueue(new Callback<User>() {
             @Override
@@ -120,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
                     navUsername.setText(user.getGivenName());
                     navEmail.setText(user.getUserEmail());
                 } else {
-                    Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, response.message(), Toast.LENGTH_LONG).show();
                 }
             }
 

@@ -10,20 +10,16 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.drawer.R;
-import com.example.drawer.RetroInstance;
-import com.example.drawer.Utils;
+import com.example.drawer.service.RetroInstance;
 import com.example.drawer.databinding.FragmentArchivedNotesBinding;
 import com.example.drawer.ui.notes.Note;
 import com.example.drawer.ui.notes.NotesDataService;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Arrays;

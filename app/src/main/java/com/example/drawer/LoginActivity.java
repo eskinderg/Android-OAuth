@@ -10,7 +10,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.drawer.auth.AuthDataService;
 import com.example.drawer.databinding.ActivityLoginBinding;
+import com.example.drawer.service.RetroInstance;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -46,7 +48,9 @@ public class LoginActivity extends AppCompatActivity {
 
     public void getAccessToken(String username, String password) {
 
-        GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+        AuthDataService service = RetroInstance
+                .getRetrofitInstance(Constants.KEYCLOAK_URL)
+                .create(AuthDataService.class);
 
         Call<AccessToken> call = service.getAccessToken(Constants.CLIENT_ID, Constants.GRANT_TYPE,Constants.CLIENT_SECRET,Constants.SCOPE, username, password);
 

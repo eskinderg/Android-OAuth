@@ -1,4 +1,7 @@
-package com.example.drawer;
+package com.example.drawer.auth;
+
+import com.example.drawer.AccessToken;
+import com.example.drawer.User;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -7,7 +10,7 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
 
-public interface GetDataService {
+public interface AuthDataService {
 
     @FormUrlEncoded
     @POST("/realms/master/protocol/openid-connect/token")
@@ -20,8 +23,9 @@ public interface GetDataService {
             @Field("password") String password
     );
 
+    @Authorized
     @POST("/realms/master/protocol/openid-connect/userinfo")
-    Call<User> getUserInfo(@Header("Authorization") String authHeader);
+    Call<User> getUserInfo();
 
     @FormUrlEncoded
     @POST("/realms/master/protocol/openid-connect/logout")

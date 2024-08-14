@@ -18,7 +18,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.drawer.R;
-import com.example.drawer.RetroInstance;
+import com.example.drawer.service.RetroInstance;
 import com.example.drawer.Utils;
 
 import retrofit2.Call;

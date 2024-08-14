@@ -24,7 +24,7 @@ enum ButtonsState {
     RIGHT_VISIBLE
 }
 
-class SwipeController extends ItemTouchHelper.Callback {
+class EventsSwipeController extends ItemTouchHelper.Callback {
 
     private boolean swipeBack = false;
 
@@ -40,7 +40,7 @@ class SwipeController extends ItemTouchHelper.Callback {
 
     private Context context;
 
-    public SwipeController(SwipeControllerActions buttonsActions, Context context) {
+    public EventsSwipeController(SwipeControllerActions buttonsActions, Context context) {
         this.buttonsActions = buttonsActions;
         this.context = context;
     }
@@ -124,7 +124,7 @@ class SwipeController extends ItemTouchHelper.Callback {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_UP) {
-                    SwipeController.super.onChildDraw(c, recyclerView, viewHolder, 0F, dY, actionState, isCurrentlyActive);
+                    EventsSwipeController.super.onChildDraw(c, recyclerView, viewHolder, 0F, dY, actionState, isCurrentlyActive);
                     recyclerView.setOnTouchListener(new View.OnTouchListener() {
                         @Override
                         public boolean onTouch(View v, MotionEvent event) {

@@ -20,7 +20,7 @@ import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.drawer.R;
-import com.example.drawer.RetroInstance;
+import com.example.drawer.service.RetroInstance;
 import com.example.drawer.Utils;
 import com.example.drawer.databinding.FragmentNotesBinding;
 import com.example.drawer.ui.notes.NotesAdapter.OnNoteItemClickListener;

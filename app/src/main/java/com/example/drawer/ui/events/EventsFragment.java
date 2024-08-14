@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.drawer.R;
-import com.example.drawer.RetroInstance;
+import com.example.drawer.service.RetroInstance;
 import com.example.drawer.databinding.FragmentEventsBinding;
 
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public class EventsFragment extends Fragment implements EventsAdapter.OnEventIte
         recyclerView = view.findViewById(R.id.eventsrecyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        SwipeController swipeController = new SwipeController(new SwipeControllerActions() {
+        EventsSwipeController eventsSwipeController = new EventsSwipeController(new SwipeControllerActions() {
             @Override
             public void onLeftClicked(int position) {
                 super.onRightClicked(position);
@@ -111,13 +111,13 @@ public class EventsFragment extends Fragment implements EventsAdapter.OnEventIte
             }
         }, getContext());
 
-        ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeController);
+        ItemTouchHelper itemTouchhelper = new ItemTouchHelper(eventsSwipeController);
         itemTouchhelper.attachToRecyclerView(recyclerView);
 
         recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
             public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
-                swipeController.onDraw(c);
+                eventsSwipeController.onDraw(c);
             }
         });
 

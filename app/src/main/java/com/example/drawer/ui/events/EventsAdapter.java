@@ -14,7 +14,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.drawer.R;
-import com.example.drawer.RetroInstance;
+import com.example.drawer.service.RetroInstance;
 
 import java.util.ArrayList;
 

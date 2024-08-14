@@ -1,7 +1,6 @@
 package com.example.drawer;
 
 public class Constants {
-    public static String CLIENT_SECRET = "FVyowDq5OR2fAgRVD4a91pCKChTScVQ2";
     public static String CLIENT_ID = "Android";
     public static String GRANT_TYPE = "password";
     public static String SCOPE = "openid";

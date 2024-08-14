@@ -55,7 +55,7 @@ public class LoginActivity extends AppCompatActivity {
                 .getRetrofitInstance(Constants.KEYCLOAK_URL)
                 .create(AuthDataService.class);
 
-        Call<AccessToken> call = service.getAccessToken(Constants.CLIENT_ID, Constants.GRANT_TYPE, Constants.CLIENT_SECRET, Constants.SCOPE, username, password);
+        Call<AccessToken> call = service.getAccessToken(Constants.CLIENT_ID, Constants.GRANT_TYPE, Constants.SCOPE, username, password);
 
         call.enqueue(new Callback<AccessToken>() {
             @Override

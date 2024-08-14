@@ -13,7 +13,6 @@ public interface AuthDataService {
     Call<AccessToken> getAccessToken(
             @Field("client_id") String client_id,
             @Field("grant_type") String grant_type,
-            @Field("client_secret") String client_secret,
             @Field("scope") String scope,
             @Field("username") String username,
             @Field("password") String password
@@ -27,7 +26,6 @@ public interface AuthDataService {
     @POST("/realms/master/protocol/openid-connect/logout")
     Call<ResponseBody> logout(
             @Field("client_id") String client_id,
-            @Field("client_secret") String client_secret,
             @Field("refresh_token") String refreshToken
     );
 }

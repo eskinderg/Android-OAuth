@@ -53,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         this.setUserInfo();
 
         navigationView.getMenu().findItem(R.id.nav_logout).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
@@ -61,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onMenuItemClick(@NonNull MenuItem item) {
                 AuthDataService service = RetroInstance.getRetrofitInstance(Constants.KEYCLOAK_URL)
                         .create(AuthDataService.class);
-                Call<ResponseBody> call = service.logout(Constants.CLIENT_ID, Constants.CLIENT_SECRET, MyNote.getContext().getSharedPreferences("prefs", Context.MODE_PRIVATE).getString("refresh_token", ""));
+                Call<ResponseBody> call = service.logout(Constants.CLIENT_ID, MyNote.getContext().getSharedPreferences("prefs", Context.MODE_PRIVATE).getString("refresh_token", ""));
                 call.enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -80,25 +79,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-
-
-//        navigationView.getMenu().findItem(R.id.nav_notes).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-//            @Override
-//            public boolean onMenuItemClick(@NonNull MenuItem item) {
-//
-//                NavController navController = Navigation.findNavController(MainActivity.this, R.id.nav_host_fragment_content_main);
-//                navController.navigate(R.id.action_nav_note_to_nav_notes);
-//                return false;
-//            }
-//        });
     }
-
-//    @Override
-//    public boolean oncreateoptionsmenu(menu menu) {
-//        // inflate the menu; this adds items to the action bar if it is present.
-//        getmenuinflater().inflate(r.menu.main, menu);
-//        return true;
-//    }
 
     @Override
     public boolean onSupportNavigateUp() {

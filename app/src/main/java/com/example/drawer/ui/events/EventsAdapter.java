@@ -7,20 +7,18 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.drawer.core.AppCallback;
 import com.example.drawer.R;
 import com.example.drawer.service.RetroInstance;
 
 import java.util.ArrayList;
 
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 
 
@@ -29,6 +27,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventRecyc
     private final OnEventItemClickListener mListener;
     public ArrayList<Event> eventsList;
     Context context;
+
     public EventsAdapter(Context context, ArrayList<Event> eventsList, OnEventItemClickListener listener) {
         this.eventsList = eventsList;
         this.context = context;
@@ -62,18 +61,14 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventRecyc
 
                 Call<Event> call = eventsApi.toggleEvent(eventItem);
 
-                call.enqueue(new Callback<Event>() {
+                call.enqueue(new AppCallback<Event>(EventsAdapter.this.context) {
                     @Override
-                    public void onResponse(Call<Event> call, Response<Event> response) {
-                        if (response.isSuccessful()) {
-                            eventItem.setIsComplete(response.body().getIsComplete());
-                        }
+                    public void onResponse(Event response) {
+                        eventItem.setIsComplete(response.getIsComplete());
                     }
 
                     @Override
-                    public void onFailure(Call<Event> call, Throwable t) {
-                        Toast.makeText(context.getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
-
+                    public void onFailure(Throwable throwable) {
                     }
                 });
             }

@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.example.drawer.core.AppCallback;
 import com.example.drawer.R;
 import com.example.drawer.databinding.FragmentArchivedNotesBinding;
 import com.example.drawer.service.RetroInstance;
@@ -26,8 +27,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdapter.OnNoteItemClickListener, SwipeRefreshLayout.OnRefreshListener {
@@ -36,6 +35,7 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
     public ArchivedNotesAdapter notesAdapter;
     public SwipeRefreshLayout mSwipeRefreshLayout;
     private FragmentArchivedNotesBinding binding;
+
     public ArchivedNotesFragment() {
     }
 
@@ -66,19 +66,16 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
                 noteItem.setArchived(false);
 
                 Call<Note> call = notesDataService.updateNote(noteItem);
-                call.enqueue(new Callback<Note>() {
+                call.enqueue(new AppCallback<Note>(getContext()) {
                     @Override
-                    public void onResponse(Call<Note> call, Response<Note> response) {
-                        if (response.isSuccessful()) {
-                            notesAdapter.notesList.remove(position);
-                            notesAdapter.notifyItemRemoved(position);
-                            Toast.makeText(getContext(), "Note restored", Toast.LENGTH_LONG).show();
-                        }
+                    public void onResponse(Note response) {
+                        notesAdapter.notesList.remove(position);
+                        notesAdapter.notifyItemRemoved(position);
+                        Toast.makeText(getContext(), "Note restored", Toast.LENGTH_LONG).show();
                     }
 
                     @Override
-                    public void onFailure(Call<Note> call, Throwable t) {
-                        Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                    public void onFailure(Throwable throwable) {
                     }
                 });
             }
@@ -134,21 +131,16 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
 
         Call<Note[]> call = notesApi.getArchivedNotes();
 
-        call.enqueue(new Callback<Note[]>() {
+        call.enqueue(new AppCallback<Note[]>(getContext()) {
             @Override
-            public void onResponse(@NonNull Call<Note[]> call, @NonNull Response<Note[]> response) {
-                if(response.isSuccessful()) {
-                    ArchivedNotesFragment.this.dataView(new ArrayList(Arrays.asList(response.body())));
-                    mSwipeRefreshLayout.setRefreshing(false);
-                    setAppbarCount();
-                } else {
-                    Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
-                }
+            public void onResponse(Note[] response) {
+                ArchivedNotesFragment.this.dataView(new ArrayList(Arrays.asList(response)));
+                mSwipeRefreshLayout.setRefreshing(false);
+                setAppbarCount();
             }
 
             @Override
-            public void onFailure(@NonNull Call<Note[]> call, @NonNull Throwable t) {
-                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+            public void onFailure(Throwable throwable) {
             }
         });
     }

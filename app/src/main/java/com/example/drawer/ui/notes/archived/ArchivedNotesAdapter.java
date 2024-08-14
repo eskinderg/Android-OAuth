@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.drawer.R;
 import com.example.drawer.ui.notes.Note;
-import com.example.drawer.utils.Time2Ago;
+import com.example.drawer.core.utils.Time2Ago;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +23,7 @@ public class ArchivedNotesAdapter extends RecyclerView.Adapter<ArchivedNotesAdap
     private final OnNoteItemClickListener mListener;
     public ArrayList<Note> notesList;
     Context context;
+
     public ArchivedNotesAdapter(Context context, List<Note> notesList, OnNoteItemClickListener listener) {
         this.notesList = getArchivedNotes(notesList);
         this.context = context;

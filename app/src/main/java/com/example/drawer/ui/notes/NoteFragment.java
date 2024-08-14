@@ -17,16 +17,16 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.drawer.core.IAppCallback;
 import com.example.drawer.R;
 import com.example.drawer.service.RetroInstance;
-import com.example.drawer.utils.GsonParser;
+import com.example.drawer.core.utils.GsonParser;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class NoteFragment extends Fragment implements Callback<Note> {
+public class NoteFragment extends Fragment implements IAppCallback<Note> {
     public EditText txtNoteText;
     public EditText txtNoteHeader;
 
@@ -77,16 +77,6 @@ public class NoteFragment extends Fragment implements Callback<Note> {
     }
 
     @Override
-    public void onResponse(Call<Note> call, Response<Note> response) {
-        Toast.makeText(getContext(), "Saved", Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onFailure(Call<Note> call, Throwable t) {
-        Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
-    }
-
-    @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.note, menu);
     }
@@ -112,5 +102,15 @@ public class NoteFragment extends Fragment implements Callback<Note> {
 
         return super.onContextItemSelected(item);
 
+    }
+
+    @Override
+    public void onResponse(Call<Note> call, Response<Note> response) {
+        Toast.makeText(getContext(), "Saved", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onFailure(Call<Note> call, Throwable t) {
+        Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
     }
 }

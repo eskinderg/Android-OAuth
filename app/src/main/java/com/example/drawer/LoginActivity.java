@@ -8,18 +8,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.drawer.auth.AccessToken;
 import com.example.drawer.auth.AuthDataService;
+import com.example.drawer.core.AppCallback;
 import com.example.drawer.databinding.ActivityLoginBinding;
 import com.example.drawer.service.RetroInstance;
 
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -57,31 +55,24 @@ public class LoginActivity extends AppCompatActivity {
 
         Call<AccessToken> call = service.getAccessToken(Constants.CLIENT_ID, Constants.GRANT_TYPE, Constants.SCOPE, username, password);
 
-        call.enqueue(new Callback<AccessToken>() {
+        call.enqueue(new AppCallback<AccessToken>(LoginActivity.this) {
             @Override
-            public void onResponse(Call<AccessToken> call, Response<AccessToken> response) {
-                if (response.isSuccessful()) {
-                    setAuthItems(response);
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    LoginActivity.this.startActivity(intent);
-                } else {
-                    LoginActivity.this.loadingProgressBar.setVisibility(View.INVISIBLE);
-                    Toast.makeText(LoginActivity.this, response.message(), Toast.LENGTH_LONG).show();
-
-                }
+            public void onResponse(AccessToken response) {
+                setAuthItems(response);
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                LoginActivity.this.startActivity(intent);
             }
 
             @Override
-            public void onFailure(Call<AccessToken> call, Throwable t) {
+            public void onFailure(Throwable throwable) {
                 LoginActivity.this.loadingProgressBar.setVisibility(View.INVISIBLE);
-                Toast.makeText(LoginActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
 
-    private void setAuthItems(Response<AccessToken> response) {
+    private void setAuthItems(AccessToken response) {
         SharedPreferences sharedPreferences = this.getSharedPreferences("prefs", Context.MODE_PRIVATE);
-        sharedPreferences.edit().putString("access_token", response.body().getAccessToken()).apply();
-        sharedPreferences.edit().putString("refresh_token", response.body().getRefreshToken()).apply();
+        sharedPreferences.edit().putString("access_token", response.getAccessToken()).apply();
+        sharedPreferences.edit().putString("refresh_token", response.getRefreshToken()).apply();
     }
 }

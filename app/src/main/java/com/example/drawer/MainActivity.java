@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,14 +17,13 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.drawer.auth.AuthDataService;
 import com.example.drawer.auth.User;
+import com.example.drawer.core.AppCallback;
 import com.example.drawer.databinding.ActivityMainBinding;
 import com.example.drawer.service.RetroInstance;
 import com.google.android.material.navigation.NavigationView;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -61,18 +59,15 @@ public class MainActivity extends AppCompatActivity {
                 AuthDataService service = RetroInstance.getRetrofitInstance(Constants.KEYCLOAK_URL)
                         .create(AuthDataService.class);
                 Call<ResponseBody> call = service.logout(Constants.CLIENT_ID, MyNote.getContext().getSharedPreferences("prefs", Context.MODE_PRIVATE).getString("refresh_token", ""));
-                call.enqueue(new Callback<ResponseBody>() {
+                call.enqueue(new AppCallback<ResponseBody>(MainActivity.this) {
                     @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        if (response.isSuccessful()) {
-                            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                            MainActivity.this.startActivity(intent);
-                        }
+                    public void onResponse(ResponseBody response) {
+                        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                        MainActivity.this.startActivity(intent);
                     }
 
                     @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                    public void onFailure(Throwable throwable) {
                     }
                 });
 
@@ -95,25 +90,20 @@ public class MainActivity extends AppCompatActivity {
 
         Call<User> call = service.getUserInfo();
 
-        call.enqueue(new Callback<User>() {
+        call.enqueue(new AppCallback<User>(this) {
             @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                if (response.isSuccessful()) {
-                    NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
-                    View headerView = navView.getHeaderView(0);
-                    TextView navUsername = (TextView) headerView.findViewById(R.id.userName);
-                    TextView navEmail = (TextView) headerView.findViewById(R.id.userEmail);
-                    User user = response.body();
-                    navUsername.setText(user.getGivenName());
-                    navEmail.setText(user.getUserEmail());
-                } else {
-                    Toast.makeText(MainActivity.this, response.message(), Toast.LENGTH_LONG).show();
-                }
+            public void onResponse(User response) {
+                NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
+                View headerView = navView.getHeaderView(0);
+                TextView navUsername = (TextView) headerView.findViewById(R.id.userName);
+                TextView navEmail = (TextView) headerView.findViewById(R.id.userEmail);
+                User user = response;
+                navUsername.setText(user.getGivenName());
+                navEmail.setText(user.getUserEmail());
             }
 
             @Override
-            public void onFailure(Call<User> call, Throwable t) {
-                Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+            public void onFailure(Throwable throwable) {
             }
         });
     }

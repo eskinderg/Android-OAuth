@@ -11,7 +11,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.drawer.R;
-import com.example.drawer.utils.Time2Ago;
+import com.example.drawer.core.utils.Time2Ago;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +22,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteRecycler
     private final OnNoteItemClickListener mListener;
     public ArrayList<Note> notesList;
     Context context;
+
     public NotesAdapter(Context context, List<Note> notesList, OnNoteItemClickListener listener) {
         this.notesList = getActiveNotes(notesList);
         this.context = context;

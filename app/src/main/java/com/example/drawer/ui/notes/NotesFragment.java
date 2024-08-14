@@ -19,11 +19,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.example.drawer.core.AppCallback;
 import com.example.drawer.R;
 import com.example.drawer.databinding.FragmentNotesBinding;
 import com.example.drawer.service.RetroInstance;
 import com.example.drawer.ui.notes.NotesAdapter.OnNoteItemClickListener;
-import com.example.drawer.utils.GsonParser;
+import com.example.drawer.core.utils.GsonParser;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -31,8 +32,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class NotesFragment extends Fragment implements OnNoteItemClickListener, SwipeRefreshLayout.OnRefreshListener {
@@ -42,6 +41,7 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
     public NotesAdapter notesAdapter;
     public SwipeRefreshLayout mSwipeRefreshLayout;
     private FragmentNotesBinding binding;
+
     public NotesFragment() {
     }
 
@@ -87,19 +87,16 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
                 noteItem.setArchived(true);
 
                 Call<Note> call = notesDataService.updateNote(noteItem);
-                call.enqueue(new Callback<Note>() {
+                call.enqueue(new AppCallback<Note>(getContext()) {
                     @Override
-                    public void onResponse(Call<Note> call, Response<Note> response) {
-                        if (response.isSuccessful()) {
-                            notesAdapter.notesList.remove(position);
-                            notesAdapter.notifyItemRemoved(position);
-                            Toast.makeText(getContext(), "Note archived", Toast.LENGTH_LONG).show();
-                        }
+                    public void onResponse(Note response) {
+                        notesAdapter.notesList.remove(position);
+                        notesAdapter.notifyItemRemoved(position);
+                        Toast.makeText(getContext(), "Note archived", Toast.LENGTH_LONG).show();
                     }
 
                     @Override
-                    public void onFailure(Call<Note> call, Throwable t) {
-                        Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                    public void onFailure(Throwable throwable) {
                     }
                 });
             }
@@ -126,24 +123,20 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
 
                 Call<Note> call = notesApi.addNote(new Note());
 
-                call.enqueue(new Callback<Note>() {
+                call.enqueue(new AppCallback<Note>(getContext()) {
                     @Override
-                    public void onResponse(Call<Note> call, Response<Note> response) {
-                        Note newNote = response.body();
+                    public void onResponse(Note response) {
+                        Note newNote = response;
                         Bundle bundle = new Bundle();
                         String noteJsonString = GsonParser.getGsonParser().toJson(newNote);
                         bundle.putString("note", noteJsonString);
-
-//                        NotesFragment.this.notesList.add(0, response.body());
-//                        notesAdapter.notifyDataSetChanged();
 
                         NavController navController = Navigation.findNavController(view);
                         navController.navigate(R.id.action_nav_notes_to_nav_note, bundle);
                     }
 
                     @Override
-                    public void onFailure(Call<Note> call, Throwable t) {
-                        Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                    public void onFailure(Throwable throwable) {
                     }
                 });
 
@@ -210,21 +203,16 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
 
         Call<Note[]> call = notesApi.getNotes();
 
-        call.enqueue(new Callback<Note[]>() {
+        call.enqueue(new AppCallback<Note[]>(getContext()) {
             @Override
-            public void onResponse(@NonNull Call<Note[]> call, @NonNull Response<Note[]> response) {
-                if(response.isSuccessful()) {
-                    NotesFragment.this.dataView(new ArrayList(Arrays.asList(response.body())));
-                    mSwipeRefreshLayout.setRefreshing(false);
-                    setAppbarCount();
-                } else {
-                    Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
-                }
+            public void onResponse(Note[] response) {
+                NotesFragment.this.dataView(new ArrayList(Arrays.asList(response)));
+                mSwipeRefreshLayout.setRefreshing(false);
+                setAppbarCount();
             }
 
             @Override
-            public void onFailure(@NonNull Call<Note[]> call, @NonNull Throwable t) {
-                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+            public void onFailure(Throwable throwable) {
             }
         });
     }

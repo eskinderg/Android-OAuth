@@ -1,4 +1,4 @@
-package com.example.drawer.utils;
+package com.example.drawer.core.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

@@ -1,4 +1,4 @@
-package com.example.drawer.utils;
+package com.example.drawer.core.utils;
 
 import android.util.Log;
 

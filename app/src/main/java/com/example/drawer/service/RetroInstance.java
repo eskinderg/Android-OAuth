@@ -10,11 +10,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetroInstance {
 
+    public static final String BASE_API_URL = Constants.BASE_API_URL;
     static Retrofit retrofitApi;
     static Retrofit retrofitAuth;
-
-    public static final String BASE_API_URL = Constants.BASE_API_URL;
-
     private static OkHttpClient client = new OkHttpClient()
             .newBuilder()
             .addInterceptor(new AnnotationInterceptor())
@@ -22,7 +20,7 @@ public class RetroInstance {
 
 
     public static Retrofit getRetrofitInstance() {
-        if( retrofitApi == null) {
+        if (retrofitApi == null) {
             retrofitApi = new Retrofit.Builder()
                     .client(client)
                     .baseUrl(BASE_API_URL)
@@ -34,7 +32,7 @@ public class RetroInstance {
     }
 
     public static Retrofit getRetrofitInstance(String baseURL) {
-        if( retrofitAuth == null) {
+        if (retrofitAuth == null) {
             retrofitAuth = new Retrofit.Builder()
                     .client(client)
                     .baseUrl(baseURL)

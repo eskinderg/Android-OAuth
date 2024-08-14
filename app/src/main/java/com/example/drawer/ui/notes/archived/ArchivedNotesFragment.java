@@ -16,8 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.drawer.R;
-import com.example.drawer.service.RetroInstance;
 import com.example.drawer.databinding.FragmentArchivedNotesBinding;
+import com.example.drawer.service.RetroInstance;
 import com.example.drawer.ui.notes.Note;
 import com.example.drawer.ui.notes.NotesDataService;
 
@@ -32,13 +32,12 @@ import retrofit2.Retrofit;
 
 public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdapter.OnNoteItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
-    public ArchivedNotesFragment() { }
-
     public RecyclerView recyclerView;
-    private FragmentArchivedNotesBinding binding;
     public ArchivedNotesAdapter notesAdapter;
     public SwipeRefreshLayout mSwipeRefreshLayout;
-
+    private FragmentArchivedNotesBinding binding;
+    public ArchivedNotesFragment() {
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -70,8 +69,8 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
                 call.enqueue(new Callback<Note>() {
                     @Override
                     public void onResponse(Call<Note> call, Response<Note> response) {
-                        if(response.isSuccessful()){
-                           notesAdapter.notesList.remove(position);
+                        if (response.isSuccessful()) {
+                            notesAdapter.notesList.remove(position);
                             notesAdapter.notifyItemRemoved(position);
                             Toast.makeText(getContext(), "Note restored", Toast.LENGTH_LONG).show();
                         }
@@ -171,7 +170,7 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
     }
 
     private void setAppbarCount() {
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Archived " + "(" + String.valueOf(ArchivedNotesFragment.this.notesAdapter.notesList.size()) + ") ");
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Archived " + "(" + String.valueOf(ArchivedNotesFragment.this.notesAdapter.notesList.size()) + ") ");
     }
 
 }

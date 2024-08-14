@@ -79,14 +79,23 @@ public class Note implements Serializable {
     @Expose
     private String text;
 
-    public Note(){}
+    public Note() {
+    }
 
     public boolean isArchived() {
         return archived;
     }
 
+    public void setArchived(boolean value) {
+        this.archived = value;
+    }
+
     public String getText() {
         return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 
     public String getDateCreated() {
@@ -97,25 +106,19 @@ public class Note implements Serializable {
         return dateModified;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public String getHeader() {
+        return header;
     }
 
     public void setHeader(String header) {
         this.header = header;
     }
 
-    public String getHeader() {
-        return header;
-    }
-
     public Number getId() {
         return id;
     }
 
-    public void setArchived(boolean value) {
-        this.archived = value;
+    public String getDateArchived() {
+        return this.dateArchived;
     }
-
-    public String getDateArchived() { return this.dateArchived; }
 }

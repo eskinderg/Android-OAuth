@@ -20,10 +20,10 @@ import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.drawer.R;
-import com.example.drawer.service.RetroInstance;
-import com.example.drawer.Utils;
 import com.example.drawer.databinding.FragmentNotesBinding;
+import com.example.drawer.service.RetroInstance;
 import com.example.drawer.ui.notes.NotesAdapter.OnNoteItemClickListener;
+import com.example.drawer.utils.GsonParser;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -37,14 +37,13 @@ import retrofit2.Retrofit;
 
 public class NotesFragment extends Fragment implements OnNoteItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
-    public NotesFragment() { }
-
     public RecyclerView recyclerView;
-    private FragmentNotesBinding binding;
     public FloatingActionButton fab;
     public NotesAdapter notesAdapter;
     public SwipeRefreshLayout mSwipeRefreshLayout;
-
+    private FragmentNotesBinding binding;
+    public NotesFragment() {
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -69,7 +68,7 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
                 super.onEditBtnClicked(position);
 
                 Bundle bundle = new Bundle();
-                String noteJsonString = Utils.getGsonParser().toJson(notesAdapter.notesList.get(position));
+                String noteJsonString = GsonParser.getGsonParser().toJson(notesAdapter.notesList.get(position));
                 bundle.putString("note", noteJsonString);
 
                 NavController navController = Navigation.findNavController(view);
@@ -91,8 +90,8 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
                 call.enqueue(new Callback<Note>() {
                     @Override
                     public void onResponse(Call<Note> call, Response<Note> response) {
-                        if(response.isSuccessful()){
-                           notesAdapter.notesList.remove(position);
+                        if (response.isSuccessful()) {
+                            notesAdapter.notesList.remove(position);
                             notesAdapter.notifyItemRemoved(position);
                             Toast.makeText(getContext(), "Note archived", Toast.LENGTH_LONG).show();
                         }
@@ -132,7 +131,7 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
                     public void onResponse(Call<Note> call, Response<Note> response) {
                         Note newNote = response.body();
                         Bundle bundle = new Bundle();
-                        String noteJsonString = Utils.getGsonParser().toJson(newNote);
+                        String noteJsonString = GsonParser.getGsonParser().toJson(newNote);
                         bundle.putString("note", noteJsonString);
 
 //                        NotesFragment.this.notesList.add(0, response.body());
@@ -176,7 +175,7 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
     @Override
     public void onNoteItemClick(View view, Note note) {
         Bundle bundle = new Bundle();
-        String noteJsonString = Utils.getGsonParser().toJson(note);
+        String noteJsonString = GsonParser.getGsonParser().toJson(note);
         bundle.putString("note", noteJsonString);
 
         NavController navController = Navigation.findNavController(view);
@@ -247,7 +246,7 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
     }
 
     private void setAppbarCount() {
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Notes " + "(" + String.valueOf(NotesFragment.this.recyclerView.getAdapter().getItemCount()) + ")" );
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Notes " + "(" + String.valueOf(NotesFragment.this.recyclerView.getAdapter().getItemCount()) + ")");
     }
 
 }

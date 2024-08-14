@@ -1,5 +1,6 @@
 package com.example.drawer;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -16,6 +17,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.drawer.auth.AuthDataService;
+import com.example.drawer.auth.User;
 import com.example.drawer.databinding.ActivityMainBinding;
 import com.example.drawer.service.RetroInstance;
 import com.google.android.material.navigation.NavigationView;
@@ -59,11 +61,11 @@ public class MainActivity extends AppCompatActivity {
             public boolean onMenuItemClick(@NonNull MenuItem item) {
                 AuthDataService service = RetroInstance.getRetrofitInstance(Constants.KEYCLOAK_URL)
                         .create(AuthDataService.class);
-                Call<ResponseBody> call = service.logout(Constants.CLIENT_ID,Constants.CLIENT_SECRET,Constants.REFRESH_TOKEN);
+                Call<ResponseBody> call = service.logout(Constants.CLIENT_ID, Constants.CLIENT_SECRET, MyNote.getContext().getSharedPreferences("prefs", Context.MODE_PRIVATE).getString("refresh_token", ""));
                 call.enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        if(response.isSuccessful()){
+                        if (response.isSuccessful()) {
                             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                             MainActivity.this.startActivity(intent);
                         }
@@ -115,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
-                if(response.isSuccessful()){
+                if (response.isSuccessful()) {
                     NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
                     View headerView = navView.getHeaderView(0);
                     TextView navUsername = (TextView) headerView.findViewById(R.id.userName);

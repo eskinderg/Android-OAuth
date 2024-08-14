@@ -24,16 +24,11 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 
-public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventRecyclerViewHolder>{
+public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventRecyclerViewHolder> {
 
-    public interface OnEventItemClickListener {
-        void onEventItemClick(View view, Event event);
-    }
-
-    Context context;
-    public ArrayList<Event> eventsList;
     private final OnEventItemClickListener mListener;
-
+    public ArrayList<Event> eventsList;
+    Context context;
     public EventsAdapter(Context context, ArrayList<Event> eventsList, OnEventItemClickListener listener) {
         this.eventsList = eventsList;
         this.context = context;
@@ -45,7 +40,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventRecyc
     public EventRecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
         LayoutInflater layoutInflater = LayoutInflater.from(context);
-        view = layoutInflater.inflate(R.layout.event_list,parent, false);
+        view = layoutInflater.inflate(R.layout.event_list, parent, false);
         return new EventRecyclerViewHolder(view);
     }
 
@@ -65,19 +60,19 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventRecyc
 
                 EventsDataService eventsApi = retrofit.create(EventsDataService.class);
 
-                Call<Event> call = eventsApi.toggleEvent(eventItem );
+                Call<Event> call = eventsApi.toggleEvent(eventItem);
 
                 call.enqueue(new Callback<Event>() {
                     @Override
                     public void onResponse(Call<Event> call, Response<Event> response) {
-                        if(response.isSuccessful()){
+                        if (response.isSuccessful()) {
                             eventItem.setIsComplete(response.body().getIsComplete());
                         }
                     }
 
                     @Override
                     public void onFailure(Call<Event> call, Throwable t) {
-                        Toast.makeText(context.getApplicationContext(), t.getMessage(),Toast.LENGTH_LONG).show();
+                        Toast.makeText(context.getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
 
                     }
                 });
@@ -91,7 +86,11 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventRecyc
         return eventsList.size();
     }
 
-    public static class EventRecyclerViewHolder extends RecyclerView.ViewHolder{
+    public interface OnEventItemClickListener {
+        void onEventItemClick(View view, Event event);
+    }
+
+    public static class EventRecyclerViewHolder extends RecyclerView.ViewHolder {
 
         TextView title;
         CheckBox chkComplete;

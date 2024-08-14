@@ -25,18 +25,12 @@ enum ButtonsState {
 
 class ArchivedNoteSwipeController extends ItemTouchHelper.Callback {
 
-    private boolean swipeBack = false;
-
-    private ButtonsState buttonShowedState = ButtonsState.GONE;
-
-    private RectF buttonRestore = null;
-
-    private RecyclerView.ViewHolder currentItemViewHolder = null;
-
-    private ArchivedNoteSwipeControllerActions buttonsActions = null;
-
     private static final float buttonWidth = 300;
-
+    private boolean swipeBack = false;
+    private ButtonsState buttonShowedState = ButtonsState.GONE;
+    private RectF buttonRestore = null;
+    private RecyclerView.ViewHolder currentItemViewHolder = null;
+    private ArchivedNoteSwipeControllerActions buttonsActions = null;
     private Context context;
 
     public ArchivedNoteSwipeController(ArchivedNoteSwipeControllerActions buttonsActions, Context context) {
@@ -73,10 +67,10 @@ class ArchivedNoteSwipeController extends ItemTouchHelper.Callback {
         if (actionState == ACTION_STATE_SWIPE) {
             if (buttonShowedState != ButtonsState.GONE) {
                 if (buttonShowedState == ButtonsState.LEFT_VISIBLE) dX = Math.max(dX, buttonWidth);
-                if (buttonShowedState == ButtonsState.RIGHT_VISIBLE) dX = Math.min(dX, - buttonWidth);
+                if (buttonShowedState == ButtonsState.RIGHT_VISIBLE)
+                    dX = Math.min(dX, -buttonWidth);
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-            }
-            else {
+            } else {
                 setTouchListener(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
             }
         }
@@ -94,7 +88,7 @@ class ArchivedNoteSwipeController extends ItemTouchHelper.Callback {
                 swipeBack = event.getAction() == MotionEvent.ACTION_CANCEL || event.getAction() == MotionEvent.ACTION_UP;
                 if (swipeBack) {
                     if (dX < -buttonWidth) buttonShowedState = ButtonsState.RIGHT_VISIBLE;
-                    else if (dX > buttonWidth) buttonShowedState  = ButtonsState.LEFT_VISIBLE;
+                    else if (dX > buttonWidth) buttonShowedState = ButtonsState.LEFT_VISIBLE;
 
                     if (buttonShowedState != ButtonsState.GONE) {
                         setTouchDownListener(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
@@ -177,7 +171,7 @@ class ArchivedNoteSwipeController extends ItemTouchHelper.Callback {
         p.setTextSize(textSize);
 
         float textWidth = p.measureText(text);
-        c.drawText(text, button.centerX()-(textWidth/2), button.centerY()+(textSize/2), p);
+        c.drawText(text, button.centerX() - (textWidth / 2), button.centerY() + (textSize / 2), p);
     }
 
     public void onDraw(Canvas c) {

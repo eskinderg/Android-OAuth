@@ -19,12 +19,13 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.drawer.R;
 import com.example.drawer.service.RetroInstance;
-import com.example.drawer.Utils;
+import com.example.drawer.utils.GsonParser;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+
 public class NoteFragment extends Fragment implements Callback<Note> {
     public EditText txtNoteText;
     public EditText txtNoteHeader;
@@ -51,22 +52,22 @@ public class NoteFragment extends Fragment implements Callback<Note> {
 
         Bundle args = getArguments();
         String personJsonString = args.getString("note");
-        this.note = Utils.getGsonParser().fromJson(personJsonString, Note.class);
+        this.note = GsonParser.getGsonParser().fromJson(personJsonString, Note.class);
 
         this.txtNoteText = view.findViewById(R.id.txtNoteText);
         this.txtNoteHeader = view.findViewById(R.id.txtNoteHeader);
 
-        if(this.note.getHeader() != null) {
+        if (this.note.getHeader() != null) {
             txtNoteHeader.setText(this.note.getHeader());
         }
 
-        if(this.note.getText() != null) {
+        if (this.note.getText() != null) {
             NoteFragment.this.txtNoteText.setText(Html.fromHtml(this.note.getText(), Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV).toString());
         }
 
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(this.note.getHeader());
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(this.note.getHeader());
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back);
 
 //        AppBarMainBinding appBarMainBinding = view.findViewById(R.id.app_bar_main)
 //        Toolbar toolbar = (Toolbar)view.findViewById(R.id.toolbar);
@@ -77,22 +78,23 @@ public class NoteFragment extends Fragment implements Callback<Note> {
 
     @Override
     public void onResponse(Call<Note> call, Response<Note> response) {
-        Toast.makeText(getContext(),"Saved", Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), "Saved", Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onFailure(Call<Note> call, Throwable t) {
-        Toast.makeText(getContext(),t.getMessage(), Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.note, menu);
     }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if(item.getItemId() == R.id.action_save) {
-            note.setText(Html.toHtml(txtNoteText.getText(),Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV));
+        if (item.getItemId() == R.id.action_save) {
+            note.setText(Html.toHtml(txtNoteText.getText(), Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV));
             note.setHeader(txtNoteHeader.getText().toString());
 
             Retrofit retrofit = RetroInstance.getRetrofitInstance();
@@ -102,9 +104,9 @@ public class NoteFragment extends Fragment implements Callback<Note> {
             return true;
         }
 
-        if(item.getItemId() == 16908332) {
+        if (item.getItemId() == 16908332) {
             NavController navController = NavHostFragment.findNavController(this);
-            navController.navigate(R.id.action_nav_note_to_nav_notes );
+            navController.navigate(R.id.action_nav_note_to_nav_notes);
             return true;
         }
 

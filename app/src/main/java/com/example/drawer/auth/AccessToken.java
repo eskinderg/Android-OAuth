@@ -1,8 +1,9 @@
-package com.example.drawer;
+package com.example.drawer.auth;
 
 import com.google.gson.annotations.SerializedName;
 
 public class AccessToken {
+
     @SerializedName("access_token")
     private String accessToken;
     @SerializedName("refresh_token")
@@ -15,11 +16,6 @@ public class AccessToken {
     private String idToken;
     @SerializedName("scope")
     private String scope;
-
-    public AccessToken(String accessToken, Integer expiresIn) {
-        this.accessToken = accessToken;
-        this.expiresIn = expiresIn;
-    }
 
     public String getAccessToken() {
         return this.accessToken;

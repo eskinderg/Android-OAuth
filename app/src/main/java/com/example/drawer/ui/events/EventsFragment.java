@@ -16,8 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.drawer.R;
-import com.example.drawer.service.RetroInstance;
 import com.example.drawer.databinding.FragmentEventsBinding;
+import com.example.drawer.service.RetroInstance;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -69,15 +69,15 @@ public class EventsFragment extends Fragment implements EventsAdapter.OnEventIte
                 call.enqueue(new Callback<Event>() {
                     @Override
                     public void onResponse(Call<Event> call, Response<Event> response) {
-                        if(response.isSuccessful()){
-                            eventsList.set(position, (Event)response.body());
+                        if (response.isSuccessful()) {
+                            eventsList.set(position, (Event) response.body());
                             eventsAdapter.notifyItemChanged(position);
                         }
                     }
 
                     @Override
                     public void onFailure(Call<Event> call, Throwable t) {
-                        Toast.makeText(getContext(), t.getMessage(),Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
 
                     }
                 });
@@ -96,7 +96,7 @@ public class EventsFragment extends Fragment implements EventsAdapter.OnEventIte
                 call.enqueue(new Callback<Event>() {
                     @Override
                     public void onResponse(Call<Event> call, Response<Event> response) {
-                        if(response.isSuccessful()){
+                        if (response.isSuccessful()) {
                             eventsAdapter.eventsList.remove(position);
                             eventsAdapter.notifyItemRemoved(position);
                         }
@@ -104,7 +104,7 @@ public class EventsFragment extends Fragment implements EventsAdapter.OnEventIte
 
                     @Override
                     public void onFailure(Call<Event> call, Throwable t) {
-                        Toast.makeText(getContext(), t.getMessage(),Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
 
                     }
                 });

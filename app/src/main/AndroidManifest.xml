@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name="com.example.drawer.MyNote"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -20,8 +21,7 @@
             android:name=".LoginActivity"
             android:exported="true"
             android:label="@string/app_name">
-            <intent-filter
-                android:label="@string/app_name">
+            <intent-filter android:label="@string/app_name">
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
@@ -31,8 +31,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.Drawer.NoActionBar">
-        </activity>
+            android:theme="@style/Theme.Drawer.NoActionBar"></activity>
     </application>
 
 </manifest>

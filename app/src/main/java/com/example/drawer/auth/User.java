@@ -1,4 +1,5 @@
-package com.example.drawer;
+package com.example.drawer.auth;
+
 import com.google.gson.annotations.SerializedName;
 
 public class User {

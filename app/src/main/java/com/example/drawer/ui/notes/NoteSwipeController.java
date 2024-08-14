@@ -25,19 +25,13 @@ enum ButtonsState {
 
 class NoteSwipeController extends ItemTouchHelper.Callback {
 
+    private static final float buttonWidth = 300;
     private boolean swipeBack = false;
-
     private ButtonsState buttonShowedState = ButtonsState.GONE;
-
     private RectF buttonArchive = null;
     private RectF buttonEdit = null;
-
     private RecyclerView.ViewHolder currentItemViewHolder = null;
-
     private NoteSwipeControllerActions buttonsActions = null;
-
-    private static final float buttonWidth = 300;
-
     private Context context;
 
     public NoteSwipeController(NoteSwipeControllerActions buttonsActions, Context context) {
@@ -74,10 +68,10 @@ class NoteSwipeController extends ItemTouchHelper.Callback {
         if (actionState == ACTION_STATE_SWIPE) {
             if (buttonShowedState != ButtonsState.GONE) {
                 if (buttonShowedState == ButtonsState.LEFT_VISIBLE) dX = Math.max(dX, buttonWidth);
-                if (buttonShowedState == ButtonsState.RIGHT_VISIBLE) dX = Math.min(dX, -buttonWidth * 2);
+                if (buttonShowedState == ButtonsState.RIGHT_VISIBLE)
+                    dX = Math.min(dX, -buttonWidth * 2);
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-            }
-            else {
+            } else {
                 setTouchListener(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
             }
         }
@@ -95,7 +89,7 @@ class NoteSwipeController extends ItemTouchHelper.Callback {
                 swipeBack = event.getAction() == MotionEvent.ACTION_CANCEL || event.getAction() == MotionEvent.ACTION_UP;
                 if (swipeBack) {
                     if (dX < -buttonWidth) buttonShowedState = ButtonsState.RIGHT_VISIBLE;
-                    else if (dX > buttonWidth) buttonShowedState  = ButtonsState.LEFT_VISIBLE;
+                    else if (dX > buttonWidth) buttonShowedState = ButtonsState.LEFT_VISIBLE;
 
                     if (buttonShowedState != ButtonsState.GONE) {
                         setTouchDownListener(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
@@ -134,8 +128,8 @@ class NoteSwipeController extends ItemTouchHelper.Callback {
                     setItemsClickable(recyclerView, true);
                     swipeBack = false;
 
-                    if(buttonEdit.contains(event.getX(), event.getY())) {
-                        if(buttonShowedState == ButtonsState.RIGHT_VISIBLE) {
+                    if (buttonEdit.contains(event.getX(), event.getY())) {
+                        if (buttonShowedState == ButtonsState.RIGHT_VISIBLE) {
                             buttonsActions.onEditBtnClicked(viewHolder.getAdapterPosition());
 
                         }
@@ -167,8 +161,8 @@ class NoteSwipeController extends ItemTouchHelper.Callback {
         View itemView = viewHolder.itemView;
         Paint p = new Paint();
 
-        RectF rightEdit= new RectF(itemView.getRight() - buttonWidthWithoutPadding- buttonWidthWithoutPadding, itemView.getTop(), itemView.getRight() - buttonWidthWithoutPadding - 15, itemView.getBottom());
-        int colorEdit = ContextCompat.getColor( context, R.color.purple_200 );
+        RectF rightEdit = new RectF(itemView.getRight() - buttonWidthWithoutPadding - buttonWidthWithoutPadding, itemView.getTop(), itemView.getRight() - buttonWidthWithoutPadding - 15, itemView.getBottom());
+        int colorEdit = ContextCompat.getColor(context, R.color.purple_200);
         p.setColor(colorEdit);
         c.drawRoundRect(rightEdit, corners, corners, p);
         drawText("Edit", c, rightEdit, p);
@@ -192,7 +186,7 @@ class NoteSwipeController extends ItemTouchHelper.Callback {
         p.setTextSize(textSize);
 
         float textWidth = p.measureText(text);
-        c.drawText(text, button.centerX()-(textWidth/2), button.centerY()+(textSize/2), p);
+        c.drawText(text, button.centerX() - (textWidth / 2), button.centerY() + (textSize / 2), p);
     }
 
     public void onDraw(Canvas c) {

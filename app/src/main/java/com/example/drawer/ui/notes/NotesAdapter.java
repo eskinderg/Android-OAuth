@@ -11,7 +11,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.drawer.R;
-import com.example.drawer.TimeAgo2;
+import com.example.drawer.utils.Time2Ago;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,14 +19,9 @@ import java.util.List;
 
 public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteRecyclerViewHolder> {
 
-    public interface OnNoteItemClickListener {
-        void onNoteItemClick(View view, Note note);
-    }
-
-    Context context;
-    public ArrayList<Note> notesList;
     private final OnNoteItemClickListener mListener;
-
+    public ArrayList<Note> notesList;
+    Context context;
     public NotesAdapter(Context context, List<Note> notesList, OnNoteItemClickListener listener) {
         this.notesList = getActiveNotes(notesList);
         this.context = context;
@@ -38,7 +33,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteRecycler
     public NoteRecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
         LayoutInflater layoutInflater = LayoutInflater.from(context);
-        view = layoutInflater.inflate(R.layout.note_list,parent, false);
+        view = layoutInflater.inflate(R.layout.note_list, parent, false);
         return new NoteRecyclerViewHolder(view);
     }
 
@@ -47,18 +42,18 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteRecycler
 
         Note noteItem = notesList.get(position);
 
-        if(noteItem.getHeader() == null || noteItem.getHeader().isEmpty()) {
+        if (noteItem.getHeader() == null || noteItem.getHeader().isEmpty()) {
             holder.header.setText("");
         } else {
             holder.header.setText(noteItem.getHeader());
         }
 
-        holder.description.setText("Modified " + TimeAgo2.covertTimeToText(noteItem.getDateModified()));
+        holder.description.setText("Modified " + Time2Ago.covertTimeToText(noteItem.getDateModified()));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onNoteItemClick(v, noteItem );
+                mListener.onNoteItemClick(v, noteItem);
             }
         });
 
@@ -69,7 +64,16 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteRecycler
         return notesList.size();
     }
 
-    public static class NoteRecyclerViewHolder extends RecyclerView.ViewHolder{
+    private ArrayList<Note> getActiveNotes(List<Note> list) {
+        List<Note> activeNotes = list.stream().filter(n -> !n.isArchived()).toList();
+        return new ArrayList<Note>(activeNotes);
+    }
+
+    public interface OnNoteItemClickListener {
+        void onNoteItemClick(View view, Note note);
+    }
+
+    public static class NoteRecyclerViewHolder extends RecyclerView.ViewHolder {
 
         TextView header;
         TextView description;
@@ -81,10 +85,5 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteRecycler
             description = itemView.findViewById(R.id.description);
             card = itemView.findViewById(R.id.card);
         }
-    }
-
-    private ArrayList<Note> getActiveNotes(List<Note> list){
-        List<Note> activeNotes = list.stream().filter(n -> !n.isArchived()).toList();
-        return new ArrayList<Note>(activeNotes);
     }
 }

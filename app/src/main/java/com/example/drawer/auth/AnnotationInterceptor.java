@@ -1,6 +1,8 @@
 package com.example.drawer.auth;
 
-import com.example.drawer.Constants;
+import android.content.Context;
+
+import com.example.drawer.MyNote;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -14,9 +16,10 @@ import retrofit2.Invocation;
 public class AnnotationInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
-        Request request = chain.request(); // addAuthHeader(chain.request()); // chain.request();
+        Request request = chain.request();
         Invocation invocation;
-        if(chain.request().tag(Invocation.class) != null){
+
+        if (chain.request().tag(Invocation.class) != null) {
             invocation = chain.request().tag(Invocation.class);
 
         } else {
@@ -24,22 +27,22 @@ public class AnnotationInterceptor implements Interceptor {
         }
 
         for (Annotation annotation : containedOnInvocation(invocation)) {
-           request = handleAnnotation(annotation, request);
+            request = handleAnnotation(annotation, request);
         }
 
         return chain.proceed(request);
     }
 
     private Request handleAnnotation(Annotation annotation, Request request) {
-        if( annotation instanceof Authorized){
-            return  addAuthHeader(request);
+        if (annotation instanceof Authorized) {
+            return addAuthHeader(request);
         }
         return request;
     }
 
-    private Request addAuthHeader(Request request){
+    private Request addAuthHeader(Request request) {
         return request.newBuilder()
-                .addHeader("Authorization", "Bearer " + Constants.ACCESS_TOKEN)
+                .addHeader("Authorization", "Bearer " + MyNote.getContext().getSharedPreferences("prefs", Context.MODE_PRIVATE).getString("access_token", ""))
                 .build();
     }
 

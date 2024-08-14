@@ -6,8 +6,8 @@ import retrofit2.Response;
 
 public interface IAppCallback<T> extends Callback<T> {
 
-    abstract void onResponse(Call<T> call, Response<T> response);
+    void onResponse(Call<T> call, Response<T> response);
 
-    abstract void onFailure(Call<T> call, Throwable throwable);
+    void onFailure(Call<T> call, Throwable throwable);
 
 }

@@ -164,9 +164,13 @@ public class EventsFragment extends Fragment implements EventsAdapter.OnEventIte
         call.enqueue(new Callback<Event[]>() {
             @Override
             public void onResponse(@NonNull Call<Event[]> call, @NonNull Response<Event[]> response) {
-                mSwipeRefreshLayout.setRefreshing(false);
-                eventsList = new ArrayList(Arrays.asList(response.body()));
-                EventsFragment.this.dataView(eventsList);
+                if(response.isSuccessful()) {
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    eventsList = new ArrayList(Arrays.asList(response.body()));
+                    EventsFragment.this.dataView(eventsList);
+                } else {
+                    Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
+                }
             }
 
             @Override

@@ -137,10 +137,13 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
         call.enqueue(new Callback<Note[]>() {
             @Override
             public void onResponse(@NonNull Call<Note[]> call, @NonNull Response<Note[]> response) {
-
-                ArchivedNotesFragment.this.dataView(new ArrayList(Arrays.asList(response.body())));
-                mSwipeRefreshLayout.setRefreshing(false);
-                setAppbarCount();
+                if(response.isSuccessful()) {
+                    ArchivedNotesFragment.this.dataView(new ArrayList(Arrays.asList(response.body())));
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    setAppbarCount();
+                } else {
+                    Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
+                }
             }
 
             @Override

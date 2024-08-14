@@ -213,10 +213,13 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
         call.enqueue(new Callback<Note[]>() {
             @Override
             public void onResponse(@NonNull Call<Note[]> call, @NonNull Response<Note[]> response) {
-
-                NotesFragment.this.dataView(new ArrayList(Arrays.asList(response.body())));
-                mSwipeRefreshLayout.setRefreshing(false);
-                setAppbarCount();
+                if(response.isSuccessful()) {
+                    NotesFragment.this.dataView(new ArrayList(Arrays.asList(response.body())));
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    setAppbarCount();
+                } else {
+                    Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
+                }
             }
 
             @Override

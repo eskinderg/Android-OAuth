@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -174,8 +175,12 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
         NavController navController = Navigation.findNavController(view);
         navController.navigate(R.id.action_nav_notes_to_nav_note, bundle);
 
-//        NoteFragment frag = new NoteFragment(note);
-//        FragmentManager fragmentManager = getFragmentManager();
+//        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+//        fragmentManager.beginTransaction()
+//                .add(R.id.nav_host_fragment_content_main, NoteFragment.class, bundle)
+//                .addToBackStack("notes")
+//                .commit();
+
 //        FragmentTransaction fragmentTransaction =fragmentManager.beginTransaction();
 //        fragmentTransaction.replace(R.id.nav_host_fragment_content_main,frag);
 //        fragmentTransaction.commit();

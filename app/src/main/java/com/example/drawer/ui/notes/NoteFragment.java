@@ -14,13 +14,17 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.drawer.LoginActivity;
 import com.example.drawer.core.IAppCallback;
 import com.example.drawer.R;
+import com.example.drawer.databinding.AppBarMainBinding;
 import com.example.drawer.service.RetroInstance;
 import com.example.drawer.core.utils.GsonParser;
 
@@ -28,19 +32,15 @@ import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class NoteFragment extends Fragment implements IAppCallback<Note> {
+public class NoteFragment extends Fragment implements IAppCallback<Note>, MenuProvider {
     public EditText txtNoteText;
     public EditText txtNoteHeader;
 
     Note note;
 
-    public NoteFragment() {
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
     }
 
     @Override
@@ -55,6 +55,8 @@ public class NoteFragment extends Fragment implements IAppCallback<Note> {
         Bundle args = getArguments();
         String personJsonString = args.getString("note");
         this.note = GsonParser.getGsonParser().fromJson(personJsonString, Note.class);
+
+        getActivity().addMenuProvider(this, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
 
         this.txtNoteText = view.findViewById(R.id.txtNoteText);
         this.txtNoteHeader = view.findViewById(R.id.txtNoteHeader);
@@ -71,39 +73,6 @@ public class NoteFragment extends Fragment implements IAppCallback<Note> {
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back);
 
-//        AppBarMainBinding appBarMainBinding = view.findViewById(R.id.app_bar_main)
-//        Toolbar toolbar = (Toolbar)view.findViewById(R.id.toolbar);
-//        DrawerLayout drawerLayout = (DrawerLayout) view.findViewById(R.id.drawer_layout);
-//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout,toolbar , R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-
-    }
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.note, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.action_save) {
-            note.setText(Html.toHtml(txtNoteText.getText(), Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV));
-            note.setHeader(txtNoteHeader.getText().toString());
-
-            Retrofit retrofit = RetroInstance.getRetrofitInstance();
-            NotesDataService notesApi = retrofit.create(NotesDataService.class);
-            Call<Note> call = notesApi.updateNote(NoteFragment.this.note);
-            call.enqueue(NoteFragment.this);
-            return true;
-        }
-
-        if (item.getItemId() == 16908332) {
-            NavController navController = NavHostFragment.findNavController(this);
-            navController.navigate(R.id.action_nav_note_to_nav_notes);
-            return true;
-        }
-
-        return super.onContextItemSelected(item);
-
     }
 
     @Override
@@ -119,5 +88,32 @@ public class NoteFragment extends Fragment implements IAppCallback<Note> {
     @Override
     public void onFailure(Call<Note> call, Throwable t) {
         Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+        menuInflater.inflate(R.menu.note, menu);
+    }
+
+    @Override
+    public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+
+        if (menuItem.getItemId() == R.id.action_save) {
+            note.setText(Html.toHtml(txtNoteText.getText(), Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV));
+            note.setHeader(txtNoteHeader.getText().toString());
+
+            Retrofit retrofit = RetroInstance.getRetrofitInstance();
+            NotesDataService notesApi = retrofit.create(NotesDataService.class);
+            Call<Note> call = notesApi.updateNote(NoteFragment.this.note);
+            call.enqueue(NoteFragment.this);
+            return true;
+        }
+
+        if (menuItem.getItemId() == 16908332) {
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.navigate(R.id.action_nav_note_to_nav_notes);
+            return true;
+        }
+        return false;
     }
 }

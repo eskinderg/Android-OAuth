@@ -12,4 +12,6 @@
     <string name="menu_archived_notes">Archived Notes</string>
     <string name="menu_logout">Logout</string>
     <string name="menu_note">note</string>
+    <string name="save">Save</string>
+    <string name="note_menu_archive">Archive</string>
 </resources>

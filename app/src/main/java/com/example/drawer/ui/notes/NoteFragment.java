@@ -1,5 +1,6 @@
 package com.example.drawer.ui.notes;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -17,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.drawer.LoginActivity;
 import com.example.drawer.core.IAppCallback;
 import com.example.drawer.R;
 import com.example.drawer.service.RetroInstance;
@@ -106,7 +108,12 @@ public class NoteFragment extends Fragment implements IAppCallback<Note> {
 
     @Override
     public void onResponse(Call<Note> call, Response<Note> response) {
-        Toast.makeText(getContext(), "Saved", Toast.LENGTH_LONG).show();
+        if (response.isSuccessful()) {
+            Toast.makeText(getContext(), "Saved", Toast.LENGTH_LONG).show();
+        } else {
+            Intent intent = new Intent(getContext(), LoginActivity.class);
+            getContext().startActivity(intent);
+        }
     }
 
     @Override

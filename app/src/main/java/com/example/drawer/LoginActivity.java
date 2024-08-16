@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,6 +17,7 @@ import com.example.drawer.auth.AuthDataService;
 import com.example.drawer.core.AppCallback;
 import com.example.drawer.databinding.ActivityLoginBinding;
 import com.example.drawer.service.RetroInstance;
+import com.google.android.material.snackbar.Snackbar;
 
 import retrofit2.Call;
 
@@ -59,6 +61,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(AccessToken response) {
                 setAuthItems(response);
+                LoginActivity.this.loadingProgressBar.setVisibility(View.INVISIBLE);
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 LoginActivity.this.startActivity(intent);
             }
@@ -66,6 +69,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onFailure(Throwable throwable) {
                 LoginActivity.this.loadingProgressBar.setVisibility(View.INVISIBLE);
+                Toast.makeText(LoginActivity.this, throwable.getMessage(),Toast.LENGTH_LONG).show();
             }
         });
     }

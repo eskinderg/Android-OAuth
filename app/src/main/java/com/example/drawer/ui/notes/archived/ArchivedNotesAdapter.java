@@ -16,6 +16,7 @@ import com.example.drawer.core.utils.Time2Ago;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class ArchivedNotesAdapter extends RecyclerView.Adapter<ArchivedNotesAdapter.ArchivedNoteRecyclerViewHolder> {
@@ -68,7 +69,7 @@ public class ArchivedNotesAdapter extends RecyclerView.Adapter<ArchivedNotesAdap
     }
 
     private ArrayList<Note> getArchivedNotes(List<Note> list) {
-        List<Note> archivedNotes = list.stream().filter(n -> n.isArchived()).toList();
+        List<Note> archivedNotes = list.stream().filter(n -> n.isArchived()).collect(Collectors.toList());
         return new ArrayList<Note>(archivedNotes);
     }
 

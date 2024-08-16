@@ -101,6 +101,29 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
                     }
                 });
             }
+
+            @Override
+            public void onPinBtnClicked(int position) {
+                super.onPinBtnClicked(position);
+                Retrofit retrofit = RetroInstance.getRetrofitInstance();
+
+                NotesDataService notesDataService = retrofit.create(NotesDataService.class);
+
+                Note noteItem = notesAdapter.notesList.get(position);
+                noteItem.setPinned(true);
+
+                Call<Note> call = notesDataService.updateNote(noteItem);
+                call.enqueue(new AppCallback<Note>(getContext()) {
+                    @Override
+                    public void onResponse(Note response) {
+                        Toast.makeText(getContext(), "Note pinned", Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                    }
+                });
+            }
         }, getContext());
 
         ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeController);

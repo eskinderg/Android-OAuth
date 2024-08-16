@@ -8,4 +8,7 @@ abstract class NoteSwipeControllerActions {
     public void onArchiveBtnClicked(int position) {
     }
 
+    public void onPinBtnClicked(int position) {
+    }
+
 }

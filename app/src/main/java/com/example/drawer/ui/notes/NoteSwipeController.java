@@ -4,8 +4,6 @@ import static androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_SWIPE;
 import static androidx.recyclerview.widget.ItemTouchHelper.LEFT;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -17,7 +15,6 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.drawer.MyNote;
 import com.example.drawer.R;
 
 enum ButtonsState {
@@ -33,6 +30,7 @@ class NoteSwipeController extends ItemTouchHelper.Callback {
     private ButtonsState buttonShowedState = ButtonsState.GONE;
     private RectF buttonArchive = null;
     private RectF buttonEdit = null;
+    private RectF buttonPin = null;
     private RecyclerView.ViewHolder currentItemViewHolder = null;
     private NoteSwipeControllerActions buttonsActions = null;
     private Context context;
@@ -131,9 +129,16 @@ class NoteSwipeController extends ItemTouchHelper.Callback {
                     setItemsClickable(recyclerView, true);
                     swipeBack = false;
 
-                    if (buttonEdit.contains(event.getX(), event.getY())) {
+//                    if (buttonEdit.contains(event.getX(), event.getY())) {
+//                        if (buttonShowedState == ButtonsState.RIGHT_VISIBLE) {
+//                            buttonsActions.onEditBtnClicked(viewHolder.getAdapterPosition());
+//
+//                        }
+//                    }
+
+                    if (buttonPin.contains(event.getX(), event.getY())) {
                         if (buttonShowedState == ButtonsState.RIGHT_VISIBLE) {
-                            buttonsActions.onEditBtnClicked(viewHolder.getAdapterPosition());
+                            buttonsActions.onPinBtnClicked(viewHolder.getAdapterPosition());
 
                         }
                     }
@@ -164,11 +169,17 @@ class NoteSwipeController extends ItemTouchHelper.Callback {
         View itemView = viewHolder.itemView;
         Paint p = new Paint();
 
-        RectF rightEdit = new RectF(itemView.getRight() - buttonWidthWithoutPadding - buttonWidthWithoutPadding, itemView.getTop(), itemView.getRight() - buttonWidthWithoutPadding - 15, itemView.getBottom());
-        int colorEdit = ContextCompat.getColor(context, R.color.purple_200);
-        p.setColor(colorEdit);
-        c.drawRoundRect(rightEdit, corners, corners, p);
-        drawText("Edit", c, rightEdit, p);
+        RectF rightPin = new RectF(itemView.getRight() - buttonWidthWithoutPadding * 2, itemView.getTop(), itemView.getRight() - buttonWidthWithoutPadding - 15, itemView.getBottom());
+        int colorPin = ContextCompat.getColor(context, R.color.orange);
+        p.setColor(colorPin);
+        c.drawRoundRect(rightPin, corners, corners, p);
+        drawText("Pin", c, rightPin, p);
+
+//        RectF rightEdit = new RectF(itemView.getRight() - buttonWidthWithoutPadding - buttonWidthWithoutPadding, itemView.getTop(), itemView.getRight() - buttonWidthWithoutPadding - 15, itemView.getBottom());
+//        int colorEdit = ContextCompat.getColor(context, R.color.purple_200);
+//        p.setColor(colorEdit);
+//        c.drawRoundRect(rightEdit, corners, corners, p);
+//        drawText("Edit", c, rightEdit, p);
 
         RectF rightArchive = new RectF(itemView.getRight() - buttonWidthWithoutPadding, itemView.getTop(), itemView.getRight(), itemView.getBottom());
         int colorArchive = ContextCompat.getColor(context, R.color.orange);
@@ -178,7 +189,8 @@ class NoteSwipeController extends ItemTouchHelper.Callback {
 
         if (buttonShowedState == ButtonsState.RIGHT_VISIBLE) {
             buttonArchive = rightArchive;
-            buttonEdit = rightEdit;
+//            buttonEdit = rightEdit;
+            buttonPin = rightPin;
         }
     }
 

@@ -39,8 +39,13 @@
         tools:layout="@layout/fragment_archived_notes" />
 
     <fragment
-        android:id="@+id/nav_logout"
-        android:name="com.example.drawer.ui.logout.SlideshowFragment"
-        android:label="@string/menu_logout"
-        tools:layout="@layout/fragment_logout" />
+        android:id="@+id/nav_pin"
+        android:name="com.example.drawer.ui.notes.pinned.PinFragment"
+        android:label="@string/menu_pin"
+        tools:layout="@layout/fragment_pin" >
+        <action
+            android:id="@+id/action_nav_pin_to_nav_note"
+            app:destination="@id/nav_note" />
+    </fragment>
+
 </navigation>

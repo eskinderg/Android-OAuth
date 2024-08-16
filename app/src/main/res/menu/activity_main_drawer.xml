@@ -3,11 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single">
+    <group
+        android:id="@+id/grp_menu"
+        android:checkableBehavior="single">
         <item
             android:id="@+id/nav_notes"
             android:icon="@drawable/ic_notes"
             android:title="@string/menu_notes" />
+        <item
+            android:id="@+id/nav_pin"
+            android:icon="@drawable/ic_pin"
+            android:title="@string/menu_pin" />
         <item
             android:id="@+id/nav_events"
             android:icon="@drawable/ic_event"
@@ -16,6 +22,11 @@
             android:id="@+id/nav_archived_notes"
             android:icon="@drawable/ic_archive"
             android:title="@string/menu_archived_notes" />
+    </group>
+
+    <group
+        android:id="@+id/grp_logout"
+        android:checkableBehavior="single">
         <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_logout"

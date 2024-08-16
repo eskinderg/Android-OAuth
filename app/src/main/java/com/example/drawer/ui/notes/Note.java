@@ -4,6 +4,8 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class Note implements Serializable {
@@ -46,6 +48,10 @@ public class Note implements Serializable {
     @SerializedName("archived")
     @Expose
     private Boolean archived;
+
+    @SerializedName("favorite")
+    @Expose
+    private Boolean favorite;
 
     @SerializedName("active")
     @Expose
@@ -90,6 +96,20 @@ public class Note implements Serializable {
         this.archived = value;
     }
 
+    public void setPinned(boolean value) {
+        if(value){
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            Date date = new Date();
+            this.pinOrder = dateFormat.format(date);
+        }
+    }
+
+    public void setFavorite(boolean value) {
+        this.favorite = value;
+    }
+
+    public boolean isFavorite() { return this.favorite; }
+
     public String getText() {
         return text;
     }
@@ -120,5 +140,13 @@ public class Note implements Serializable {
 
     public String getDateArchived() {
         return this.dateArchived;
+    }
+
+    public boolean getPinned() {
+        if(this.pinOrder != null){
+            return true;
+        } else {
+            return false;
+        }
     }
 }

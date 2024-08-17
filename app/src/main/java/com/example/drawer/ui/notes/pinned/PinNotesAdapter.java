@@ -66,7 +66,7 @@ public class PinNotesAdapter extends  RecyclerView.Adapter<PinNotesAdapter.PinNo
     }
 
     private ArrayList<Note> getPinnedNotes(List<Note> list) {
-        List<Note> pinnedNotes = list.stream().filter(n -> n.isPinned()).collect(Collectors.toList());
+        List<Note> pinnedNotes = list.stream().filter(n -> n.isPinned() && !n.isArchived()).collect(Collectors.toList());
         pinnedNotes.sort(new Comparator<Note>() {
             @Override
             public int compare(Note o1, Note o2) {

@@ -1,6 +1,5 @@
 package com.example.drawer.ui.notes.archived;
 
-import android.graphics.Canvas;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,8 +8,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -21,6 +20,7 @@ import com.example.drawer.databinding.FragmentArchivedNotesBinding;
 import com.example.drawer.service.RetroInstance;
 import com.example.drawer.ui.notes.Note;
 import com.example.drawer.ui.notes.NotesDataService;
+import com.example.drawer.ui.notes.SwipeController;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,43 +53,44 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
         recyclerView = view.findViewById(R.id.archivednoterecyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        ArchivedNoteSwipeController swipeController = new ArchivedNoteSwipeController(new ArchivedNoteSwipeControllerActions() {
+        SwipeController swipeController = new SwipeController(getContext(), recyclerView) {
             @Override
-            public void onRestoreBtnClicked(int position) {
-                super.onRestoreBtnClicked(position);
+            public void instantiateUnderlayButton(RecyclerView.ViewHolder viewHolder, List<UnderlayButton> underlayButtons) {
+                underlayButtons.add(new UnderlayButton(
+                        "Restore",
+                        SwipeController.getBitmapFromVectorDrawable(getContext(), R.drawable.ic_restore_white),
+                        ContextCompat.getColor(getContext(), R.color.primary),
+                        new UnderlayButtonClickListener() {
+                            @Override
+                            public void onClick(int position) {
 
-                Retrofit retrofit = RetroInstance.getRetrofitInstance();
+                                Retrofit retrofit = RetroInstance.getRetrofitInstance();
 
-                NotesDataService notesDataService = retrofit.create(NotesDataService.class);
+                                NotesDataService notesDataService = retrofit.create(NotesDataService.class);
 
-                Note noteItem = notesAdapter.notesList.get(position);
-                noteItem.setArchived(false);
+                                Note noteItem = notesAdapter.notesList.get(position);
+                                noteItem.setArchived(false);
 
-                Call<Note> call = notesDataService.updateNote(noteItem);
-                call.enqueue(new AppCallback<Note>(getContext()) {
-                    @Override
-                    public void onResponse(Note response) {
-                        notesAdapter.notesList.remove(position);
-                        notesAdapter.notifyItemRemoved(position);
-                        Toast.makeText(getContext(), "Note restored", Toast.LENGTH_LONG).show();
-                    }
+                                Call<Note> call = notesDataService.updateNote(noteItem);
+                                call.enqueue(new AppCallback<Note>(getContext()) {
+                                    @Override
+                                    public void onResponse(Note response) {
+                                        notesAdapter.notesList.remove(position);
+                                        notesAdapter.notifyItemRemoved(position);
+                                        Toast.makeText(getContext(), "Note restored", Toast.LENGTH_LONG).show();
+                                    }
 
-                    @Override
-                    public void onFailure(Throwable throwable) {
-                    }
-                });
+                                    @Override
+                                    public void onFailure(Throwable throwable) {
+                                    }
+                                });
+                            }
+                        }
+
+                ));
+
             }
-        }, getContext());
-
-        ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeController);
-        itemTouchhelper.attachToRecyclerView(recyclerView);
-
-        recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-            @Override
-            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
-                swipeController.onDraw(c);
-            }
-        });
+        };
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
         mSwipeRefreshLayout.setOnRefreshListener(this);

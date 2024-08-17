@@ -1,8 +1,11 @@
 package com.example.drawer.ui.notes.pinned;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
 import com.example.drawer.databinding.FragmentPinBinding;
 import com.example.drawer.ui.notes.NotesDataService;
 import androidx.annotation.NonNull;
@@ -20,6 +23,7 @@ import com.example.drawer.R;
 import com.example.drawer.service.RetroInstance;
 import com.example.drawer.ui.notes.Note;
 import com.example.drawer.core.utils.GsonParser;
+import com.example.drawer.ui.notes.SwipeController;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -68,6 +72,45 @@ public class PinNoteListFragment extends Fragment implements SwipeRefreshLayout.
 
         this.fab = view.findViewById(R.id.fab);
         this.fab.setVisibility(View.INVISIBLE);
+
+        SwipeController swipeController = new SwipeController(getContext(), recyclerView) {
+            @Override
+            public void instantiateUnderlayButton(RecyclerView.ViewHolder viewHolder, List<UnderlayButton> underlayButtons) {
+                underlayButtons.add(new UnderlayButton(
+                        "Un Pin",
+                        SwipeController.getBitmapFromVectorDrawable(getContext(), R.drawable.ic_pin_white),
+                        Color.GRAY,
+                        new UnderlayButtonClickListener() {
+                            @Override
+                            public void onClick(int position) {
+
+                                Retrofit retrofit = RetroInstance.getRetrofitInstance();
+
+                                NotesDataService notesDataService = retrofit.create(NotesDataService.class);
+
+                                Note noteItem = pinAdapter.notesList.get(position);
+
+                                noteItem.setPinned(false);
+
+                                Call<Note> call = notesDataService.updateNote(noteItem);
+                                call.enqueue(new AppCallback<Note>(getContext()) {
+                                    @Override
+                                    public void onResponse(Note response) {
+                                        pinAdapter.notesList.remove(position);
+                                        pinAdapter.notifyItemRemoved(position);
+                                        Toast.makeText(getContext(), "Updated", Toast.LENGTH_LONG).show();
+                                    }
+
+                                    @Override
+                                    public void onFailure(Throwable throwable) {
+                                    }
+                                });
+                            }
+                        }
+                ));
+
+            }
+        };
     }
 
     @Override
@@ -138,4 +181,5 @@ public class PinNoteListFragment extends Fragment implements SwipeRefreshLayout.
         NavController navController = Navigation.findNavController(view);
         navController.navigate(R.id.action_nav_pin_to_nav_pin_edit, bundle);
     }
+
 }

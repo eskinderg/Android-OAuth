@@ -104,6 +104,9 @@ public class Note implements Serializable {
             Date date = new Date();
             this.pinOrder = dateFormat.format(date);
         }
+        else {
+            this.pinOrder = null;
+        }
     }
 
     public void setFavorite(boolean value) {
@@ -149,10 +152,6 @@ public class Note implements Serializable {
     }
 
     public boolean isPinned() {
-        if(this.pinOrder != null){
-            return true;
-        } else {
-            return false;
-        }
+        return this.pinOrder != null;
     }
 }

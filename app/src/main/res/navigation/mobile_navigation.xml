@@ -40,12 +40,21 @@
 
     <fragment
         android:id="@+id/nav_pin"
-        android:name="com.example.drawer.ui.notes.pinned.PinFragment"
+        android:name="com.example.drawer.ui.notes.pinned.PinNoteListFragment"
         android:label="@string/menu_pin"
         tools:layout="@layout/fragment_pin" >
         <action
-            android:id="@+id/action_nav_pin_to_nav_note"
-            app:destination="@id/nav_note" />
+            android:id="@+id/action_nav_pin_to_nav_pin_edit"
+            app:destination="@id/nav_pin_edit" />
     </fragment>
 
+    <fragment
+        android:id="@+id/nav_pin_edit"
+        android:name="com.example.drawer.ui.notes.pinned.PinnedNoteEditFragment"
+        android:label="@string/menu_pin"
+        tools:layout="@layout/fragment_note" >
+        <action
+            android:id="@+id/action_nav_pin_edit_nav_pin"
+            app:destination="@id/nav_pin" />
+    </fragment>
 </navigation>

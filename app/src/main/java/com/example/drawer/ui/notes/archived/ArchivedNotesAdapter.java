@@ -15,6 +15,7 @@ import com.example.drawer.ui.notes.Note;
 import com.example.drawer.core.utils.Time2Ago;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -70,6 +71,12 @@ public class ArchivedNotesAdapter extends RecyclerView.Adapter<ArchivedNotesAdap
 
     private ArrayList<Note> getArchivedNotes(List<Note> list) {
         List<Note> archivedNotes = list.stream().filter(n -> n.isArchived()).collect(Collectors.toList());
+        archivedNotes.sort(new Comparator<Note>() {
+            @Override
+            public int compare(Note o1, Note o2) {
+                return o2.getArchivedDate().compareTo(o1.getArchivedDate());
+            }
+        });
         return new ArrayList<Note>(archivedNotes);
     }
 

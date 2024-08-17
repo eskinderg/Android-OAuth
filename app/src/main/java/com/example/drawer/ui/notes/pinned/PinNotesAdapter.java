@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import android.content.Context;
@@ -65,7 +66,13 @@ public class PinNotesAdapter extends  RecyclerView.Adapter<PinNotesAdapter.PinNo
     }
 
     private ArrayList<Note> getPinnedNotes(List<Note> list) {
-        List<Note> pinnedNotes = list.stream().filter(n -> n.getPinned()).collect(Collectors.toList());
+        List<Note> pinnedNotes = list.stream().filter(n -> n.isPinned()).collect(Collectors.toList());
+        pinnedNotes.sort(new Comparator<Note>() {
+            @Override
+            public int compare(Note o1, Note o2) {
+                return o2.getPinned().compareTo(o1.getPinned());
+            }
+        });
         return new ArrayList<Note>(pinnedNotes);
     }
 

@@ -10,7 +10,7 @@
     <string name="menu_notes">Notes</string>
     <string name="menu_pin">Pinned</string>
     <string name="menu_events">Events</string>
-    <string name="menu_archived_notes">Archived Notes</string>
+    <string name="menu_archived_notes">Archived</string>
     <string name="menu_logout">Logout</string>
     <string name="menu_note">note</string>
     <string name="save">Save</string>

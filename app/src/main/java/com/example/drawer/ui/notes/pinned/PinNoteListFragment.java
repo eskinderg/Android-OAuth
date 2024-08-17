@@ -20,6 +20,7 @@ import com.example.drawer.R;
 import com.example.drawer.service.RetroInstance;
 import com.example.drawer.ui.notes.Note;
 import com.example.drawer.core.utils.GsonParser;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,12 +29,13 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 
-public class PinFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, PinNotesAdapter.OnPinNoteItemClickListener {
+public class PinNoteListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, PinNotesAdapter.OnPinNoteItemClickListener {
 
     public RecyclerView recyclerView;
     public PinNotesAdapter pinAdapter;
     public SwipeRefreshLayout mSwipeRefreshLayout;
     private FragmentPinBinding binding;
+    private FloatingActionButton fab;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -63,6 +65,9 @@ public class PinFragment extends Fragment implements SwipeRefreshLayout.OnRefres
                 fetchNotes();
             }
         });
+
+        this.fab = view.findViewById(R.id.fab);
+        this.fab.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -90,7 +95,7 @@ public class PinFragment extends Fragment implements SwipeRefreshLayout.OnRefres
         call.enqueue(new AppCallback<Note[]>(getContext()) {
             @Override
             public void onResponse(Note[] response) {
-                PinFragment.this.dataView(new ArrayList(Arrays.asList(response)));
+                PinNoteListFragment.this.dataView(new ArrayList(Arrays.asList(response)));
                 mSwipeRefreshLayout.setRefreshing(false);
                 setAppbarCount();
             }
@@ -121,7 +126,7 @@ public class PinFragment extends Fragment implements SwipeRefreshLayout.OnRefres
     }
 
     private void setAppbarCount() {
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Pinned Notes " + "(" + String.valueOf(PinFragment.this.recyclerView.getAdapter().getItemCount()) + ")");
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Pinned " + "(" + String.valueOf(PinNoteListFragment.this.recyclerView.getAdapter().getItemCount()) + ")");
     }
 
     @Override
@@ -131,6 +136,6 @@ public class PinFragment extends Fragment implements SwipeRefreshLayout.OnRefres
         bundle.putString("note", noteJsonString);
 
         NavController navController = Navigation.findNavController(view);
-        navController.navigate(R.id.action_nav_pin_to_nav_note, bundle);
+        navController.navigate(R.id.action_nav_pin_to_nav_pin_edit, bundle);
     }
 }

@@ -92,6 +92,8 @@ public class Note implements Serializable {
         return archived;
     }
 
+    public String getArchivedDate() { return this.dateArchived; }
+
     public void setArchived(boolean value) {
         this.archived = value;
     }
@@ -142,7 +144,11 @@ public class Note implements Serializable {
         return this.dateArchived;
     }
 
-    public boolean getPinned() {
+    public String getPinned() {
+        return this.pinOrder;
+    }
+
+    public boolean isPinned() {
         if(this.pinOrder != null){
             return true;
         } else {

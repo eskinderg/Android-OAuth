@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/nav_notes"
-        android:name="com.example.drawer.fragments.note.NotesFragment"
+        android:name="app.mynote.fragments.note.NotesFragment"
         android:label="@string/menu_notes"
         tools:layout="@layout/fragment_notes">
         <action
@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/nav_note"
-        android:name="com.example.drawer.fragments.note.NoteFragment"
+        android:name="app.mynote.fragments.note.NoteFragment"
         android:label="@string/menu_note"
         tools:layout="@layout/fragment_note">
         <action
@@ -28,19 +28,19 @@
 
     <fragment
         android:id="@+id/nav_events"
-        android:name="com.example.drawer.fragments.event.EventsFragment"
+        android:name="app.mynote.fragments.event.EventsFragment"
         android:label="@string/menu_events"
         tools:layout="@layout/fragment_events" />
 
     <fragment
         android:id="@+id/nav_archived_notes"
-        android:name="com.example.drawer.fragments.note.archived.ArchivedNotesFragment"
+        android:name="app.mynote.fragments.note.archived.ArchivedNotesFragment"
         android:label="@string/menu_archived_notes"
         tools:layout="@layout/fragment_archived_notes" />
 
     <fragment
         android:id="@+id/nav_pin"
-        android:name="com.example.drawer.fragments.note.pinned.PinNoteListFragment"
+        android:name="app.mynote.fragments.note.pinned.PinNoteListFragment"
         android:label="@string/menu_pin"
         tools:layout="@layout/fragment_pin" >
         <action
@@ -50,7 +50,7 @@
 
     <fragment
         android:id="@+id/nav_pin_edit"
-        android:name="com.example.drawer.fragments.note.pinned.PinnedNoteEditFragment"
+        android:name="app.mynote.fragments.note.pinned.PinnedNoteEditFragment"
         android:label="@string/menu_pin"
         tools:layout="@layout/fragment_note" >
         <action

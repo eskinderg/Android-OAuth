@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.drawer"
+    namespace = "mynote"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.drawer"
+        applicationId = "app.mynote"
         minSdk = 31
         targetSdk = 34
         versionCode = 1

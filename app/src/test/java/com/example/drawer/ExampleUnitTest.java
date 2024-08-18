@@ -1,4 +1,4 @@
-package com.example.drawer;
+package mynote;
 
 import static org.junit.Assert.assertEquals;
 

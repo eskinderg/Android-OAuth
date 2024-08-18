@@ -15,9 +15,11 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.example.drawer.auth.AuthConfig;
 import com.example.drawer.auth.AuthDataService;
 import com.example.drawer.auth.User;
-import com.example.drawer.core.AppCallback;
+import com.example.drawer.core.callback.AppCallback;
+import com.example.drawer.core.MyNote;
 import com.example.drawer.databinding.ActivityMainBinding;
 import com.example.drawer.service.RetroInstance;
 import com.google.android.material.navigation.NavigationView;
@@ -56,9 +58,9 @@ public class MainActivity extends AppCompatActivity {
         navigationView.getMenu().findItem(R.id.nav_logout).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(@NonNull MenuItem item) {
-                AuthDataService service = RetroInstance.getRetrofitInstance(Constants.KEYCLOAK_URL)
+                AuthDataService service = RetroInstance.getRetrofitInstance(AuthConfig.KEYCLOAK_URL)
                         .create(AuthDataService.class);
-                Call<ResponseBody> call = service.logout(Constants.CLIENT_ID, MyNote.getContext().getSharedPreferences("prefs", Context.MODE_PRIVATE).getString("refresh_token", ""));
+                Call<ResponseBody> call = service.logout(AuthConfig.CLIENT_ID, MyNote.getContext().getSharedPreferences("prefs", Context.MODE_PRIVATE).getString("refresh_token", ""));
                 call.enqueue(new AppCallback<ResponseBody>(MainActivity.this) {
                     @Override
                     public void onResponse(ResponseBody response) {
@@ -85,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setUserInfo() {
 
-        AuthDataService service = RetroInstance.getRetrofitInstance(Constants.KEYCLOAK_URL)
+        AuthDataService service = RetroInstance.getRetrofitInstance(AuthConfig.KEYCLOAK_URL)
                 .create(AuthDataService.class);
 
         Call<User> call = service.getUserInfo();

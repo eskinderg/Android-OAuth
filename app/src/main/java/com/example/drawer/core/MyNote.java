@@ -1,4 +1,4 @@
-package com.example.drawer;
+package com.example.drawer.core;
 
 import android.app.Application;
 import android.content.Context;

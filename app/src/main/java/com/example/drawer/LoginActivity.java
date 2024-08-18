@@ -13,11 +13,11 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.drawer.auth.AccessToken;
+import com.example.drawer.auth.AuthConfig;
 import com.example.drawer.auth.AuthDataService;
-import com.example.drawer.core.AppCallback;
+import com.example.drawer.core.callback.AppCallback;
 import com.example.drawer.databinding.ActivityLoginBinding;
 import com.example.drawer.service.RetroInstance;
-import com.google.android.material.snackbar.Snackbar;
 
 import retrofit2.Call;
 
@@ -52,10 +52,10 @@ public class LoginActivity extends AppCompatActivity {
     public void getAccessToken(String username, String password) {
 
         AuthDataService service = RetroInstance
-                .getRetrofitInstance(Constants.KEYCLOAK_URL)
+                .getRetrofitInstance(AuthConfig.KEYCLOAK_URL)
                 .create(AuthDataService.class);
 
-        Call<AccessToken> call = service.getAccessToken(Constants.CLIENT_ID, Constants.GRANT_TYPE, Constants.SCOPE, username, password);
+        Call<AccessToken> call = service.getAccessToken(AuthConfig.CLIENT_ID, AuthConfig.GRANT_TYPE, AuthConfig.SCOPE, username, password);
 
         call.enqueue(new AppCallback<AccessToken>(LoginActivity.this) {
             @Override

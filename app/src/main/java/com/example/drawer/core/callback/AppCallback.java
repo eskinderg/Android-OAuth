@@ -1,4 +1,4 @@
-package com.example.drawer.core;
+package com.example.drawer.core.callback;
 
 import android.content.Context;
 import android.content.Intent;

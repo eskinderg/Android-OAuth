@@ -1,4 +1,4 @@
-package com.example.drawer.ui.events;
+package com.example.drawer.fragments.event;
 
 import android.graphics.Canvas;
 import android.os.Bundle;
@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.drawer.core.AppCallback;
+import com.example.drawer.core.callback.AppCallback;
 import com.example.drawer.R;
 import com.example.drawer.databinding.FragmentEventsBinding;
 import com.example.drawer.service.RetroInstance;

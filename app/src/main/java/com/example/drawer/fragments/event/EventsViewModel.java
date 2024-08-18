@@ -1,16 +1,16 @@
-package com.example.drawer.ui.notes;
+package com.example.drawer.fragments.event;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class NotesViewModel extends ViewModel {
+public class EventsViewModel extends ViewModel {
 
     private final MutableLiveData<String> mText;
 
-    public NotesViewModel() {
+    public EventsViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is home fragment");
+        mText.setValue("Events Fragment");
     }
 
     public LiveData<String> getText() {

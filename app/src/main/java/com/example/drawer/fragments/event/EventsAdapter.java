@@ -1,4 +1,4 @@
-package com.example.drawer.ui.events;
+package com.example.drawer.fragments.event;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.drawer.core.AppCallback;
+import com.example.drawer.core.callback.AppCallback;
 import com.example.drawer.R;
 import com.example.drawer.service.RetroInstance;
 

@@ -1,4 +1,4 @@
-package com.example.drawer.ui.notes.pinned;
+package com.example.drawer.fragments.note.pinned;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -15,7 +15,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.example.drawer.R;
-import com.example.drawer.ui.notes.Note;
+import com.example.drawer.fragments.note.Note;
 
 public class PinNotesAdapter extends  RecyclerView.Adapter<PinNotesAdapter.PinNoteRecyclerViewHolder> {
 

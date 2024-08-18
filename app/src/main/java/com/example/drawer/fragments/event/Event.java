@@ -1,4 +1,4 @@
-package com.example.drawer.ui.events;
+package com.example.drawer.fragments.event;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

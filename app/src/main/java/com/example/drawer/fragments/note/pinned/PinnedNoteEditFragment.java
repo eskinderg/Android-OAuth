@@ -1,4 +1,4 @@
-package com.example.drawer.ui.notes.pinned;
+package com.example.drawer.fragments.note.pinned;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,11 +19,11 @@ import androidx.lifecycle.Lifecycle;
 import androidx.navigation.NavController;
 import com.example.drawer.LoginActivity;
 import com.example.drawer.R;
-import com.example.drawer.core.IAppCallback;
+import com.example.drawer.core.callback.IAppCallback;
 import com.example.drawer.core.utils.GsonParser;
 import com.example.drawer.service.RetroInstance;
-import com.example.drawer.ui.notes.Note;
-import com.example.drawer.ui.notes.NotesDataService;
+import com.example.drawer.fragments.note.Note;
+import com.example.drawer.fragments.note.NotesDataService;
 
 import android.view.View;
 import android.view.ViewGroup;

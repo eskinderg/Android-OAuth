@@ -1,4 +1,4 @@
-package com.example.drawer.core;
+package com.example.drawer.core.callback;
 
 import retrofit2.Call;
 import retrofit2.Callback;

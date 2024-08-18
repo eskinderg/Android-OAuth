@@ -1,4 +1,4 @@
-package com.example.drawer.ui.notes;
+package com.example.drawer.fragments.note;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
@@ -22,9 +21,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.drawer.LoginActivity;
-import com.example.drawer.core.IAppCallback;
+import com.example.drawer.core.callback.IAppCallback;
 import com.example.drawer.R;
-import com.example.drawer.databinding.AppBarMainBinding;
 import com.example.drawer.service.RetroInstance;
 import com.example.drawer.core.utils.GsonParser;
 

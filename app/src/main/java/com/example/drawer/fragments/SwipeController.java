@@ -1,4 +1,4 @@
-package com.example.drawer.ui.notes;
+package com.example.drawer.fragments;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -20,8 +20,9 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.example.drawer.MyNote;
+import com.example.drawer.core.MyNote;
 import com.example.drawer.R;
+import com.example.drawer.fragments.note.NotesAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;

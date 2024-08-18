@@ -1,7 +1,7 @@
 package com.example.drawer.service;
 
 
-import com.example.drawer.Constants;
+import com.example.drawer.auth.AuthConfig;
 import com.example.drawer.auth.AnnotationInterceptor;
 
 import okhttp3.OkHttpClient;
@@ -10,7 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetroInstance {
 
-    public static final String BASE_API_URL = Constants.BASE_API_URL;
+    public static final String BASE_API_URL = AuthConfig.BASE_API_URL;
     static Retrofit retrofitApi;
     static Retrofit retrofitAuth;
     private static OkHttpClient client = new OkHttpClient()

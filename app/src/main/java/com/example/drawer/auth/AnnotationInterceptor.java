@@ -2,7 +2,7 @@ package com.example.drawer.auth;
 
 import android.content.Context;
 
-import com.example.drawer.MyNote;
+import com.example.drawer.core.MyNote;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;

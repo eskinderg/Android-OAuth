@@ -1,4 +1,4 @@
-package com.example.drawer.ui.notes;
+package com.example.drawer.fragments.note;
 
 import com.example.drawer.auth.Authorized;
 

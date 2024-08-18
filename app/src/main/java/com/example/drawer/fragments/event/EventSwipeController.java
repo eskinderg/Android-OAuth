@@ -1,4 +1,4 @@
-package com.example.drawer.ui.events;
+package com.example.drawer.fragments.event;
 
 import static androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_SWIPE;
 import static androidx.recyclerview.widget.ItemTouchHelper.LEFT;

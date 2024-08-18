@@ -1,4 +1,4 @@
-package com.example.drawer.ui.notes.archived;
+package com.example.drawer.fragments.note.archived;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,7 +11,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.drawer.R;
-import com.example.drawer.ui.notes.Note;
+import com.example.drawer.fragments.note.Note;
 import com.example.drawer.core.utils.Time2Ago;
 
 import java.util.ArrayList;

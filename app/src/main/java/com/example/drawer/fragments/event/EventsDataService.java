@@ -1,4 +1,4 @@
-package com.example.drawer.ui.events;
+package com.example.drawer.fragments.event;
 
 import com.example.drawer.auth.Authorized;
 

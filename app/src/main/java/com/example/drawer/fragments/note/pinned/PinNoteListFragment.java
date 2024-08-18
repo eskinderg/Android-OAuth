@@ -1,26 +1,30 @@
-package com.example.drawer.ui.notes.archived;
-
+package com.example.drawer.fragments.note.pinned;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.drawer.databinding.FragmentPinBinding;
+import com.example.drawer.fragments.note.NotesDataService;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.drawer.core.AppCallback;
+import com.example.drawer.core.callback.AppCallback;
 import com.example.drawer.R;
-import com.example.drawer.databinding.FragmentArchivedNotesBinding;
 import com.example.drawer.service.RetroInstance;
-import com.example.drawer.ui.notes.Note;
-import com.example.drawer.ui.notes.NotesDataService;
-import com.example.drawer.ui.notes.SwipeController;
+import com.example.drawer.fragments.note.Note;
+import com.example.drawer.core.utils.GsonParser;
+import com.example.drawer.fragments.SwipeController;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,19 +33,18 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 
-public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdapter.OnNoteItemClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class PinNoteListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, PinNotesAdapter.OnPinNoteItemClickListener {
 
     public RecyclerView recyclerView;
-    public ArchivedNotesAdapter notesAdapter;
+    public PinNotesAdapter pinAdapter;
     public SwipeRefreshLayout mSwipeRefreshLayout;
-    private FragmentArchivedNotesBinding binding;
+    private FragmentPinBinding binding;
+    private FloatingActionButton fab;
 
-    public ArchivedNotesFragment() {
-    }
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        binding = FragmentArchivedNotesBinding.inflate(inflater, container, false);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        binding = FragmentPinBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
         return root;
@@ -50,47 +53,8 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
 
-        recyclerView = view.findViewById(R.id.archivednoterecyclerview);
+        recyclerView = view.findViewById(R.id.noterecyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        SwipeController swipeController = new SwipeController(getContext(), recyclerView) {
-            @Override
-            public void instantiateUnderlayButton(RecyclerView.ViewHolder viewHolder, List<UnderlayButton> underlayButtons) {
-                underlayButtons.add(new UnderlayButton(
-                        "Restore",
-                        SwipeController.getBitmapFromVectorDrawable(getContext(), R.drawable.ic_restore_white),
-                        ContextCompat.getColor(getContext(), R.color.primary),
-                        new UnderlayButtonClickListener() {
-                            @Override
-                            public void onClick(int position) {
-
-                                Retrofit retrofit = RetroInstance.getRetrofitInstance();
-
-                                NotesDataService notesDataService = retrofit.create(NotesDataService.class);
-
-                                Note noteItem = notesAdapter.notesList.get(position);
-                                noteItem.setArchived(false);
-
-                                Call<Note> call = notesDataService.updateNote(noteItem);
-                                call.enqueue(new AppCallback<Note>(getContext()) {
-                                    @Override
-                                    public void onResponse(Note response) {
-                                        notesAdapter.notesList.remove(position);
-                                        notesAdapter.notifyItemRemoved(position);
-                                        Toast.makeText(getContext(), "Note restored", Toast.LENGTH_LONG).show();
-                                    }
-
-                                    @Override
-                                    public void onFailure(Throwable throwable) {
-                                    }
-                                });
-                            }
-                        }
-
-                ));
-
-            }
-        };
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
         mSwipeRefreshLayout.setOnRefreshListener(this);
@@ -106,16 +70,47 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
             }
         });
 
-    }
+        this.fab = view.findViewById(R.id.fab);
+        this.fab.setVisibility(View.INVISIBLE);
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
-    }
+        SwipeController swipeController = new SwipeController(getContext(), recyclerView) {
+            @Override
+            public void instantiateUnderlayButton(RecyclerView.ViewHolder viewHolder, List<UnderlayButton> underlayButtons) {
+                underlayButtons.add(new UnderlayButton(
+                        "Un Pin",
+                        SwipeController.getBitmapFromVectorDrawable(getContext(), R.drawable.ic_pin_white),
+                        Color.GRAY,
+                        new UnderlayButtonClickListener() {
+                            @Override
+                            public void onClick(int position) {
 
-    @Override
-    public void onNoteItemClick(View view, Note note) {
+                                Retrofit retrofit = RetroInstance.getRetrofitInstance();
+
+                                NotesDataService notesDataService = retrofit.create(NotesDataService.class);
+
+                                Note noteItem = pinAdapter.notesList.get(position);
+
+                                noteItem.setPinned(false);
+
+                                Call<Note> call = notesDataService.updateNote(noteItem);
+                                call.enqueue(new AppCallback<Note>(getContext()) {
+                                    @Override
+                                    public void onResponse(Note response) {
+                                        pinAdapter.notesList.remove(position);
+                                        pinAdapter.notifyItemRemoved(position);
+                                        Toast.makeText(getContext(), "Updated", Toast.LENGTH_LONG).show();
+                                    }
+
+                                    @Override
+                                    public void onFailure(Throwable throwable) {
+                                    }
+                                });
+                            }
+                        }
+                ));
+
+            }
+        };
     }
 
     @Override
@@ -124,18 +119,26 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
         fetchNotes();
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+
+
+
     private void fetchNotes() {
 
         Retrofit retrofit = RetroInstance.getRetrofitInstance();
 
         NotesDataService notesApi = retrofit.create(NotesDataService.class);
 
-        Call<Note[]> call = notesApi.getArchivedNotes();
+        Call<Note[]> call = notesApi.getNotes();
 
         call.enqueue(new AppCallback<Note[]>(getContext()) {
             @Override
             public void onResponse(Note[] response) {
-                ArchivedNotesFragment.this.dataView(new ArrayList(Arrays.asList(response)));
+                PinNoteListFragment.this.dataView(new ArrayList(Arrays.asList(response)));
                 mSwipeRefreshLayout.setRefreshing(false);
                 setAppbarCount();
             }
@@ -146,11 +149,11 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
         });
     }
 
+
     private void dataView(List<Note> notes) {
-//        List<Note> list = notes.stream().filter(n -> !n.isArchived()).toList();
-        this.notesAdapter = new ArchivedNotesAdapter(getContext(), notes, this);
-        recyclerView.setAdapter(this.notesAdapter);
-        this.notesAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+        this.pinAdapter = new PinNotesAdapter(getContext(), notes, this);
+        recyclerView.setAdapter(this.pinAdapter);
+        this.pinAdapter.registerAdapterDataObserver(new AdapterDataObserver() {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
                 super.onItemRangeInserted(positionStart, itemCount);
@@ -166,7 +169,17 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
     }
 
     private void setAppbarCount() {
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Archived " + "(" + String.valueOf(ArchivedNotesFragment.this.notesAdapter.notesList.size()) + ") ");
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Pinned " + "(" + String.valueOf(PinNoteListFragment.this.recyclerView.getAdapter().getItemCount()) + ")");
+    }
+
+    @Override
+    public void onPinNoteItemClick(View view, Note note) {
+        Bundle bundle = new Bundle();
+        String noteJsonString = GsonParser.getGsonParser().toJson(note);
+        bundle.putString("note", noteJsonString);
+
+        NavController navController = Navigation.findNavController(view);
+        navController.navigate(R.id.action_nav_pin_to_nav_pin_edit, bundle);
     }
 
 }

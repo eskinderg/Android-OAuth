@@ -72,7 +72,7 @@ public class PinNotesAdapter extends RecyclerView.Adapter<PinNotesAdapter.PinNot
         pinnedNotes.sort(new Comparator<Note>() {
             @Override
             public int compare(Note o1, Note o2) {
-                return o2.getPinned().compareTo(o1.getPinned());
+                return o1.getPinned().compareTo(o2.getPinned());
             }
         });
         return new ArrayList<Note>(pinnedNotes);

@@ -75,7 +75,8 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
                                 call.enqueue(new AppCallback<Note>(getContext()) {
                                     @Override
                                     public void onResponse(Note response) {
-                                        Toast.makeText(getContext(), "Updated", Toast.LENGTH_LONG).show();
+                                        String textMsg = response.isPinned() ? "Pinned" : "Un Pinned";
+                                        Toast.makeText(getContext(), "Note " + textMsg, Toast.LENGTH_LONG).show();
                                         notesAdapter.notifyItemChanged(position);
                                     }
 

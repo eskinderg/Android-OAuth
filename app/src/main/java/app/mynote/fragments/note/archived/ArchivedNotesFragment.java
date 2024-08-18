@@ -58,7 +58,7 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
                 underlayButtons.add(new UnderlayButton(
                         "Restore",
                         SwipeController.getBitmapFromVectorDrawable(getContext(), R.drawable.ic_restore_white),
-                        ContextCompat.getColor(getContext(), R.color.primary),
+                        ContextCompat.getColor(getContext(), R.color.green),
                         new UnderlayButtonClickListener() {
                             @Override
                             public void onClick(int position) {

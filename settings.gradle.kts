@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Drawer"
+rootProject.name = "MyNote"
 include(":app")

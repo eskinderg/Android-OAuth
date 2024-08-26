@@ -70,11 +70,11 @@ public class ArchivedNotesAdapter extends RecyclerView.Adapter<ArchivedNotesAdap
     }
 
     private ArrayList<Note> getArchivedNotes(List<Note> list) {
-        List<Note> archivedNotes = list.stream().filter(n -> n.isArchived()).collect(Collectors.toList());
+        List<Note> archivedNotes = list.stream().filter(n -> n.getArchived()).collect(Collectors.toList());
         archivedNotes.sort(new Comparator<Note>() {
             @Override
             public int compare(Note o1, Note o2) {
-                return o2.getArchivedDate().compareTo(o1.getArchivedDate());
+                return o2.getDateArchived().compareTo(o1.getDateArchived());
             }
         });
         return new ArrayList<Note>(archivedNotes);

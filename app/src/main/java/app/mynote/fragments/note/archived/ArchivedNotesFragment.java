@@ -15,18 +15,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import app.mynote.core.callback.AppCallback;
+import app.mynote.core.db.NoteSyncAdapter;
 import app.mynote.fragments.SwipeController;
 import app.mynote.fragments.note.Note;
-import app.mynote.fragments.note.NotesDataService;
-import app.mynote.service.RetroInstance;
+import app.mynote.fragments.note.NoteService;
 import mynote.R;
 import mynote.databinding.FragmentArchivedNotesBinding;
-import retrofit2.Call;
-import retrofit2.Retrofit;
 
 public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdapter.OnNoteItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
@@ -62,27 +58,14 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
                         new UnderlayButtonClickListener() {
                             @Override
                             public void onClick(int position) {
-
-                                Retrofit retrofit = RetroInstance.getRetrofitInstance();
-
-                                NotesDataService notesDataService = retrofit.create(NotesDataService.class);
-
                                 Note noteItem = notesAdapter.notesList.get(position);
                                 noteItem.setArchived(false);
-
-                                Call<Note> call = notesDataService.updateNote(noteItem);
-                                call.enqueue(new AppCallback<Note>(getContext()) {
-                                    @Override
-                                    public void onResponse(Note response) {
-                                        notesAdapter.notesList.remove(position);
-                                        notesAdapter.notifyItemRemoved(position);
-                                        Toast.makeText(getContext(), "Note restored", Toast.LENGTH_LONG).show();
-                                    }
-
-                                    @Override
-                                    public void onFailure(Throwable throwable) {
-                                    }
-                                });
+                                NoteService noteService = new NoteService(getContext());
+                                noteService.update(noteItem);
+                                String textMsg = "restored";
+                                Toast.makeText(getContext(), "Note " + textMsg, Toast.LENGTH_LONG).show();
+                                notesAdapter.notesList.remove(position);
+                                notesAdapter.notifyItemRemoved(position);
                             }
                         }
 
@@ -119,30 +102,21 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
 
     @Override
     public void onRefresh() {
+        NoteSyncAdapter.cancelSync();
+        NoteSyncAdapter.performSync();
+        recyclerView.setVisibility(View.INVISIBLE);
         mSwipeRefreshLayout.setRefreshing(true);
         fetchNotes();
     }
 
     private void fetchNotes() {
-
-        Retrofit retrofit = RetroInstance.getRetrofitInstance();
-
-        NotesDataService notesApi = retrofit.create(NotesDataService.class);
-
-        Call<Note[]> call = notesApi.getArchivedNotes();
-
-        call.enqueue(new AppCallback<Note[]>(getContext()) {
-            @Override
-            public void onResponse(Note[] response) {
-                ArchivedNotesFragment.this.dataView(new ArrayList(Arrays.asList(response)));
-                mSwipeRefreshLayout.setRefreshing(false);
-                setAppbarCount();
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-            }
-        });
+        NoteService noteService = new NoteService(getContext());
+        ArrayList<Note> notes = new ArrayList<>(noteService.getArchived());
+        ArchivedNotesFragment.this.dataView(notes);
+        setAppbarCount();
+        mSwipeRefreshLayout.setRefreshing(false);
+        recyclerView.getAdapter().notifyDataSetChanged();
+        recyclerView.setVisibility(View.VISIBLE);
     }
 
     private void dataView(List<Note> notes) {

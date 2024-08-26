@@ -42,7 +42,7 @@
         android:id="@+id/nav_pin"
         android:name="app.mynote.fragments.note.pinned.PinNoteListFragment"
         android:label="@string/menu_pin"
-        tools:layout="@layout/fragment_pin" >
+        tools:layout="@layout/fragment_pin">
         <action
             android:id="@+id/action_nav_pin_to_nav_pin_edit"
             app:destination="@id/nav_pin_edit" />
@@ -52,7 +52,7 @@
         android:id="@+id/nav_pin_edit"
         android:name="app.mynote.fragments.note.pinned.PinnedNoteEditFragment"
         android:label="@string/menu_pin"
-        tools:layout="@layout/fragment_note" >
+        tools:layout="@layout/fragment_note">
         <action
             android:id="@+id/action_nav_pin_edit_nav_pin"
             app:destination="@id/nav_pin" />

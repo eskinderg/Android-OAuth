@@ -15,7 +15,7 @@ public class Note implements Serializable {
 
     @SerializedName("id")
     @Expose
-    private Number id;
+    private String id;
 
     @SerializedName("userId")
     @Expose
@@ -47,19 +47,19 @@ public class Note implements Serializable {
 
     @SerializedName("archived")
     @Expose
-    private Boolean archived;
+    private boolean archived;
 
     @SerializedName("favorite")
     @Expose
-    private Boolean favorite;
+    private boolean favorite;
 
     @SerializedName("active")
     @Expose
-    private Boolean active;
+    private boolean active;
 
     @SerializedName("spellCheck")
     @Expose
-    private Boolean spellCheck;
+    private boolean spellCheck;
 
     @SerializedName("pinOrder")
     @Expose
@@ -77,6 +77,10 @@ public class Note implements Serializable {
     @Expose
     private String dateArchived;
 
+    @SerializedName("dateSync")
+    @Expose
+    private String dateSync;
+
     @SerializedName("owner")
     @Expose
     private String owner;
@@ -88,16 +92,44 @@ public class Note implements Serializable {
     public Note() {
     }
 
-    public boolean isArchived() {
-        return archived;
+    public String getDateSync() {
+        return dateSync;
+    }
+
+    public void setDateSync(String dateSync) {
+        this.dateSync = dateSync;
+    }
+
+    public String getOwner() {
+        return this.owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    public boolean getArchived() {
+        return this.archived;
     }
 
     public void setArchived(boolean value) {
         this.archived = value;
     }
 
-    public String getArchivedDate() {
+    public String getDateArchived() {
         return this.dateArchived;
+    }
+
+    public void setDateArchived(String dateArchived) {
+        this.dateArchived = dateArchived;
+    }
+
+    public String getUserId() {
+        return this.userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public boolean isFavorite() {
@@ -114,14 +146,23 @@ public class Note implements Serializable {
 
     public void setText(String text) {
         this.text = text;
+
     }
 
     public String getDateCreated() {
         return dateCreated;
     }
 
+    public void setDateCreated(String dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
     public String getDateModified() {
         return dateModified;
+    }
+
+    public void setDateModified(String dateModified) {
+        this.dateModified = dateModified;
     }
 
     public String getHeader() {
@@ -132,16 +173,40 @@ public class Note implements Serializable {
         this.header = header;
     }
 
-    public Number getId() {
+    public String getColour() {
+        return colour;
+    }
+
+    public void setColour(String colour) {
+        this.colour = colour;
+    }
+
+    public String getId() {
         return id;
     }
 
-    public String getDateArchived() {
-        return this.dateArchived;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getSelection() {
+        return this.selection;
+    }
+
+    public void setSelection(String selection) {
+        this.selection = selection;
     }
 
     public String getPinned() {
         return this.pinOrder;
+    }
+
+    public String getPinOrder() {
+        return this.pinOrder;
+    }
+
+    public void setPinOrder(String pinOrder) {
+        this.pinOrder = pinOrder;
     }
 
     public boolean isPinned() {
@@ -156,5 +221,25 @@ public class Note implements Serializable {
         } else {
             this.pinOrder = null;
         }
+    }
+
+    public boolean getSpellCheck() {
+        return this.spellCheck;
+    }
+
+    public void setSpellCheck(Boolean spellCheck) {
+        this.spellCheck = spellCheck;
+    }
+
+    public boolean getActive() {
+        return this.active;
+    }
+
+    public boolean isActive() {
+        return this.active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 }

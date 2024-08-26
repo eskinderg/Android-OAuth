@@ -1,12 +1,17 @@
 package app.mynote.fragments.note;
 
+import android.database.ContentObserver;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -19,19 +24,19 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
-import app.mynote.core.callback.AppCallback;
+import app.mynote.core.db.NoteContract;
+import app.mynote.core.db.NoteSyncAdapter;
 import app.mynote.core.utils.GsonParser;
 import app.mynote.fragments.SwipeController;
 import app.mynote.fragments.note.NotesAdapter.OnNoteItemClickListener;
-import app.mynote.service.RetroInstance;
 import mynote.R;
 import mynote.databinding.FragmentNotesBinding;
-import retrofit2.Call;
-import retrofit2.Retrofit;
 
 public class NotesFragment extends Fragment implements OnNoteItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
@@ -40,8 +45,15 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
     public NotesAdapter notesAdapter;
     public SwipeRefreshLayout mSwipeRefreshLayout;
     private FragmentNotesBinding binding;
+    private NoteObserver noteObserver;
 
     public NotesFragment() {
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        noteObserver = new NoteObserver();
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -67,23 +79,13 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
                         new SwipeController.UnderlayButtonClickListener() {
                             @Override
                             public void onClick(int position) {
-                                Retrofit retrofit = RetroInstance.getRetrofitInstance();
-                                NotesDataService notesDataService = retrofit.create(NotesDataService.class);
                                 Note noteItem = notesAdapter.notesList.get(position);
                                 noteItem.setPinned(!noteItem.isPinned());
-                                Call<Note> call = notesDataService.updateNote(noteItem);
-                                call.enqueue(new AppCallback<Note>(getContext()) {
-                                    @Override
-                                    public void onResponse(Note response) {
-                                        String textMsg = response.isPinned() ? "Pinned" : "Un Pinned";
-                                        Toast.makeText(getContext(), "Note " + textMsg, Toast.LENGTH_LONG).show();
-                                        notesAdapter.notifyItemChanged(position);
-                                    }
-
-                                    @Override
-                                    public void onFailure(Throwable throwable) {
-                                    }
-                                });
+                                NoteService noteService = new NoteService(getContext());
+                                noteService.update(noteItem);
+                                String textMsg = noteItem.isPinned() ? "Pinned" : "Un Pinned";
+                                Toast.makeText(getContext(), "Note " + textMsg, Toast.LENGTH_LONG).show();
+                                notesAdapter.notifyItemChanged(position);
                             }
                         }
                 ));
@@ -94,23 +96,17 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
                         new SwipeController.UnderlayButtonClickListener() {
                             @Override
                             public void onClick(int position) {
-                                Retrofit retrofit = RetroInstance.getRetrofitInstance();
-                                NotesDataService notesDataService = retrofit.create(NotesDataService.class);
                                 Note noteItem = notesAdapter.notesList.get(position);
                                 noteItem.setArchived(true);
-                                Call<Note> call = notesDataService.updateNote(noteItem);
-                                call.enqueue(new AppCallback<Note>(getContext()) {
-                                    @Override
-                                    public void onResponse(Note response) {
-                                        notesAdapter.notesList.remove(position);
-                                        notesAdapter.notifyItemRemoved(position);
-                                        Toast.makeText(getContext(), "Note archived", Toast.LENGTH_LONG).show();
-                                    }
-
-                                    @Override
-                                    public void onFailure(Throwable throwable) {
-                                    }
-                                });
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                                Date date = new Date();
+                                noteItem.setDateArchived(dateFormat.format(date));
+                                NoteService noteService = new NoteService(getContext());
+                                noteService.update(noteItem);
+                                String textMsg = "archived";
+                                Toast.makeText(getContext(), "Note " + textMsg, Toast.LENGTH_LONG).show();
+                                notesAdapter.notesList.remove(position);
+                                notesAdapter.notifyItemRemoved(position);
                             }
                         }
                 ));
@@ -123,25 +119,20 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
         this.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Retrofit retrofit = RetroInstance.getRetrofitInstance();
-                NotesDataService notesApi = retrofit.create(NotesDataService.class);
-                Call<Note> call = notesApi.addNote(new Note());
-                call.enqueue(new AppCallback<Note>(getContext()) {
-                    @Override
-                    public void onResponse(Note response) {
-                        Note newNote = response;
-                        Bundle bundle = new Bundle();
-                        String noteJsonString = GsonParser.getGsonParser().toJson(newNote);
-                        bundle.putString("note", noteJsonString);
-                        NavController navController = Navigation.findNavController(view);
-                        navController.navigate(R.id.action_nav_notes_to_nav_note, bundle);
-                    }
+                NoteService noteService = new NoteService(getContext());
+                Note note = new Note();
 
-                    @Override
-                    public void onFailure(Throwable throwable) {
-                    }
-                });
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                Date date = new Date();
+                note.setId(UUID.randomUUID().toString());
+                note.setDateModified(dateFormat.format(date));
+                noteService.add(note);
 
+                Bundle bundle = new Bundle();
+                String noteJsonString = GsonParser.getGsonParser().toJson(note);
+                bundle.putString("note", noteJsonString);
+                NavController navController = Navigation.findNavController(view);
+                navController.navigate(R.id.action_nav_notes_to_nav_note, bundle);
             }
         });
 
@@ -166,6 +157,24 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
         super.onDestroyView();
         binding = null;
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        getActivity().getContentResolver().registerContentObserver(
+                NoteContract.Notes.CONTENT_URI,
+                true,
+                noteObserver);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (noteObserver != null) {
+            getActivity().getContentResolver().unregisterContentObserver(noteObserver);
+        }
+    }
+
 
     @Override
     public void onNoteItemClick(View view, Note note) {
@@ -197,26 +206,21 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
 
     @Override
     public void onRefresh() {
+        NoteSyncAdapter.cancelSync();
+        NoteSyncAdapter.performSync();
+        recyclerView.setVisibility(View.INVISIBLE);
         mSwipeRefreshLayout.setRefreshing(true);
         fetchNotes();
     }
 
     private void fetchNotes() {
-        Retrofit retrofit = RetroInstance.getRetrofitInstance();
-        NotesDataService notesApi = retrofit.create(NotesDataService.class);
-        Call<Note[]> call = notesApi.getNotes();
-        call.enqueue(new AppCallback<Note[]>(getContext()) {
-            @Override
-            public void onResponse(Note[] response) {
-                NotesFragment.this.dataView(new ArrayList(Arrays.asList(response)));
-                mSwipeRefreshLayout.setRefreshing(false);
-                setAppbarCount();
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-            }
-        });
+        NoteService noteService = new NoteService(getContext());
+        ArrayList<Note> notes = new ArrayList<>(noteService.getAllNotes());
+        NotesFragment.this.dataView(notes);
+        setAppbarCount();
+        mSwipeRefreshLayout.setRefreshing(false);
+        recyclerView.getAdapter().notifyDataSetChanged();
+        recyclerView.setVisibility(View.VISIBLE);
     }
 
 
@@ -240,5 +244,16 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
 
     private void setAppbarCount() {
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Notes " + "(" + NotesFragment.this.recyclerView.getAdapter().getItemCount() + ")");
+    }
+
+    private final class NoteObserver extends ContentObserver {
+        private NoteObserver() {
+            super(new Handler(Looper.getMainLooper()));
+        }
+
+        @Override
+        public void onChange(boolean selfChange, Uri uri) {
+            fetchNotes();
+        }
     }
 }

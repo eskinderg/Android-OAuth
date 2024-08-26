@@ -23,11 +23,9 @@ import androidx.navigation.fragment.NavHostFragment;
 import app.mynote.LoginActivity;
 import app.mynote.core.callback.IAppCallback;
 import app.mynote.core.utils.GsonParser;
-import app.mynote.service.RetroInstance;
 import mynote.R;
 import retrofit2.Call;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class NoteFragment extends Fragment implements IAppCallback<Note>, MenuProvider {
     public EditText txtNoteText;
@@ -94,15 +92,24 @@ public class NoteFragment extends Fragment implements IAppCallback<Note>, MenuPr
 
     @Override
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
-
         if (menuItem.getItemId() == R.id.action_save) {
-            note.setText(Html.toHtml(txtNoteText.getText(), Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV));
-            note.setHeader(txtNoteHeader.getText().toString());
 
-            Retrofit retrofit = RetroInstance.getRetrofitInstance();
-            NotesDataService notesApi = retrofit.create(NotesDataService.class);
-            Call<Note> call = notesApi.updateNote(NoteFragment.this.note);
-            call.enqueue(NoteFragment.this);
+            NoteService noteService = new NoteService(getContext());
+            String body = txtNoteText.getText().toString().isEmpty() ? "" : Html.toHtml(txtNoteText.getText(), Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV);
+            String header = txtNoteHeader.getText().toString().isEmpty() ? "" : txtNoteHeader.getText().toString();
+//            note.setText(Html.toHtml( txtNoteText.getText(), Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV));
+//            note.setHeader(txtNoteHeader.getText().toString());
+            note.setText(body);
+            note.setHeader(header);
+            noteService.update(note);
+
+//            note.setText(Html.toHtml(txtNoteText.getText(), Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV));
+//            note.setHeader(txtNoteHeader.getText().toString());
+//
+//            Retrofit retrofit = RetroInstance.getRetrofitInstance();
+//            NotesDataService notesApi = retrofit.create(NotesDataService.class);
+//            Call<Note> call = notesApi.updateNote(NoteFragment.this.note);
+//            call.enqueue(NoteFragment.this);
             return true;
         }
 

@@ -20,19 +20,15 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import app.mynote.core.callback.AppCallback;
+import app.mynote.core.db.NoteSyncAdapter;
 import app.mynote.core.utils.GsonParser;
 import app.mynote.fragments.SwipeController;
 import app.mynote.fragments.note.Note;
-import app.mynote.fragments.note.NotesDataService;
-import app.mynote.service.RetroInstance;
+import app.mynote.fragments.note.NoteService;
 import mynote.R;
 import mynote.databinding.FragmentPinBinding;
-import retrofit2.Call;
-import retrofit2.Retrofit;
 
 public class PinNoteListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, PinNotesAdapter.OnPinNoteItemClickListener {
 
@@ -84,28 +80,13 @@ public class PinNoteListFragment extends Fragment implements SwipeRefreshLayout.
                         new UnderlayButtonClickListener() {
                             @Override
                             public void onClick(int position) {
-
-                                Retrofit retrofit = RetroInstance.getRetrofitInstance();
-
-                                NotesDataService notesDataService = retrofit.create(NotesDataService.class);
-
                                 Note noteItem = pinAdapter.notesList.get(position);
-
                                 noteItem.setPinned(false);
-
-                                Call<Note> call = notesDataService.updateNote(noteItem);
-                                call.enqueue(new AppCallback<Note>(getContext()) {
-                                    @Override
-                                    public void onResponse(Note response) {
-                                        pinAdapter.notesList.remove(position);
-                                        pinAdapter.notifyItemRemoved(position);
-                                        Toast.makeText(getContext(), "Updated", Toast.LENGTH_LONG).show();
-                                    }
-
-                                    @Override
-                                    public void onFailure(Throwable throwable) {
-                                    }
-                                });
+                                NoteService noteService = new NoteService(getContext());
+                                noteService.update(noteItem);
+                                Toast.makeText(getContext(), "Updated", Toast.LENGTH_LONG).show();
+                                pinAdapter.notesList.remove(position);
+                                pinAdapter.notifyItemRemoved(position);
                             }
                         }
                 ));
@@ -116,6 +97,9 @@ public class PinNoteListFragment extends Fragment implements SwipeRefreshLayout.
 
     @Override
     public void onRefresh() {
+        NoteSyncAdapter.cancelSync();
+        NoteSyncAdapter.performSync();
+        recyclerView.setVisibility(View.INVISIBLE);
         mSwipeRefreshLayout.setRefreshing(true);
         fetchNotes();
     }
@@ -128,25 +112,13 @@ public class PinNoteListFragment extends Fragment implements SwipeRefreshLayout.
 
 
     private void fetchNotes() {
-
-        Retrofit retrofit = RetroInstance.getRetrofitInstance();
-
-        NotesDataService notesApi = retrofit.create(NotesDataService.class);
-
-        Call<Note[]> call = notesApi.getNotes();
-
-        call.enqueue(new AppCallback<Note[]>(getContext()) {
-            @Override
-            public void onResponse(Note[] response) {
-                PinNoteListFragment.this.dataView(new ArrayList(Arrays.asList(response)));
-                mSwipeRefreshLayout.setRefreshing(false);
-                setAppbarCount();
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-            }
-        });
+        NoteService noteService = new NoteService(getContext());
+        ArrayList<Note> notes = new ArrayList<>(noteService.getPinned());
+        PinNoteListFragment.this.dataView(notes);
+        setAppbarCount();
+        mSwipeRefreshLayout.setRefreshing(false);
+        recyclerView.getAdapter().notifyDataSetChanged();
+        recyclerView.setVisibility(View.VISIBLE);
     }
 
 

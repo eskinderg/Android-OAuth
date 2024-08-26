@@ -34,13 +34,10 @@ public abstract class SwipeController extends ItemTouchHelper.SimpleCallback {
 
     public static final int BUTTON_WIDTH = 220;
     private static RecyclerView recyclerView;
-    private List<UnderlayButton> buttons;
     private final GestureDetector gestureDetector;
-    private int swipedPos = -1;
-    private float swipeThreshold = 0.5f;
     private final Map<Integer, List<UnderlayButton>> buttonsBuffer;
     private final Queue<Integer> recoverQueue;
-
+    private List<UnderlayButton> buttons;
     private final GestureDetector.SimpleOnGestureListener gestureListener = new GestureDetector.SimpleOnGestureListener() {
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
@@ -52,7 +49,7 @@ public abstract class SwipeController extends ItemTouchHelper.SimpleCallback {
             return true;
         }
     };
-
+    private int swipedPos = -1;
     private final View.OnTouchListener onTouchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View view, MotionEvent e) {
@@ -76,6 +73,7 @@ public abstract class SwipeController extends ItemTouchHelper.SimpleCallback {
             return false;
         }
     };
+    private float swipeThreshold = 0.5f;
 
     public SwipeController(Context context, RecyclerView recyclerView) {
         super(0, ItemTouchHelper.LEFT);
@@ -226,13 +224,13 @@ public abstract class SwipeController extends ItemTouchHelper.SimpleCallback {
     }
 
     public static class UnderlayButton {
-        private String text;
         private final Bitmap bitmap;
+        private final UnderlayButtonClickListener clickListener;
+        private String text;
         private int color;
         private int pos;
         private RectF clickRegion;
         private boolean pinFlag;
-        private final UnderlayButtonClickListener clickListener;
 
         public UnderlayButton(String text, Bitmap bitmap, int color, UnderlayButtonClickListener clickListener) {
             this.text = text;

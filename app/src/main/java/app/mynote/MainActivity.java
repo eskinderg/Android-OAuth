@@ -22,6 +22,7 @@ import app.mynote.auth.AuthDataService;
 import app.mynote.auth.User;
 import app.mynote.core.MyNote;
 import app.mynote.core.callback.AppCallback;
+import app.mynote.core.db.auth.AccountGeneral;
 import app.mynote.service.RetroInstance;
 import mynote.R;
 import mynote.databinding.ActivityMainBinding;
@@ -29,13 +30,14 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 
 public class MainActivity extends AppCompatActivity {
-
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        AccountGeneral.createSyncAccount(this);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -103,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
                 User user = response;
                 navUsername.setText(user.getGivenName());
                 navEmail.setText(user.getUserEmail());
+                AuthConfig.USER = user;
             }
 
             @Override

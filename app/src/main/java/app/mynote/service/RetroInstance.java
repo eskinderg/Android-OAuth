@@ -10,13 +10,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetroInstance {
 
     public static final String BASE_API_URL = AuthConfig.BASE_API_URL;
-    static Retrofit retrofitApi;
-    static Retrofit retrofitAuth;
     private static final OkHttpClient client = new OkHttpClient()
             .newBuilder()
             .addInterceptor(new AnnotationInterceptor())
             .build();
-
+    static Retrofit retrofitApi;
+    static Retrofit retrofitAuth;
 
     public static Retrofit getRetrofitInstance() {
         if (retrofitApi == null) {

@@ -1,5 +1,7 @@
 package app.mynote.fragments.note;
 
+import java.util.ArrayList;
+
 import app.mynote.auth.Authorized;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -27,4 +29,14 @@ public interface NotesDataService {
     @Headers({"Content-Type: application/json"})
     @POST("notes")
     Call<Note> addNote(@Body Note note);
+
+    @Authorized
+    @Headers({"Content-Type: application/json"})
+    @PUT("notes/update")
+    Call<Note[]> updateNote(@Body ArrayList<Note> notes);
+
+    @Authorized
+    @Headers({"Content-Type: application/json"})
+    @POST("notes/insert")
+    Call<Note[]> insert(@Body ArrayList<Note> notes);
 }

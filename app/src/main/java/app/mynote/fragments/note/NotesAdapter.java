@@ -12,6 +12,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,8 +27,8 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteRecycler
     Context context;
 
     public NotesAdapter(Context context, List<Note> notesList, OnNoteItemClickListener listener) {
-        this.notesList = getActiveNotes(notesList);
         this.context = context;
+        this.notesList = getActiveNotes(notesList);
         this.mListener = listener;
     }
 
@@ -44,8 +45,9 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteRecycler
     public void onBindViewHolder(@NonNull NoteRecyclerViewHolder holder, int position) {
 
         Note noteItem = notesList.get(position);
+//        holder.setIsRecyclable(false);
 
-        if(noteItem.isPinned()) {
+        if (noteItem.isPinned()) {
             holder.header.setTypeface(Typeface.DEFAULT_BOLD);
         }
 
@@ -72,7 +74,13 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteRecycler
     }
 
     private ArrayList<Note> getActiveNotes(List<Note> list) {
-        List<Note> activeNotes = list.stream().filter(n -> !n.isArchived()).collect(Collectors.toList());
+        List<Note> activeNotes = list.stream().filter(n -> !n.getArchived()).collect(Collectors.toList());
+        activeNotes.sort(new Comparator<Note>() {
+            @Override
+            public int compare(Note o1, Note o2) {
+                return o2.getDateModified().compareTo(o1.getDateModified());
+            }
+        });
         return new ArrayList<Note>(activeNotes);
     }
 

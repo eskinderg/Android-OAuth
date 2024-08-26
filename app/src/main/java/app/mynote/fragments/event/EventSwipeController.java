@@ -27,12 +27,12 @@ enum ButtonsState {
 class EventsSwipeController extends ItemTouchHelper.Callback {
 
     private static final float buttonWidth = 300;
+    private final Context context;
     private boolean swipeBack = false;
     private ButtonsState buttonShowedState = ButtonsState.GONE;
     private RectF buttonInstance = null;
     private RecyclerView.ViewHolder currentItemViewHolder = null;
     private SwipeControllerActions buttonsActions = null;
-    private final Context context;
 
     public EventsSwipeController(SwipeControllerActions buttonsActions, Context context) {
         this.buttonsActions = buttonsActions;

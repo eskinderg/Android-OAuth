@@ -5,7 +5,7 @@ import android.net.Uri;
 public final class NoteContract {
     public static final String CONTENT_AUTHORITY = "app.mynote.sync";
     static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
-    static final String PATH_ARTICLES = "notes";
+    static final String PATH_NOTES = "notes";
 
     // Database info
     static final String DB_NAME = "notes_db";
@@ -33,10 +33,10 @@ public final class NoteContract {
 
         // ContentProvider information for notes
         public static final Uri CONTENT_URI =
-                BASE_CONTENT_URI.buildUpon().appendPath(PATH_ARTICLES).build();
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_NOTES).build();
         public static final String CONTENT_TYPE =
-                "vnd.android.cursor.dir/" + CONTENT_URI + "/" + PATH_ARTICLES;
+                "vnd.android.cursor.dir/" + CONTENT_URI + "/" + PATH_NOTES;
         public static final String CONTENT_ITEM_TYPE =
-                "vnd.android.cursor.item/" + CONTENT_URI + "/" + PATH_ARTICLES;
+                "vnd.android.cursor.item/" + CONTENT_URI + "/" + PATH_NOTES;
     }
 }

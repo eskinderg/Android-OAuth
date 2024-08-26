@@ -13,16 +13,16 @@ import androidx.annotation.Nullable;
 
 public class NoteProvider extends ContentProvider {
     // Use ints to represent different queries
-    private static final int ARTICLE = 1;
-    private static final int ARTICLE_ID = 2;
+    private static final int NOTE = 1;
+    private static final int NOTE_ID = 2;
 
     private static final UriMatcher uriMatcher;
 
     static {
         // Add all our query types to our UriMatcher
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        uriMatcher.addURI(NoteContract.CONTENT_AUTHORITY, NoteContract.PATH_ARTICLES, ARTICLE);
-        uriMatcher.addURI(NoteContract.CONTENT_AUTHORITY, NoteContract.PATH_ARTICLES + "/#", ARTICLE_ID);
+        uriMatcher.addURI(NoteContract.CONTENT_AUTHORITY, NoteContract.PATH_NOTES, NOTE);
+        uriMatcher.addURI(NoteContract.CONTENT_AUTHORITY, NoteContract.PATH_NOTES + "/#", NOTE_ID);
     }
 
     private SQLiteDatabase db;
@@ -39,9 +39,9 @@ public class NoteProvider extends ContentProvider {
     public String getType(@NonNull Uri uri) {
         // Find the MIME type of the results... multiple results or a single result
         switch (uriMatcher.match(uri)) {
-            case ARTICLE:
+            case NOTE:
                 return NoteContract.Notes.CONTENT_TYPE;
-            case ARTICLE_ID:
+            case NOTE_ID:
                 return NoteContract.Notes.CONTENT_ITEM_TYPE;
             default:
                 throw new IllegalArgumentException("Invalid URI!");
@@ -54,7 +54,7 @@ public class NoteProvider extends ContentProvider {
         Cursor c;
         switch (uriMatcher.match(uri)) {
             // Query for multiple article results
-            case ARTICLE:
+            case NOTE:
                 c = db.query(NoteContract.Notes.NAME,
                         projection,
                         selection,
@@ -65,7 +65,7 @@ public class NoteProvider extends ContentProvider {
                 break;
 
             // Query for single article result
-            case ARTICLE_ID:
+            case NOTE_ID:
                 long _id = ContentUris.parseId(uri);
                 c = db.query(NoteContract.Notes.NAME,
                         projection,
@@ -93,7 +93,7 @@ public class NoteProvider extends ContentProvider {
         long _id;
 
         switch (uriMatcher.match(uri)) {
-            case ARTICLE:
+            case NOTE:
                 _id = db.insert(NoteContract.Notes.NAME, null, values);
                 returnUri = ContentUris.withAppendedId(NoteContract.Notes.CONTENT_URI, _id);
                 break;
@@ -111,7 +111,7 @@ public class NoteProvider extends ContentProvider {
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
         int rows;
         switch (uriMatcher.match(uri)) {
-            case ARTICLE:
+            case NOTE:
                 rows = db.update(NoteContract.Notes.NAME, values, selection, selectionArgs);
                 break;
             default:
@@ -130,7 +130,7 @@ public class NoteProvider extends ContentProvider {
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
         int rows;
         switch (uriMatcher.match(uri)) {
-            case ARTICLE:
+            case NOTE:
                 rows = db.delete(NoteContract.Notes.NAME, selection, selectionArgs);
                 break;
             default:

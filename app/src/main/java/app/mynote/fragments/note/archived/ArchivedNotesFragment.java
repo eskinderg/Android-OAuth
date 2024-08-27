@@ -14,7 +14,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import app.mynote.core.db.NoteSyncAdapter;
@@ -60,6 +62,9 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
                             public void onClick(int position) {
                                 Note noteItem = notesAdapter.notesList.get(position);
                                 noteItem.setArchived(false);
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                                Date date = new Date();
+                                noteItem.setDateArchived(dateFormat.format(date));
                                 NoteService noteService = new NoteService(getContext());
                                 noteService.update(noteItem, false);
                                 String textMsg = "restored";

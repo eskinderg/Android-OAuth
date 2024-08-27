@@ -40,4 +40,22 @@ public final class NoteContract {
         public static final String CONTENT_ITEM_TYPE =
                 "vnd.android.cursor.item/" + CONTENT_URI + "/" + PATH_NOTES;
     }
+    private static final String[] PROJECTION = {
+            Notes.COL_ID,
+            Notes.COL_HEADER,
+            Notes.COL_TEXT,
+            Notes.COL_USER_ID,
+            Notes.COL_COLOUR,
+            Notes.COL_SELECTION,
+            Notes.COL_ARCHIVED,
+            Notes.COL_PINNED,
+            Notes.COL_ACTIVE,
+            Notes.COL_SPELL_CHECK,
+            Notes.COL_PIN_ORDER,
+            Notes.COL_DATE_CREATED,
+            Notes.COL_DATE_MODIFIED,
+            Notes.COL_DATE_ARCHIVED,
+            Notes.COL_DATE_SYNC,
+            Notes.COL_OWNER
+    };
 }

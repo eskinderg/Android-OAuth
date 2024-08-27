@@ -61,7 +61,7 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
                                 Note noteItem = notesAdapter.notesList.get(position);
                                 noteItem.setArchived(false);
                                 NoteService noteService = new NoteService(getContext());
-                                noteService.update(noteItem);
+                                noteService.update(noteItem, false);
                                 String textMsg = "restored";
                                 Toast.makeText(getContext(), "Note " + textMsg, Toast.LENGTH_LONG).show();
                                 notesAdapter.notesList.remove(position);

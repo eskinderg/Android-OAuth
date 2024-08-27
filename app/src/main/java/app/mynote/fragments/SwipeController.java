@@ -269,7 +269,7 @@ public abstract class SwipeController extends ItemTouchHelper.SimpleCallback {
 
             if (pinFlag) {
                 NotesAdapter adapter = (NotesAdapter) recyclerView.getAdapter();
-                if (adapter.notesList.get(pos).isPinned()) {
+                if (adapter.notesList.get(pos).getPinned()) {
                     color = ContextCompat.getColor(MyNote.getContext(), R.color.primary);
                     text = "Un Pin";
 

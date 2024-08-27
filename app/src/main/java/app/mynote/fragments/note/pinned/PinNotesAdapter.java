@@ -1,6 +1,7 @@
 package app.mynote.fragments.note.pinned;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +46,8 @@ public class PinNotesAdapter extends RecyclerView.Adapter<PinNotesAdapter.PinNot
 
         Note noteItem = notesList.get(position);
 
+        holder.header.setTypeface(Typeface.DEFAULT_BOLD);
+
         if (noteItem.getHeader() == null || noteItem.getHeader().isEmpty()) {
             holder.header.setText("");
         } else {
@@ -72,7 +75,7 @@ public class PinNotesAdapter extends RecyclerView.Adapter<PinNotesAdapter.PinNot
         pinnedNotes.sort(new Comparator<Note>() {
             @Override
             public int compare(Note o1, Note o2) {
-                return o1.getPinned().compareTo(o2.getPinned());
+                return o1.getPinOrder().compareTo(o2.getPinOrder());
             }
         });
         return new ArrayList<Note>(pinnedNotes);

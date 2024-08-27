@@ -21,6 +21,7 @@ public final class NoteContract {
         public static final String COL_COLOUR = "colour";
         public static final String COL_SELECTION = "selection";
         public static final String COL_ARCHIVED = "archived";
+        public static final String COL_PINNED = "pinned";
         public static final String COL_ACTIVE = "active";
         public static final String COL_SPELL_CHECK = "spellCheck";
         public static final String COL_PIN_ORDER = "pinOrder";

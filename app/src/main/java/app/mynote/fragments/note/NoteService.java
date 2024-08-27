@@ -31,6 +31,7 @@ public class NoteService {
         values.put(NoteContract.Notes.COL_USER_ID, AuthConfig.USER.getId());
         values.put(NoteContract.Notes.COL_SELECTION, note.getSelection());
         values.put(NoteContract.Notes.COL_ARCHIVED, note.getArchived());
+        values.put(NoteContract.Notes.COL_PINNED, note.getPinned());
         values.put(NoteContract.Notes.COL_COLOUR, note.getColour());
         values.put(NoteContract.Notes.COL_ACTIVE, note.isActive());
         values.put(NoteContract.Notes.COL_SPELL_CHECK, note.getSpellCheck());
@@ -44,21 +45,26 @@ public class NoteService {
         return note;
     }
 
-    public Note update(Note note) {
+    public Note update(Note note, boolean markModified) {
         ContentValues values = new ContentValues();
         values.put(NoteContract.Notes.COL_TEXT, note.getText());
         values.put(NoteContract.Notes.COL_HEADER, note.getHeader());
         values.put(NoteContract.Notes.COL_USER_ID, AuthConfig.USER.getId());
         values.put(NoteContract.Notes.COL_SELECTION, note.getSelection());
         values.put(NoteContract.Notes.COL_ARCHIVED, note.getArchived());
+        values.put(NoteContract.Notes.COL_PINNED, note.getPinned());
         values.put(NoteContract.Notes.COL_COLOUR, note.getColour());
         values.put(NoteContract.Notes.COL_ACTIVE, note.isActive());
         values.put(NoteContract.Notes.COL_SPELL_CHECK, note.getSpellCheck());
         values.put(NoteContract.Notes.COL_PIN_ORDER, note.getPinOrder());
         values.put(NoteContract.Notes.COL_DATE_CREATED, note.getDateCreated());
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        Date date = new Date();
-        values.put(NoteContract.Notes.COL_DATE_MODIFIED, dateFormat.format(date));
+        if(markModified){
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            Date date = new Date();
+            values.put(NoteContract.Notes.COL_DATE_MODIFIED, dateFormat.format(date));
+        }else{
+            values.put(NoteContract.Notes.COL_DATE_MODIFIED, note.getDateModified());
+        }
         values.put(NoteContract.Notes.COL_DATE_ARCHIVED, note.getDateArchived());
         values.put(NoteContract.Notes.COL_DATE_SYNC, note.getDateSync());
         values.put(NoteContract.Notes.COL_OWNER, note.getOwner());
@@ -84,6 +90,7 @@ public class NoteService {
                 note.setSelection(c.getString(c.getColumnIndex(NoteContract.Notes.COL_SELECTION)));
                 note.setColour(c.getString(c.getColumnIndex(NoteContract.Notes.COL_COLOUR)));
                 note.setArchived(c.getInt(c.getColumnIndex(NoteContract.Notes.COL_ARCHIVED)) > 0);
+                note.setPinned(c.getInt(c.getColumnIndex(NoteContract.Notes.COL_PINNED)) > 0);
                 note.setActive(c.getInt(c.getColumnIndex(NoteContract.Notes.COL_ACTIVE)) > 0);
                 note.setSpellCheck(c.getInt(c.getColumnIndex(NoteContract.Notes.COL_SPELL_CHECK)) > 0);
                 note.setPinOrder(c.getString(c.getColumnIndex(NoteContract.Notes.COL_PIN_ORDER)));
@@ -119,6 +126,7 @@ public class NoteService {
             values.put(NoteContract.Notes.COL_USER_ID, AuthConfig.USER.getId());
             values.put(NoteContract.Notes.COL_SELECTION, note.getSelection());
             values.put(NoteContract.Notes.COL_ARCHIVED, note.getArchived());
+            values.put(NoteContract.Notes.COL_PINNED, note.getPinned());
             values.put(NoteContract.Notes.COL_COLOUR, note.getColour());
             values.put(NoteContract.Notes.COL_ACTIVE, note.isActive());
             values.put(NoteContract.Notes.COL_SPELL_CHECK, note.getSpellCheck());
@@ -128,7 +136,7 @@ public class NoteService {
             values.put(NoteContract.Notes.COL_DATE_ARCHIVED, note.getDateArchived());
             values.put(NoteContract.Notes.COL_DATE_SYNC, note.getDateSync());
             values.put(NoteContract.Notes.COL_OWNER, note.getOwner());
-            update(note);
+            update(note, true);
         }
         return notes;
     }

@@ -81,8 +81,11 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
                             public void onClick(int position) {
                                 Note noteItem = notesAdapter.notesList.get(position);
                                 noteItem.setPinned(!noteItem.isPinned());
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                                Date date = new Date();
+                                noteItem.setPinOrder(dateFormat.format(date));
                                 NoteService noteService = new NoteService(getContext());
-                                noteService.update(noteItem);
+                                noteService.update(noteItem, false);
                                 String textMsg = noteItem.isPinned() ? "Pinned" : "Un Pinned";
                                 Toast.makeText(getContext(), "Note " + textMsg, Toast.LENGTH_LONG).show();
                                 notesAdapter.notifyItemChanged(position);
@@ -102,7 +105,7 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
                                 Date date = new Date();
                                 noteItem.setDateArchived(dateFormat.format(date));
                                 NoteService noteService = new NoteService(getContext());
-                                noteService.update(noteItem);
+                                noteService.update(noteItem, false);
                                 String textMsg = "archived";
                                 Toast.makeText(getContext(), "Note " + textMsg, Toast.LENGTH_LONG).show();
                                 notesAdapter.notesList.remove(position);

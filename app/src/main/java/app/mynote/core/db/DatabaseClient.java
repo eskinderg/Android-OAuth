@@ -67,6 +67,7 @@ public final class DatabaseClient extends SQLiteOpenHelper {
                 NoteContract.Notes.COL_COLOUR + "] TEXT,[" +
                 NoteContract.Notes.COL_SELECTION + "] TEXT,[" +
                 NoteContract.Notes.COL_ARCHIVED + "] TINYINT,[" +
+                NoteContract.Notes.COL_PINNED + "] TINYINT,[" +
                 NoteContract.Notes.COL_ACTIVE + "] TINYINT,[" +
                 NoteContract.Notes.COL_SPELL_CHECK + "] TINYINT,[" +
                 NoteContract.Notes.COL_PIN_ORDER + "] TEXT,[" +

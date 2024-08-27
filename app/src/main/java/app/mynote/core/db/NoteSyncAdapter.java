@@ -130,6 +130,7 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
                         noteLocal.setSelection(c.getString(c.getColumnIndex(NoteContract.Notes.COL_SELECTION)));
                         noteLocal.setColour(c.getString(c.getColumnIndex(NoteContract.Notes.COL_COLOUR)));
                         noteLocal.setArchived(c.getInt(c.getColumnIndex(NoteContract.Notes.COL_ARCHIVED)) > 0);
+                        noteLocal.setPinned(c.getInt(c.getColumnIndex(NoteContract.Notes.COL_PINNED)) > 0);
                         noteLocal.setActive(c.getInt(c.getColumnIndex(NoteContract.Notes.COL_ACTIVE)) > 0);
                         noteLocal.setSpellCheck(c.getInt(c.getColumnIndex(NoteContract.Notes.COL_SPELL_CHECK)) > 0);
                         noteLocal.setPinOrder(c.getString(c.getColumnIndex(NoteContract.Notes.COL_PIN_ORDER)));
@@ -143,6 +144,7 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
                         found = networkEntries.get(noteLocal.getId() + noteLocal.getUserId());
 
                         archives(localEntries, batch, noteLocal, found);
+                        pinOrder(localEntries, batch, noteLocal, found);
 
                         if (found != null) {
                             int des = found.getDateModified().compareTo(noteLocal.getDateModified());
@@ -157,6 +159,7 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
                                         .withValue(NoteContract.Notes.COL_COLOUR, found.getColour())
                                         .withValue(NoteContract.Notes.COL_SELECTION, found.getSelection())
                                         .withValue(NoteContract.Notes.COL_ARCHIVED, found.getArchived())
+                                        .withValue(NoteContract.Notes.COL_PINNED, found.getPinned())
                                         .withValue(NoteContract.Notes.COL_ACTIVE, found.getActive())
                                         .withValue(NoteContract.Notes.COL_SPELL_CHECK, found.getSpellCheck())
                                         .withValue(NoteContract.Notes.COL_PIN_ORDER, found.getPinOrder())
@@ -214,6 +217,7 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
                                 .withValue(NoteContract.Notes.COL_COLOUR, note.getColour())
                                 .withValue(NoteContract.Notes.COL_SELECTION, note.getSelection())
                                 .withValue(NoteContract.Notes.COL_ARCHIVED, note.getArchived())
+                                .withValue(NoteContract.Notes.COL_PINNED, note.getPinned())
                                 .withValue(NoteContract.Notes.COL_ACTIVE, note.getActive())
                                 .withValue(NoteContract.Notes.COL_SPELL_CHECK, note.getSpellCheck())
                                 .withValue(NoteContract.Notes.COL_PIN_ORDER, note.getPinOrder())
@@ -276,6 +280,7 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
                             .withValue(NoteContract.Notes.COL_COLOUR, remoteNote.getColour())
                             .withValue(NoteContract.Notes.COL_SELECTION, remoteNote.getSelection())
                             .withValue(NoteContract.Notes.COL_ARCHIVED, remoteNote.getArchived())
+                            .withValue(NoteContract.Notes.COL_PINNED, remoteNote.getPinned())
                             .withValue(NoteContract.Notes.COL_ACTIVE, remoteNote.getActive())
                             .withValue(NoteContract.Notes.COL_SPELL_CHECK, remoteNote.getSpellCheck())
                             .withValue(NoteContract.Notes.COL_PIN_ORDER, remoteNote.getPinOrder())
@@ -306,6 +311,66 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
                         .withValue(NoteContract.Notes.COL_COLOUR, remoteNote.getColour())
                         .withValue(NoteContract.Notes.COL_SELECTION, remoteNote.getSelection())
                         .withValue(NoteContract.Notes.COL_ARCHIVED, remoteNote.getArchived())
+                        .withValue(NoteContract.Notes.COL_PINNED, remoteNote.getPinned())
+                        .withValue(NoteContract.Notes.COL_ACTIVE, remoteNote.getActive())
+                        .withValue(NoteContract.Notes.COL_SPELL_CHECK, remoteNote.getSpellCheck())
+                        .withValue(NoteContract.Notes.COL_PIN_ORDER, remoteNote.getPinOrder())
+                        .withValue(NoteContract.Notes.COL_DATE_CREATED, remoteNote.getDateCreated())
+                        .withValue(NoteContract.Notes.COL_DATE_ARCHIVED, remoteNote.getDateArchived())
+                        .withValue(NoteContract.Notes.COL_DATE_MODIFIED, remoteNote.getDateModified())
+                        .withValue(NoteContract.Notes.COL_DATE_SYNC, remoteNote.getDateSync())
+                        .withValue(NoteContract.Notes.COL_OWNER, remoteNote.getOwner())
+                        .build());
+            }
+        }
+    }
+
+    private void pinOrder(Map<String, Note> localEntries, ArrayList<ContentProviderOperation> batch, Note localNote, Note remoteNote) {
+        if (remoteNote != null) {
+            if (localNote.getPinOrder() != null && remoteNote.getPinOrder() != null) {
+                int comp = localNote.getPinOrder().compareTo(remoteNote.getPinOrder());
+                if (comp < 0) {
+                    batch.add(ContentProviderOperation.newUpdate(NoteContract.Notes.CONTENT_URI)
+                            .withSelection(NoteContract.Notes.COL_ID + "='" + remoteNote.getId() + "'", null)
+                            .withValue(NoteContract.Notes.COL_ID, remoteNote.getId())
+                            .withValue(NoteContract.Notes.COL_HEADER, remoteNote.getHeader())
+                            .withValue(NoteContract.Notes.COL_TEXT, remoteNote.getText())
+                            .withValue(NoteContract.Notes.COL_USER_ID, remoteNote.getUserId())
+                            .withValue(NoteContract.Notes.COL_COLOUR, remoteNote.getColour())
+                            .withValue(NoteContract.Notes.COL_SELECTION, remoteNote.getSelection())
+                            .withValue(NoteContract.Notes.COL_ARCHIVED, remoteNote.getArchived())
+                            .withValue(NoteContract.Notes.COL_PINNED, remoteNote.getPinned())
+                            .withValue(NoteContract.Notes.COL_ACTIVE, remoteNote.getActive())
+                            .withValue(NoteContract.Notes.COL_SPELL_CHECK, remoteNote.getSpellCheck())
+                            .withValue(NoteContract.Notes.COL_PIN_ORDER, remoteNote.getPinOrder())
+                            .withValue(NoteContract.Notes.COL_DATE_CREATED, remoteNote.getDateCreated())
+                            .withValue(NoteContract.Notes.COL_DATE_ARCHIVED, remoteNote.getDateArchived())
+                            .withValue(NoteContract.Notes.COL_DATE_MODIFIED, remoteNote.getDateModified())
+                            .withValue(NoteContract.Notes.COL_DATE_SYNC, remoteNote.getDateSync())
+                            .withValue(NoteContract.Notes.COL_OWNER, remoteNote.getOwner())
+                            .build());
+                }
+
+                if (comp > 0) {
+                    localEntries.put(localNote.getId() + localNote.getUserId(), localNote);
+                }
+            }
+
+            if (localNote.getPinOrder() != null && remoteNote.getPinOrder() == null) {
+                localEntries.put(localNote.getId() + localNote.getUserId(), localNote);
+            }
+
+            if (localNote.getPinOrder() == null && remoteNote.getPinOrder() != null) {
+                batch.add(ContentProviderOperation.newUpdate(NoteContract.Notes.CONTENT_URI)
+                        .withSelection(NoteContract.Notes.COL_ID + "='" + remoteNote.getId() + "'", null)
+                        .withValue(NoteContract.Notes.COL_ID, remoteNote.getId())
+                        .withValue(NoteContract.Notes.COL_HEADER, remoteNote.getHeader())
+                        .withValue(NoteContract.Notes.COL_TEXT, remoteNote.getText())
+                        .withValue(NoteContract.Notes.COL_USER_ID, remoteNote.getUserId())
+                        .withValue(NoteContract.Notes.COL_COLOUR, remoteNote.getColour())
+                        .withValue(NoteContract.Notes.COL_SELECTION, remoteNote.getSelection())
+                        .withValue(NoteContract.Notes.COL_ARCHIVED, remoteNote.getArchived())
+                        .withValue(NoteContract.Notes.COL_PINNED, remoteNote.getPinned())
                         .withValue(NoteContract.Notes.COL_ACTIVE, remoteNote.getActive())
                         .withValue(NoteContract.Notes.COL_SPELL_CHECK, remoteNote.getSpellCheck())
                         .withValue(NoteContract.Notes.COL_PIN_ORDER, remoteNote.getPinOrder())

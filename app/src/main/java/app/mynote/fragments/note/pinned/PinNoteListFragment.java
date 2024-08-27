@@ -1,13 +1,18 @@
 package app.mynote.fragments.note.pinned;
 
+import android.database.ContentObserver;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -19,9 +24,12 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import app.mynote.core.db.NoteContract;
 import app.mynote.core.db.NoteSyncAdapter;
 import app.mynote.core.utils.GsonParser;
 import app.mynote.fragments.SwipeController;
@@ -37,7 +45,13 @@ public class PinNoteListFragment extends Fragment implements SwipeRefreshLayout.
     public SwipeRefreshLayout mSwipeRefreshLayout;
     private FragmentPinBinding binding;
     private FloatingActionButton fab;
+    private NoteObserver noteObserver;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        noteObserver = new NoteObserver();
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -82,8 +96,11 @@ public class PinNoteListFragment extends Fragment implements SwipeRefreshLayout.
                             public void onClick(int position) {
                                 Note noteItem = pinAdapter.notesList.get(position);
                                 noteItem.setPinned(false);
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                                Date date = new Date();
+                                noteItem.setPinOrder(dateFormat.format(date));
                                 NoteService noteService = new NoteService(getContext());
-                                noteService.update(noteItem);
+                                noteService.update(noteItem, false);
                                 Toast.makeText(getContext(), "Updated", Toast.LENGTH_LONG).show();
                                 pinAdapter.notesList.remove(position);
                                 pinAdapter.notifyItemRemoved(position);
@@ -110,6 +127,22 @@ public class PinNoteListFragment extends Fragment implements SwipeRefreshLayout.
         binding = null;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        getActivity().getContentResolver().registerContentObserver(
+                NoteContract.Notes.CONTENT_URI,
+                true,
+                noteObserver);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (noteObserver != null) {
+            getActivity().getContentResolver().unregisterContentObserver(noteObserver);
+        }
+    }
 
     private void fetchNotes() {
         NoteService noteService = new NoteService(getContext());
@@ -154,4 +187,14 @@ public class PinNoteListFragment extends Fragment implements SwipeRefreshLayout.
         navController.navigate(R.id.action_nav_pin_to_nav_pin_edit, bundle);
     }
 
+    private final class NoteObserver extends ContentObserver {
+        private NoteObserver() {
+            super(new Handler(Looper.getMainLooper()));
+        }
+
+        @Override
+        public void onChange(boolean selfChange, Uri uri) {
+            fetchNotes();
+        }
+    }
 }

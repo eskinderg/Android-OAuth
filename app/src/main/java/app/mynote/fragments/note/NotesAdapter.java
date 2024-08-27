@@ -47,7 +47,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteRecycler
         Note noteItem = notesList.get(position);
 //        holder.setIsRecyclable(false);
 
-        if (noteItem.isPinned()) {
+        if (noteItem.getPinned()) {
             holder.header.setTypeface(Typeface.DEFAULT_BOLD);
         }
 

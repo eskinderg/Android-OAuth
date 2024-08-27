@@ -101,15 +101,8 @@ public class NoteFragment extends Fragment implements IAppCallback<Note>, MenuPr
 //            note.setHeader(txtNoteHeader.getText().toString());
             note.setText(body);
             note.setHeader(header);
-            noteService.update(note);
-
-//            note.setText(Html.toHtml(txtNoteText.getText(), Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV));
-//            note.setHeader(txtNoteHeader.getText().toString());
-//
-//            Retrofit retrofit = RetroInstance.getRetrofitInstance();
-//            NotesDataService notesApi = retrofit.create(NotesDataService.class);
-//            Call<Note> call = notesApi.updateNote(NoteFragment.this.note);
-//            call.enqueue(NoteFragment.this);
+            noteService.update(note, true);
+            Toast.makeText(getContext(), "Note Saved", Toast.LENGTH_LONG).show();
             return true;
         }
 

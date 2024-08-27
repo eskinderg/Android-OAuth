@@ -1,6 +1,7 @@
 package app.mynote.fragments.note.archived;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +46,10 @@ public class ArchivedNotesAdapter extends RecyclerView.Adapter<ArchivedNotesAdap
     public void onBindViewHolder(@NonNull ArchivedNoteRecyclerViewHolder holder, int position) {
 
         Note noteItem = notesList.get(position);
+
+        if (noteItem.getPinned()) {
+            holder.header.setTypeface(Typeface.DEFAULT_BOLD);
+        }
 
         if (noteItem.getHeader() == null || noteItem.getHeader().isEmpty()) {
             holder.header.setText("");

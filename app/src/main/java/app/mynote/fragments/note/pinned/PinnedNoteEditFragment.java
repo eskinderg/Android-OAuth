@@ -25,6 +25,7 @@ import app.mynote.LoginActivity;
 import app.mynote.core.callback.IAppCallback;
 import app.mynote.core.utils.GsonParser;
 import app.mynote.fragments.note.Note;
+import app.mynote.fragments.note.NoteService;
 import app.mynote.fragments.note.NotesDataService;
 import app.mynote.service.RetroInstance;
 import mynote.R;
@@ -32,7 +33,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class PinnedNoteEditFragment extends Fragment implements IAppCallback<Note>, MenuProvider {
+public class PinnedNoteEditFragment extends Fragment implements MenuProvider {
 
     public EditText txtNoteText;
     public EditText txtNoteHeader;
@@ -79,13 +80,16 @@ public class PinnedNoteEditFragment extends Fragment implements IAppCallback<Not
     @Override
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
         if (menuItem.getItemId() == R.id.action_save) {
-            note.setText(Html.toHtml(txtNoteText.getText(), Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV));
-            note.setHeader(txtNoteHeader.getText().toString());
+            NoteService noteService = new NoteService(getContext());
+            String body = txtNoteText.getText().toString().isEmpty() ? "" : Html.toHtml(txtNoteText.getText(), Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV);
+            String header = txtNoteHeader.getText().toString().isEmpty() ? "" : txtNoteHeader.getText().toString();
+//            note.setText(Html.toHtml( txtNoteText.getText(), Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV));
+//            note.setHeader(txtNoteHeader.getText().toString());
+            note.setText(body);
+            note.setHeader(header);
+            noteService.update(note, true);
+            Toast.makeText(getContext(), "Note Saved", Toast.LENGTH_LONG).show();
 
-            Retrofit retrofit = RetroInstance.getRetrofitInstance();
-            NotesDataService notesApi = retrofit.create(NotesDataService.class);
-            Call<Note> call = notesApi.updateNote(PinnedNoteEditFragment.this.note);
-            call.enqueue(PinnedNoteEditFragment.this);
             return true;
         }
 
@@ -95,20 +99,5 @@ public class PinnedNoteEditFragment extends Fragment implements IAppCallback<Not
             return true;
         }
         return false;
-    }
-
-    @Override
-    public void onResponse(Call<Note> call, Response<Note> response) {
-        if (response.isSuccessful()) {
-            Toast.makeText(getContext(), "Saved", Toast.LENGTH_LONG).show();
-        } else {
-            Intent intent = new Intent(getContext(), LoginActivity.class);
-            getContext().startActivity(intent);
-        }
-    }
-
-    @Override
-    public void onFailure(Call<Note> call, Throwable throwable) {
-
     }
 }

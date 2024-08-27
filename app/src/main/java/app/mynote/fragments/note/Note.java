@@ -49,6 +49,10 @@ public class Note implements Serializable {
     @Expose
     private boolean archived;
 
+    @SerializedName("pinned")
+    @Expose
+    private boolean pinned;
+
     @SerializedName("favorite")
     @Expose
     private boolean favorite;
@@ -197,9 +201,10 @@ public class Note implements Serializable {
         this.selection = selection;
     }
 
-    public String getPinned() {
-        return this.pinOrder;
+    public boolean getPinned() {
+        return this.pinned;
     }
+
 
     public String getPinOrder() {
         return this.pinOrder;
@@ -210,17 +215,11 @@ public class Note implements Serializable {
     }
 
     public boolean isPinned() {
-        return this.pinOrder != null;
+        return this.pinned;
     }
 
     public void setPinned(boolean value) {
-        if (value) {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            Date date = new Date();
-            this.pinOrder = dateFormat.format(date);
-        } else {
-            this.pinOrder = null;
-        }
+        this.pinned = value;
     }
 
     public boolean getSpellCheck() {

@@ -22,6 +22,7 @@ import app.mynote.auth.AuthDataService;
 import app.mynote.auth.User;
 import app.mynote.core.MyNote;
 import app.mynote.core.callback.AppCallback;
+import app.mynote.core.db.NoteSyncAdapter;
 import app.mynote.core.db.auth.AccountGeneral;
 import app.mynote.service.RetroInstance;
 import mynote.R;
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         AccountGeneral.createSyncAccount(this);
+        NoteSyncAdapter.performSync();
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -45,6 +47,13 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(binding.appBarMain.toolbar);
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
+
+        View headerView = navigationView.getHeaderView(0);
+        TextView navUsername = headerView.findViewById(R.id.userName);
+        TextView navEmail = headerView.findViewById(R.id.userEmail);
+
+        navUsername.setText(AuthConfig.USER.getGivenName());
+        navEmail.setText(AuthConfig.USER.getUserEmail());
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -55,8 +64,6 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
-
-        this.setUserInfo();
 
         navigationView.getMenu().findItem(R.id.nav_logout).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
@@ -86,31 +93,5 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
-    }
-
-    private void setUserInfo() {
-
-        AuthDataService service = RetroInstance.getRetrofitInstance(AuthConfig.KEYCLOAK_URL)
-                .create(AuthDataService.class);
-
-        Call<User> call = service.getUserInfo();
-
-        call.enqueue(new AppCallback<User>(this) {
-            @Override
-            public void onResponse(User response) {
-                NavigationView navView = findViewById(R.id.nav_view);
-                View headerView = navView.getHeaderView(0);
-                TextView navUsername = headerView.findViewById(R.id.userName);
-                TextView navEmail = headerView.findViewById(R.id.userEmail);
-                User user = response;
-                navUsername.setText(user.getGivenName());
-                navEmail.setText(user.getUserEmail());
-                AuthConfig.USER = user;
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-            }
-        });
     }
 }

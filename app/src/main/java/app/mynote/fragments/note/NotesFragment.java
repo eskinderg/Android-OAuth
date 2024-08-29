@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,15 +58,31 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentNotesBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
-        return root;
+        View view = binding.getRoot();
+        this.recyclerView = view.findViewById(R.id.noterecyclerview);
+        NoteService noteService = new NoteService(getContext());
+        ArrayList<Note> notes = new ArrayList<>(noteService.getAllNotes());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        this.notesAdapter = new NotesAdapter(getContext(),notes, this);
+        this.recyclerView.setAdapter(this.notesAdapter);
+        this.notesAdapter.registerAdapterDataObserver(new AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                super.onItemRangeInserted(positionStart, itemCount);
+                setAppbarCount();
+            }
+
+            @Override
+            public void onItemRangeRemoved(int positionStart, int itemCount) {
+                super.onItemRangeRemoved(positionStart, itemCount);
+                setAppbarCount();
+            }
+        });
+        return view;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-
-        recyclerView = view.findViewById(R.id.noterecyclerview);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         SwipeController swipeHelper = new SwipeController(getContext(), recyclerView) {
             @Override
@@ -146,14 +161,6 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
                 R.color.primary_light,
                 R.color.primary_light,
                 R.color.primary_light);
-
-        mSwipeRefreshLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                fetchNotes();
-            }
-        });
-
     }
 
     @Override
@@ -165,6 +172,7 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
     @Override
     public void onStart() {
         super.onStart();
+        setAppbarCount();
         getActivity().getContentResolver().registerContentObserver(
                 NoteContract.Notes.CONTENT_URI,
                 true,
@@ -188,33 +196,12 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
 
         NavController navController = Navigation.findNavController(view);
         navController.navigate(R.id.action_nav_notes_to_nav_note, bundle);
-
-//        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-//        fragmentManager.beginTransaction()
-//                .add(R.id.nav_host_fragment_content_main, NoteFragment.class, bundle)
-//                .addToBackStack("notes")
-//                .commit();
-
-//        FragmentTransaction fragmentTransaction =fragmentManager.beginTransaction();
-//        fragmentTransaction.replace(R.id.nav_host_fragment_content_main,frag);
-//        fragmentTransaction.commit();
-
-        //Put the value
-//        NoteFragment ldf = new NoteFragment();
-//        Bundle args = new Bundle();
-//        args.putString("YourKey", "YourValue");
-//        ldf.setArguments(args);
-//
-//        getFragmentManager().beginTransaction().add(R.id.nav_host_fragment_content_main, ldf).commit();
     }
 
     @Override
     public void onRefresh() {
-        NoteSyncAdapter.cancelSync();
         NoteSyncAdapter.performSync();
-        recyclerView.setVisibility(View.INVISIBLE);
         mSwipeRefreshLayout.setRefreshing(true);
-        fetchNotes();
     }
 
     private void fetchNotes() {
@@ -222,28 +209,14 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
         ArrayList<Note> notes = new ArrayList<>(noteService.getAllNotes());
         NotesFragment.this.dataView(notes);
         setAppbarCount();
-        mSwipeRefreshLayout.setRefreshing(false);
         recyclerView.getAdapter().notifyDataSetChanged();
-        recyclerView.setVisibility(View.VISIBLE);
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
 
     private void dataView(List<Note> notes) {
         this.notesAdapter = new NotesAdapter(getContext(), notes, this);
         recyclerView.setAdapter(this.notesAdapter);
-        this.notesAdapter.registerAdapterDataObserver(new AdapterDataObserver() {
-            @Override
-            public void onItemRangeInserted(int positionStart, int itemCount) {
-                super.onItemRangeInserted(positionStart, itemCount);
-                setAppbarCount();
-            }
-
-            @Override
-            public void onItemRangeRemoved(int positionStart, int itemCount) {
-                super.onItemRangeRemoved(positionStart, itemCount);
-                setAppbarCount();
-            }
-        });
     }
 
     private void setAppbarCount() {

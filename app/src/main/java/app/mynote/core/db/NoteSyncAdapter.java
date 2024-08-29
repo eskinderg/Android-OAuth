@@ -53,6 +53,8 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
      * Manual force Android to perform a sync with our SyncAdapter.
      */
     public static void performSync() {
+        // First cancel any ongoing sync.
+        cancelSync();
         Bundle b = new Bundle();
         b.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         b.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
@@ -238,6 +240,7 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
                             @Override
                             public void onResponse(Note[] response) {
                                 Log.w("SERVER", String.valueOf(response.length));
+                                localEntries.clear();
                             }
 
                             @Override

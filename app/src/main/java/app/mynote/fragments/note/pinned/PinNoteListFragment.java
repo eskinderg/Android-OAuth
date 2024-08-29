@@ -56,16 +56,33 @@ public class PinNoteListFragment extends Fragment implements SwipeRefreshLayout.
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         binding = FragmentPinBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
+        View view = binding.getRoot();
+        recyclerView = view.findViewById(R.id.noterecyclerview);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        NoteService noteService = new NoteService(getContext());
+        ArrayList<Note> notes = new ArrayList<>(noteService.getAllNotes());
+        this.pinAdapter = new PinNotesAdapter(getContext(), notes, this);
+        recyclerView.setAdapter(pinAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        this.pinAdapter.registerAdapterDataObserver(new AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                super.onItemRangeInserted(positionStart, itemCount);
+                setAppbarCount();
+            }
 
-        return root;
+            @Override
+            public void onItemRangeRemoved(int positionStart, int itemCount) {
+                super.onItemRangeRemoved(positionStart, itemCount);
+                setAppbarCount();
+            }
+        });
+        return view;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
 
-        recyclerView = view.findViewById(R.id.noterecyclerview);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         mSwipeRefreshLayout = view.findViewById(R.id.swipe_container);
         mSwipeRefreshLayout.setOnRefreshListener(this);
@@ -73,13 +90,6 @@ public class PinNoteListFragment extends Fragment implements SwipeRefreshLayout.
                 R.color.primary_light,
                 R.color.primary_light,
                 R.color.primary_light);
-
-        mSwipeRefreshLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                fetchNotes();
-            }
-        });
 
         this.fab = view.findViewById(R.id.fab);
         this.fab.setVisibility(View.INVISIBLE);
@@ -114,11 +124,8 @@ public class PinNoteListFragment extends Fragment implements SwipeRefreshLayout.
 
     @Override
     public void onRefresh() {
-        NoteSyncAdapter.cancelSync();
         NoteSyncAdapter.performSync();
-        recyclerView.setVisibility(View.INVISIBLE);
         mSwipeRefreshLayout.setRefreshing(true);
-        fetchNotes();
     }
 
     @Override
@@ -130,6 +137,7 @@ public class PinNoteListFragment extends Fragment implements SwipeRefreshLayout.
     @Override
     public void onStart() {
         super.onStart();
+        setAppbarCount();
         getActivity().getContentResolver().registerContentObserver(
                 NoteContract.Notes.CONTENT_URI,
                 true,
@@ -148,29 +156,16 @@ public class PinNoteListFragment extends Fragment implements SwipeRefreshLayout.
         NoteService noteService = new NoteService(getContext());
         ArrayList<Note> notes = new ArrayList<>(noteService.getPinned());
         PinNoteListFragment.this.dataView(notes);
-        setAppbarCount();
         mSwipeRefreshLayout.setRefreshing(false);
+        setAppbarCount();
         recyclerView.getAdapter().notifyDataSetChanged();
-        recyclerView.setVisibility(View.VISIBLE);
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
 
     private void dataView(List<Note> notes) {
         this.pinAdapter = new PinNotesAdapter(getContext(), notes, this);
         recyclerView.setAdapter(this.pinAdapter);
-        this.pinAdapter.registerAdapterDataObserver(new AdapterDataObserver() {
-            @Override
-            public void onItemRangeInserted(int positionStart, int itemCount) {
-                super.onItemRangeInserted(positionStart, itemCount);
-                setAppbarCount();
-            }
-
-            @Override
-            public void onItemRangeRemoved(int positionStart, int itemCount) {
-                super.onItemRangeRemoved(positionStart, itemCount);
-                setAppbarCount();
-            }
-        });
     }
 
     private void setAppbarCount() {

@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import app.mynote.auth.AccessToken;
 import app.mynote.auth.AuthConfig;
 import app.mynote.auth.AuthDataService;
+import app.mynote.auth.User;
 import app.mynote.core.callback.AppCallback;
 import app.mynote.service.RetroInstance;
 import mynote.databinding.ActivityLoginBinding;
@@ -60,9 +61,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(AccessToken response) {
                 setAuthItems(response);
-                LoginActivity.this.loadingProgressBar.setVisibility(View.INVISIBLE);
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                LoginActivity.this.startActivity(intent);
+                userInfo();
             }
 
             @Override
@@ -77,5 +76,27 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = this.getSharedPreferences("prefs", Context.MODE_PRIVATE);
         sharedPreferences.edit().putString("access_token", response.getAccessToken()).apply();
         sharedPreferences.edit().putString("refresh_token", response.getRefreshToken()).apply();
+    }
+
+    private void userInfo() {
+
+        AuthDataService service = RetroInstance.getRetrofitInstance(AuthConfig.KEYCLOAK_URL)
+                .create(AuthDataService.class);
+
+        Call<User> call = service.getUserInfo();
+
+        call.enqueue(new AppCallback<User>(this) {
+            @Override
+            public void onResponse(User response) {
+                AuthConfig.USER = response;
+                LoginActivity.this.loadingProgressBar.setVisibility(View.INVISIBLE);
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                LoginActivity.this.startActivity(intent);
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+            }
+        });
     }
 }

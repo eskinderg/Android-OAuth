@@ -1,12 +1,17 @@
 package app.mynote.fragments.note.archived;
 
+import android.database.ContentObserver;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -19,10 +24,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import app.mynote.core.db.NoteContract;
 import app.mynote.core.db.NoteSyncAdapter;
 import app.mynote.fragments.SwipeController;
 import app.mynote.fragments.note.Note;
 import app.mynote.fragments.note.NoteService;
+import app.mynote.fragments.note.NotesFragment;
 import mynote.R;
 import mynote.databinding.FragmentArchivedNotesBinding;
 
@@ -32,23 +39,50 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
     public ArchivedNotesAdapter notesAdapter;
     public SwipeRefreshLayout mSwipeRefreshLayout;
     private FragmentArchivedNotesBinding binding;
+    private NoteObserver noteObserver;
 
     public ArchivedNotesFragment() {
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        noteObserver = new NoteObserver();
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentArchivedNotesBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
+        View view = binding.getRoot();
 
-        return root;
+        recyclerView = view.findViewById(R.id.archivednoterecyclerview);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        NoteService noteService = new NoteService(getContext());
+        ArrayList<Note> notes = new ArrayList<>(noteService.getArchived());
+        this.notesAdapter = new ArchivedNotesAdapter(getContext(), notes, this);
+        this.recyclerView.setAdapter(notesAdapter);
+        this.notesAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                super.onItemRangeInserted(positionStart, itemCount);
+                setAppbarCount();
+            }
+
+            @Override
+            public void onItemRangeRemoved(int positionStart, int itemCount) {
+                super.onItemRangeRemoved(positionStart, itemCount);
+                setAppbarCount();
+            }
+        });
+
+
+        return view;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
 
-        recyclerView = view.findViewById(R.id.archivednoterecyclerview);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         SwipeController swipeController = new SwipeController(getContext(), recyclerView) {
             @Override
@@ -85,14 +119,6 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
                 R.color.primary_light,
                 R.color.primary_light,
                 R.color.primary_light);
-
-        mSwipeRefreshLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                fetchNotes();
-            }
-        });
-
     }
 
     @Override
@@ -106,12 +132,27 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        setAppbarCount();
+        getActivity().getContentResolver().registerContentObserver(
+                NoteContract.Notes.CONTENT_URI,
+                true,
+                noteObserver);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (noteObserver != null) {
+            getActivity().getContentResolver().unregisterContentObserver(noteObserver);
+        }
+    }
+
+    @Override
     public void onRefresh() {
-        NoteSyncAdapter.cancelSync();
         NoteSyncAdapter.performSync();
-        recyclerView.setVisibility(View.INVISIBLE);
         mSwipeRefreshLayout.setRefreshing(true);
-        fetchNotes();
     }
 
     private void fetchNotes() {
@@ -119,32 +160,29 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
         ArrayList<Note> notes = new ArrayList<>(noteService.getArchived());
         ArchivedNotesFragment.this.dataView(notes);
         setAppbarCount();
-        mSwipeRefreshLayout.setRefreshing(false);
         recyclerView.getAdapter().notifyDataSetChanged();
-        recyclerView.setVisibility(View.VISIBLE);
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     private void dataView(List<Note> notes) {
 //        List<Note> list = notes.stream().filter(n -> !n.isArchived()).toList();
         this.notesAdapter = new ArchivedNotesAdapter(getContext(), notes, this);
         recyclerView.setAdapter(this.notesAdapter);
-        this.notesAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onItemRangeInserted(int positionStart, int itemCount) {
-                super.onItemRangeInserted(positionStart, itemCount);
-                setAppbarCount();
-            }
-
-            @Override
-            public void onItemRangeRemoved(int positionStart, int itemCount) {
-                super.onItemRangeRemoved(positionStart, itemCount);
-                setAppbarCount();
-            }
-        });
     }
 
     private void setAppbarCount() {
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Archived " + "(" + ArchivedNotesFragment.this.notesAdapter.notesList.size() + ") ");
+    }
+
+    private final class NoteObserver extends ContentObserver {
+        private NoteObserver() {
+            super(new Handler(Looper.getMainLooper()));
+        }
+
+        @Override
+        public void onChange(boolean selfChange, Uri uri) {
+            fetchNotes();
+        }
     }
 
 }

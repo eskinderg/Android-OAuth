@@ -69,26 +69,26 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
 
-        Log.w(TAG, "Starting synchronization...");
+        if( AuthConfig.USER != null) {
 
-        try {
-            // Synchronize our news feed
-            syncNotes(syncResult);
+            Log.i(TAG, "Starting synchronization...");
 
-            // Add any other things you may want to sync
+            try {
+                syncNotes(syncResult);
+                // Add any other things you may want to sync
 
-        } catch (IOException ex) {
-            Log.e(TAG, "Error synchronizing!", ex);
-            syncResult.stats.numIoExceptions++;
-        } catch (JSONException ex) {
-            Log.e(TAG, "Error synchronizing!", ex);
-            syncResult.stats.numParseExceptions++;
-        } catch (RemoteException | OperationApplicationException ex) {
-            Log.e(TAG, "Error synchronizing!", ex);
-            syncResult.stats.numAuthExceptions++;
+            } catch (IOException ex) {
+                Log.e(TAG, "Error synchronizing!", ex);
+                syncResult.stats.numIoExceptions++;
+            } catch (JSONException ex) {
+                Log.e(TAG, "Error synchronizing!", ex);
+                syncResult.stats.numParseExceptions++;
+            } catch (RemoteException | OperationApplicationException ex) {
+                Log.e(TAG, "Error synchronizing!", ex);
+                syncResult.stats.numAuthExceptions++;
+            }
+
         }
-
-        Log.w(TAG, "Finished synchronization!");
     }
 
     private void syncNotes(SyncResult syncResult) throws IOException, JSONException, RemoteException, OperationApplicationException {
@@ -173,10 +173,10 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
                                         .build());
 
                             } else if (des < 0) {
-                                Log.w("SERVER", found.getHeader() + "Needs to be sent to the server");
+                                Log.i("SERVER", found.getHeader() + "Needs to be sent to the server");
                                 localEntries.put(noteLocal.getId() + noteLocal.getUserId(), noteLocal);
                             } else {
-                                Log.w("Eskinder", found.getHeader() + "=0");
+//                                Log.w("Eskinder", found.getHeader() + "=0");
                             }
 
                             networkEntries.remove(noteLocal.getId() + noteLocal.getUserId());
@@ -202,7 +202,7 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
 
                             @Override
                             public void onFailure(Throwable throwable) {
-                                Log.w("Eskinder", "Error " + throwable.getMessage());
+                                Log.e(TAG, "Error pushing local changes " + throwable.getMessage());
                             }
                         });
                     }
@@ -239,8 +239,40 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
                         callRemote.enqueue(new AppCallback<Note[]>(getContext()) {
                             @Override
                             public void onResponse(Note[] response) {
-                                Log.w("SERVER", String.valueOf(response.length));
-                                localEntries.clear();
+                                try {
+                                    ArrayList<ContentProviderOperation> responseBatch = new ArrayList<>();
+
+                                    for(Note note: response) {
+                                        responseBatch.add(ContentProviderOperation.newUpdate(NoteContract.Notes.CONTENT_URI)
+                                                .withSelection(NoteContract.Notes.COL_ID + "='" + note.getId() + "'", null)
+                                                .withValue(NoteContract.Notes.COL_ID, note.getId())
+                                                .withValue(NoteContract.Notes.COL_HEADER, note.getHeader())
+                                                .withValue(NoteContract.Notes.COL_TEXT, note.getText())
+                                                .withValue(NoteContract.Notes.COL_USER_ID, note.getUserId())
+                                                .withValue(NoteContract.Notes.COL_COLOUR, note.getColour())
+                                                .withValue(NoteContract.Notes.COL_SELECTION, note.getSelection())
+                                                .withValue(NoteContract.Notes.COL_ARCHIVED, note.getArchived())
+                                                .withValue(NoteContract.Notes.COL_PINNED, note.getPinned())
+                                                .withValue(NoteContract.Notes.COL_ACTIVE, note.getActive())
+                                                .withValue(NoteContract.Notes.COL_SPELL_CHECK, note.getSpellCheck())
+                                                .withValue(NoteContract.Notes.COL_PIN_ORDER, note.getPinOrder())
+                                                .withValue(NoteContract.Notes.COL_DATE_CREATED, note.getDateCreated())
+                                                .withValue(NoteContract.Notes.COL_DATE_ARCHIVED, note.getDateArchived())
+                                                .withValue(NoteContract.Notes.COL_DATE_MODIFIED, note.getDateModified())
+                                                .withValue(NoteContract.Notes.COL_DATE_SYNC, note.getDateSync())
+                                                .withValue(NoteContract.Notes.COL_OWNER, note.getOwner())
+                                                .build());
+                                    }
+
+                                    resolver.applyBatch(NoteContract.CONTENT_AUTHORITY, responseBatch);
+                                    resolver.notifyChange(NoteContract.Notes.CONTENT_URI, // URI where data was modified
+                                            null, // No local observer
+                                            ContentResolver.NOTIFY_UPDATE); // IMPORTANT: Do not sync to network
+
+                                } catch (Exception ex) {
+                                   Log.e(TAG, "Error updating local data", ex) ;
+                                }
+                                Log.i("SERVER", String.valueOf(response.length) + " Items updated and synced successfully");
                             }
 
                             @Override
@@ -255,7 +287,9 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
                     resolver.applyBatch(NoteContract.CONTENT_AUTHORITY, batch);
                     resolver.notifyChange(NoteContract.Notes.CONTENT_URI, // URI where data was modified
                             null, // No local observer
-                            false); // IMPORTANT: Do not sync to network
+                            ContentResolver.NOTIFY_INSERT | ContentResolver.NOTIFY_UPDATE); // IMPORTANT: Do not sync to network
+
+                    Log.i(TAG, "Finished synchronization!");
 
                 } catch (Exception ex) {
                     Log.e(TAG, "Error synchronizing!", ex);

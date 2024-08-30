@@ -4,9 +4,6 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 
 public class Note implements Serializable {
     @SerializedName("header")
@@ -204,7 +201,6 @@ public class Note implements Serializable {
     public boolean getPinned() {
         return this.pinned;
     }
-
 
     public String getPinOrder() {
         return this.pinOrder;

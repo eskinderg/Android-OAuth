@@ -3,6 +3,7 @@ package app.mynote.service;
 
 import app.mynote.auth.AnnotationInterceptor;
 import app.mynote.auth.AuthConfig;
+import app.mynote.core.utils.TimeCalibrationInterceptor;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -13,6 +14,7 @@ public class RetroInstance {
     private static final OkHttpClient client = new OkHttpClient()
             .newBuilder()
             .addInterceptor(new AnnotationInterceptor())
+            .addInterceptor(new TimeCalibrationInterceptor())
             .build();
     static Retrofit retrofitApi;
     static Retrofit retrofitAuth;

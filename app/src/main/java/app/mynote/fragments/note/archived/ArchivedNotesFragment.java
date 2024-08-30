@@ -19,13 +19,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import app.mynote.core.db.NoteContract;
 import app.mynote.core.db.NoteSyncAdapter;
+import app.mynote.core.utils.AppDate;
 import app.mynote.fragments.SwipeController;
 import app.mynote.fragments.note.Note;
 import app.mynote.fragments.note.NoteService;
@@ -83,7 +82,6 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
 
-
         SwipeController swipeController = new SwipeController(getContext(), recyclerView) {
             @Override
             public void instantiateUnderlayButton(RecyclerView.ViewHolder viewHolder, List<UnderlayButton> underlayButtons) {
@@ -96,9 +94,7 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
                             public void onClick(int position) {
                                 Note noteItem = notesAdapter.notesList.get(position);
                                 noteItem.setArchived(false);
-                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                                Date date = new Date();
-                                noteItem.setDateArchived(dateFormat.format(date));
+                                noteItem.setDateArchived(AppDate.Now());
                                 NoteService noteService = new NoteService(getContext());
                                 noteService.update(noteItem, false);
                                 String textMsg = "restored";
@@ -151,8 +147,9 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
 
     @Override
     public void onRefresh() {
-        NoteSyncAdapter.performSync();
         mSwipeRefreshLayout.setRefreshing(true);
+        NoteSyncAdapter.performSync();
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     private void fetchNotes() {
@@ -161,7 +158,6 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
         ArchivedNotesFragment.this.dataView(notes);
         setAppbarCount();
         recyclerView.getAdapter().notifyDataSetChanged();
-        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     private void dataView(List<Note> notes) {
@@ -184,5 +180,4 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
             fetchNotes();
         }
     }
-
 }

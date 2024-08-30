@@ -6,7 +6,10 @@ import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.net.ConnectException;
+
 import app.mynote.LoginActivity;
+import app.mynote.core.AppToast;
 import retrofit2.Call;
 import retrofit2.HttpException;
 import retrofit2.Response;
@@ -28,10 +31,7 @@ public abstract class AppCallback<T> implements IAppCallback<T> {
         if (response.isSuccessful()) {
             onResponse(response.body());
         } else if(response.raw().code() == 409) {
-            Toast.makeText(context, "Sync Failed",Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(this.context, LoginActivity.class);
-            this.context.startActivity(intent);
-            onFailure(new HttpException(response));
+            AppToast.show(context,"Sync Conflict Occurred. Changes are not saved !!! Please refresh again", true);
         } else{
             Intent intent = new Intent(this.context, LoginActivity.class);
             this.context.startActivity(intent);
@@ -41,7 +41,9 @@ public abstract class AppCallback<T> implements IAppCallback<T> {
 
     @Override
     public void onFailure(Call<T> call, Throwable t) {
+        if( t instanceof ConnectException){
+            AppToast.show(context, "Failed to connect to sync server", true);
+        }
         onFailure(t);
-        Toast.makeText(this.context, t.getMessage(), Toast.LENGTH_LONG).show();
     }
 }

@@ -24,13 +24,12 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import app.mynote.core.db.NoteContract;
 import app.mynote.core.db.NoteSyncAdapter;
+import app.mynote.core.utils.AppDate;
 import app.mynote.core.utils.GsonParser;
 import app.mynote.fragments.SwipeController;
 import app.mynote.fragments.note.Note;
@@ -106,9 +105,7 @@ public class PinNoteListFragment extends Fragment implements SwipeRefreshLayout.
                             public void onClick(int position) {
                                 Note noteItem = pinAdapter.notesList.get(position);
                                 noteItem.setPinned(false);
-                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                                Date date = new Date();
-                                noteItem.setPinOrder(dateFormat.format(date));
+                                noteItem.setPinOrder(AppDate.Now());
                                 NoteService noteService = new NoteService(getContext());
                                 noteService.update(noteItem, false);
                                 Toast.makeText(getContext(), "Updated", Toast.LENGTH_LONG).show();
@@ -124,8 +121,9 @@ public class PinNoteListFragment extends Fragment implements SwipeRefreshLayout.
 
     @Override
     public void onRefresh() {
-        NoteSyncAdapter.performSync();
         mSwipeRefreshLayout.setRefreshing(true);
+        NoteSyncAdapter.performSync();
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -156,10 +154,8 @@ public class PinNoteListFragment extends Fragment implements SwipeRefreshLayout.
         NoteService noteService = new NoteService(getContext());
         ArrayList<Note> notes = new ArrayList<>(noteService.getPinned());
         PinNoteListFragment.this.dataView(notes);
-        mSwipeRefreshLayout.setRefreshing(false);
         setAppbarCount();
         recyclerView.getAdapter().notifyDataSetChanged();
-        mSwipeRefreshLayout.setRefreshing(false);
     }
 
 

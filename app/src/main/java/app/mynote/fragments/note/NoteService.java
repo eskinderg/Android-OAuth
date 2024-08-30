@@ -5,13 +5,12 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.stream.Collectors;
 
 import app.mynote.auth.AuthConfig;
 import app.mynote.core.db.NoteContract;
+import app.mynote.core.utils.AppDate;
 
 public class NoteService {
 
@@ -59,9 +58,7 @@ public class NoteService {
         values.put(NoteContract.Notes.COL_PIN_ORDER, note.getPinOrder());
         values.put(NoteContract.Notes.COL_DATE_CREATED, note.getDateCreated());
         if(markModified){
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            Date date = new Date();
-            values.put(NoteContract.Notes.COL_DATE_MODIFIED, dateFormat.format(date));
+            values.put(NoteContract.Notes.COL_DATE_MODIFIED, AppDate.Now());
         }else{
             values.put(NoteContract.Notes.COL_DATE_MODIFIED, note.getDateModified());
         }

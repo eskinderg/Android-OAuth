@@ -20,7 +20,7 @@ public class Time2Ago {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             Date pasTime = dateFormat.parse(dataDate);
 
-            Date nowTime = new Date();
+            Date nowTime = new Date(TimeManager.getInstance().getServerTime());
 
             long dateDiff = nowTime.getTime() - pasTime.getTime();
 

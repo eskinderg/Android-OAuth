@@ -24,7 +24,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,7 +31,9 @@ import java.util.UUID;
 
 import app.mynote.core.db.NoteContract;
 import app.mynote.core.db.NoteSyncAdapter;
+import app.mynote.core.utils.AppDate;
 import app.mynote.core.utils.GsonParser;
+import app.mynote.core.utils.TimeManager;
 import app.mynote.fragments.SwipeController;
 import app.mynote.fragments.note.NotesAdapter.OnNoteItemClickListener;
 import mynote.R;
@@ -54,6 +55,7 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         noteObserver = new NoteObserver();
+        NoteSyncAdapter.performSync();
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -97,9 +99,7 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
                             public void onClick(int position) {
                                 Note noteItem = notesAdapter.notesList.get(position);
                                 noteItem.setPinned(!noteItem.isPinned());
-                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                                Date date = new Date();
-                                noteItem.setPinOrder(dateFormat.format(date));
+                                noteItem.setPinOrder(AppDate.Now());
                                 NoteService noteService = new NoteService(getContext());
                                 noteService.update(noteItem, false);
                                 String textMsg = noteItem.isPinned() ? "Pinned" : "Un Pinned";
@@ -117,9 +117,7 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
                             public void onClick(int position) {
                                 Note noteItem = notesAdapter.notesList.get(position);
                                 noteItem.setArchived(true);
-                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                                Date date = new Date();
-                                noteItem.setDateArchived(dateFormat.format(date));
+                                noteItem.setDateArchived(AppDate.Now());
                                 NoteService noteService = new NoteService(getContext());
                                 noteService.update(noteItem, false);
                                 String textMsg = "archived";
@@ -141,10 +139,8 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
                 NoteService noteService = new NoteService(getContext());
                 Note note = new Note();
 
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                Date date = new Date();
                 note.setId(UUID.randomUUID().toString());
-                note.setDateModified(dateFormat.format(date));
+                note.setDateModified(AppDate.Now());
                 noteService.add(note);
 
                 Bundle bundle = new Bundle();
@@ -200,8 +196,9 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
 
     @Override
     public void onRefresh() {
-        NoteSyncAdapter.performSync();
         mSwipeRefreshLayout.setRefreshing(true);
+        NoteSyncAdapter.performSync();
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     private void fetchNotes() {
@@ -210,7 +207,6 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
         NotesFragment.this.dataView(notes);
         setAppbarCount();
         recyclerView.getAdapter().notifyDataSetChanged();
-        mSwipeRefreshLayout.setRefreshing(false);
     }
 
 

@@ -25,7 +25,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,7 +32,6 @@ import app.mynote.core.db.NoteContract;
 import app.mynote.core.db.NoteSyncAdapter;
 import app.mynote.core.utils.AppDate;
 import app.mynote.core.utils.GsonParser;
-import app.mynote.core.utils.TimeManager;
 import app.mynote.fragments.SwipeController;
 import app.mynote.fragments.note.NotesAdapter.OnNoteItemClickListener;
 import mynote.R;

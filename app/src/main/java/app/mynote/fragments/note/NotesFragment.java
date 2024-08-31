@@ -53,7 +53,6 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         noteObserver = new NoteObserver();
-        NoteSyncAdapter.performSync();
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

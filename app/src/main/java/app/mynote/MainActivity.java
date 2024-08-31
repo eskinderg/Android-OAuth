@@ -40,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
 
         AccountGeneral.createSyncAccount(this);
 
+        NoteSyncAdapter.performSync();
+
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 

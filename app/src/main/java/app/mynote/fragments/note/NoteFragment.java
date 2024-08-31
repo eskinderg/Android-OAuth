@@ -2,6 +2,7 @@ package app.mynote.fragments.note;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,20 +23,24 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import app.mynote.LoginActivity;
 import app.mynote.core.callback.IAppCallback;
+import app.mynote.core.utils.AppDate;
 import app.mynote.core.utils.GsonParser;
 import mynote.R;
 import retrofit2.Call;
 import retrofit2.Response;
 
 public class NoteFragment extends Fragment implements IAppCallback<Note>, MenuProvider {
-    public EditText txtNoteText;
-    public EditText txtNoteHeader;
 
     Note note;
+    public EditText txtNoteText;
+    public EditText txtNoteHeader;
+    public NoteService noteService;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.noteService = new NoteService(getContext());
     }
 
     @Override
@@ -64,6 +69,24 @@ public class NoteFragment extends Fragment implements IAppCallback<Note>, MenuPr
             NoteFragment.this.txtNoteText.setText(Html.fromHtml(this.note.getText(), Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV).toString());
         }
 
+        this.txtNoteHeader.addTextChangedListener(new EditTextChangedListener<EditText>(txtNoteHeader) {
+            @Override
+            public void onTextChanged(EditText target, Editable s) {
+                String header = txtNoteHeader.getText().toString().isEmpty() ? "" : txtNoteHeader.getText().toString();
+                note.setHeader(header);
+                NoteFragment.this.noteService.update(note, true);
+
+            }
+        });
+
+        this.txtNoteText.addTextChangedListener(new EditTextChangedListener<EditText>(txtNoteText) {
+            @Override
+            public void onTextChanged(EditText target, Editable s) {
+                String body = txtNoteText.getText().toString().isEmpty() ? "" : Html.toHtml(txtNoteText.getText(), Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV);
+                note.setText(body);
+                NoteFragment.this.noteService.update(note, true);
+            }
+        });
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(this.note.getHeader());
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back);
@@ -92,25 +115,35 @@ public class NoteFragment extends Fragment implements IAppCallback<Note>, MenuPr
 
     @Override
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
-        if (menuItem.getItemId() == R.id.action_save) {
-
-            NoteService noteService = new NoteService(getContext());
-            String body = txtNoteText.getText().toString().isEmpty() ? "" : Html.toHtml(txtNoteText.getText(), Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV);
-            String header = txtNoteHeader.getText().toString().isEmpty() ? "" : txtNoteHeader.getText().toString();
-//            note.setText(Html.toHtml( txtNoteText.getText(), Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV));
-//            note.setHeader(txtNoteHeader.getText().toString());
-            note.setText(body);
-            note.setHeader(header);
-            noteService.update(note, true);
-            Toast.makeText(getContext(), "Note Saved", Toast.LENGTH_LONG).show();
-            return true;
-        }
+//        if (menuItem.getItemId() == R.id.action_save) {
+//
+//            String body = txtNoteText.getText().toString().isEmpty() ? "" : Html.toHtml(txtNoteText.getText(), Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV);
+//            String header = txtNoteHeader.getText().toString().isEmpty() ? "" : txtNoteHeader.getText().toString();
+////            note.setText(Html.toHtml( txtNoteText.getText(), Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV));
+////            note.setHeader(txtNoteHeader.getText().toString());
+//            note.setText(body);
+//            note.setHeader(header);
+//            noteService.update(note, true);
+//            Toast.makeText(getContext(), "Note Saved", Toast.LENGTH_LONG).show();
+//            return true;
+//        }
 
         if (menuItem.getItemId() == 16908332) {
             NavController navController = NavHostFragment.findNavController(this);
             navController.navigate(R.id.action_nav_note_to_nav_notes);
             return true;
         }
+
+        if(menuItem.getItemId() == R.id.action_archive){
+            this.note.setArchived(true);
+            this.note.setDateArchived(AppDate.Now());
+            this.noteService.update(note, false);
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.navigate(R.id.action_nav_note_to_nav_notes);
+            return true;
+        }
+
         return false;
     }
+
 }

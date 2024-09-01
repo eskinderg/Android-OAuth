@@ -22,6 +22,6 @@ public interface EventsDataService {
 
     @Authorized
     @DELETE("events/{id}")
-    Call<Event> deleteEvent(@Path("id") int eventId);
+    Call<Event> deleteEvent(@Path("id") String eventId);
 
 }

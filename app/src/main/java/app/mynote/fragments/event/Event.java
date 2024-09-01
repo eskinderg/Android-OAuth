@@ -9,7 +9,7 @@ public class Event implements Serializable {
 
     @SerializedName("id")
     @Expose
-    private int id;
+    private String id;
 
     @SerializedName("title")
     @Expose
@@ -35,7 +35,7 @@ public class Event implements Serializable {
         this.complete = value;
     }
 
-    public int getEventId() {
+    public String getEventId() {
         return this.id;
     }
 

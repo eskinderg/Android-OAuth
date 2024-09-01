@@ -10,12 +10,19 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.biometric.BiometricManager;
+import androidx.biometric.BiometricPrompt;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import app.mynote.auth.AccessToken;
 import app.mynote.auth.AuthConfig;
 import app.mynote.auth.AuthDataService;
 import app.mynote.auth.User;
+import app.mynote.auth.UserManager;
 import app.mynote.core.callback.AppCallback;
 import app.mynote.service.RetroInstance;
 import mynote.databinding.ActivityLoginBinding;
@@ -47,6 +54,7 @@ public class LoginActivity extends AppCompatActivity {
                 getAccessToken(usernameEditText.getText().toString(), passwordEditText.getText().toString());
             }
         });
+
     }
 
     public void getAccessToken(String username, String password) {
@@ -66,8 +74,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Throwable throwable) {
-                LoginActivity.this.loadingProgressBar.setVisibility(View.INVISIBLE);
-                Toast.makeText(LoginActivity.this, throwable.getMessage(), Toast.LENGTH_LONG).show();
+                tryCheckAndAuthenticate();
             }
         });
     }
@@ -88,7 +95,7 @@ public class LoginActivity extends AppCompatActivity {
         call.enqueue(new AppCallback<User>(this) {
             @Override
             public void onResponse(User response) {
-                AuthConfig.USER = response;
+                setUser(response);
                 LoginActivity.this.loadingProgressBar.setVisibility(View.INVISIBLE);
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 LoginActivity.this.startActivity(intent);
@@ -96,6 +103,65 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Throwable throwable) {
+            }
+        });
+    }
+
+    private void setUser(User user) {
+        AuthConfig.USER = user;
+        SharedPreferences sharedPreferences = LoginActivity.this.getSharedPreferences("prefs", Context.MODE_PRIVATE);
+        sharedPreferences.edit().putString("sub", user.getId()).apply();
+        sharedPreferences.edit().putString("given_name", user.getGivenName()).apply();
+        sharedPreferences.edit().putString("email", user.getUserEmail()).apply();
+    }
+
+    private BiometricPrompt.PromptInfo buildBiometricPrompt() {
+        return new BiometricPrompt.PromptInfo.Builder()
+                .setTitle("Login")
+                .setSubtitle("Authentication")
+                .setDescription("Authentication required to use MyNote")
+                .setAllowedAuthenticators(
+                        BiometricManager.Authenticators.BIOMETRIC_WEAK |
+                                BiometricManager.Authenticators.BIOMETRIC_STRONG |
+                                BiometricManager.Authenticators.DEVICE_CREDENTIAL
+                )
+                .build();
+
+    }
+
+    private void tryCheckAndAuthenticate() {
+        Executor executor = Executors.newSingleThreadExecutor();
+        BiometricManager biometricManager = BiometricManager.from(this);
+        BiometricPrompt.PromptInfo promptInfo = buildBiometricPrompt();
+        BiometricPrompt biometricPrompt = new BiometricPrompt(this, executor, new BiometricPrompt.AuthenticationCallback() {
+            @Override
+            public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
+                super.onAuthenticationSucceeded(result);
+
+                AuthConfig.USER = UserManager.getUser(LoginActivity.this);
+
+                if (AuthConfig.USER != null) {
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    LoginActivity.this.startActivity(intent);
+                } else {
+                    LoginActivity.this.loadingProgressBar.setVisibility(View.INVISIBLE);
+                    Toast("Unable to login user");
+                }
+            }
+
+            @Override
+            public void onAuthenticationFailed() {
+                Toast("The FingerPrint was not recognized.Please Try Again!");
+            }
+        });
+
+        biometricPrompt.authenticate(promptInfo);
+    }
+
+    private void Toast(String message) {
+        LoginActivity.this.runOnUiThread(new Runnable() {
+            public void run() {
+                Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
             }
         });
     }

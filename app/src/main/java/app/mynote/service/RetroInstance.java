@@ -1,6 +1,8 @@
 package app.mynote.service;
 
 
+import java.util.concurrent.TimeUnit;
+
 import app.mynote.auth.AnnotationInterceptor;
 import app.mynote.auth.AuthConfig;
 import app.mynote.core.utils.TimeCalibrationInterceptor;
@@ -34,7 +36,7 @@ public class RetroInstance {
     public static Retrofit getRetrofitInstance(String baseURL) {
         if (retrofitAuth == null) {
             retrofitAuth = new Retrofit.Builder()
-                    .client(client)
+                    .client(client.newBuilder().connectTimeout(2, TimeUnit.SECONDS).build())
                     .baseUrl(baseURL)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();

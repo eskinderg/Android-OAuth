@@ -16,6 +16,10 @@ public class User {
     @SerializedName("email")
     private String email;
 
+    public String getId() {
+        return this.id.toString();
+    }
+
     public String getGivenName() {
         return this.givenName;
     }
@@ -24,7 +28,15 @@ public class User {
         return this.email;
     }
 
-    public String getId() {
-        return this.id.toString();
+    public void setGivenName(String name){
+        this.givenName = name;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setId(String id) {
+        this.id = UUID.fromString(id);
     }
 }

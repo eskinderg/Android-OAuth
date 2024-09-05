@@ -125,7 +125,7 @@ public class PinnedNoteEditFragment extends Fragment implements MenuProvider {
             this.note.setDateArchived(AppDate.Now());
             this.noteService.update(note, false);
             NavController navController = NavHostFragment.findNavController(this);
-            navController.navigate(R.id.action_nav_note_to_nav_notes);
+            navController.navigate(R.id.action_nav_pin_edit_nav_pin);
             return true;
         }
         return false;

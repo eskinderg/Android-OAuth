@@ -28,6 +28,10 @@
         android:id="@+id/grp_logout"
         android:checkableBehavior="single">
         <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_settings"
+            android:title="@string/menu_settings" />
+        <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_logout"
             android:title="@string/menu_logout" />

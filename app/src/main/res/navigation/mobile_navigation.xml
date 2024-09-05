@@ -57,4 +57,12 @@
             android:id="@+id/action_nav_pin_edit_nav_pin"
             app:destination="@id/nav_pin" />
     </fragment>
+
+    <fragment
+        android:id="@+id/nav_settings"
+        android:name="app.mynote.fragments.settings.SettingsFragment"
+        android:label="@string/menu_settings"
+        tools:layout="@layout/fragment_settings">
+    </fragment>
+
 </navigation>

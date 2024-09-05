@@ -38,7 +38,9 @@ public class PinNotesAdapter extends RecyclerView.Adapter<PinNotesAdapter.PinNot
         View view;
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         view = layoutInflater.inflate(R.layout.note_list, parent, false);
-        return new PinNoteRecyclerViewHolder(view);
+        PinNoteRecyclerViewHolder holder = new PinNoteRecyclerViewHolder(view);
+        holder.setIsRecyclable(false);
+        return holder;
     }
 
     @Override

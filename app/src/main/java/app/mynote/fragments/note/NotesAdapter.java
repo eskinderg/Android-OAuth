@@ -1,14 +1,17 @@
 package app.mynote.fragments.note;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -38,17 +41,20 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteRecycler
         View view;
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         view = layoutInflater.inflate(R.layout.note_list, parent, false);
-        return new NoteRecyclerViewHolder(view);
+        NoteRecyclerViewHolder holder = new NoteRecyclerViewHolder(view);
+        holder.setIsRecyclable(false);
+        return holder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull NoteRecyclerViewHolder holder, int position) {
 
         Note noteItem = notesList.get(position);
-//        holder.setIsRecyclable(false);
 
         if (noteItem.getPinned()) {
             holder.header.setTypeface(Typeface.DEFAULT_BOLD);
+            holder.imgPinned.setColorFilter(ContextCompat.getColor(context, R.color.primary), PorterDuff.Mode.MULTIPLY);
+            holder.imgPinned.setVisibility(View.VISIBLE);
         }
 
         if (noteItem.getHeader() == null || noteItem.getHeader().isEmpty()) {
@@ -75,12 +81,32 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteRecycler
 
     private ArrayList<Note> getActiveNotes(List<Note> list) {
         List<Note> activeNotes = list.stream().filter(n -> !n.getArchived()).collect(Collectors.toList());
+
         activeNotes.sort(new Comparator<Note>() {
             @Override
             public int compare(Note o1, Note o2) {
                 return o2.getDateModified().compareTo(o1.getDateModified());
             }
         });
+
+        activeNotes.sort(new Comparator<Note>() {
+            @Override
+            public int compare(Note o1, Note o2) {
+                if(o2.isPinned() || o1.isPinned())
+                    return Boolean.compare(o2.isPinned(), o1.isPinned());
+                return 0;
+            }
+        });
+
+        activeNotes.sort(new Comparator<Note>() {
+            @Override
+            public int compare(Note o1, Note o2) {
+                if(o1.isPinned() && o2.isPinned())
+                    return o1.getPinOrder().compareTo(o2.getPinOrder());
+                return 0;
+            }
+        });
+
         return new ArrayList<Note>(activeNotes);
     }
 
@@ -92,6 +118,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteRecycler
 
         TextView header;
         TextView description;
+        ImageView imgPinned;
         CardView card;
 
         public NoteRecyclerViewHolder(@NonNull View itemView) {
@@ -99,6 +126,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteRecycler
             header = itemView.findViewById(R.id.header);
             description = itemView.findViewById(R.id.description);
             card = itemView.findViewById(R.id.card);
+            imgPinned = itemView.findViewById(R.id.imgPinned);
         }
     }
 }

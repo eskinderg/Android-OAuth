@@ -40,8 +40,17 @@ public class ArchivedNotesAdapter extends RecyclerView.Adapter<ArchivedNotesAdap
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         view = layoutInflater.inflate(R.layout.archived_note_list, parent, false);
         ArchivedNoteRecyclerViewHolder holder = new ArchivedNoteRecyclerViewHolder(view);
-        holder.setIsRecyclable(false);
         return holder;
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
     }
 
     @Override

@@ -42,8 +42,17 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteRecycler
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         view = layoutInflater.inflate(R.layout.note_list, parent, false);
         NoteRecyclerViewHolder holder = new NoteRecyclerViewHolder(view);
-        holder.setIsRecyclable(false);
         return holder;
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
     }
 
     @Override

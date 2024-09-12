@@ -4,6 +4,10 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
+
+import app.mynote.core.utils.AppDate;
+import app.mynote.core.utils.AppTimestamp;
 
 public class Note implements Serializable {
     @SerializedName("header")
@@ -64,7 +68,7 @@ public class Note implements Serializable {
 
     @SerializedName("pinOrder")
     @Expose
-    private String pinOrder;
+    private Timestamp pinOrder;
 
     @SerializedName("dateCreated")
     @Expose
@@ -72,11 +76,11 @@ public class Note implements Serializable {
 
     @SerializedName("dateModified")
     @Expose
-    private String dateModified;
+    private Timestamp dateModified;
 
     @SerializedName("dateArchived")
     @Expose
-    private String dateArchived;
+    private Timestamp dateArchived;
 
     @SerializedName("dateSync")
     @Expose
@@ -91,6 +95,9 @@ public class Note implements Serializable {
     private String text;
 
     public Note() {
+        this.pinOrder = AppTimestamp.convertStringToTimestamp(AppDate.Now());
+        this.dateModified = AppTimestamp.convertStringToTimestamp(AppDate.Now());
+        this.dateArchived = AppTimestamp.convertStringToTimestamp(AppDate.Now());
     }
 
     public String getDateSync() {
@@ -117,11 +124,11 @@ public class Note implements Serializable {
         this.archived = value;
     }
 
-    public String getDateArchived() {
+    public Timestamp getDateArchived() {
         return this.dateArchived;
     }
 
-    public void setDateArchived(String dateArchived) {
+    public void setDateArchived(Timestamp dateArchived) {
         this.dateArchived = dateArchived;
     }
 
@@ -158,11 +165,11 @@ public class Note implements Serializable {
         this.dateCreated = dateCreated;
     }
 
-    public String getDateModified() {
+    public Timestamp getDateModified() {
         return dateModified;
     }
 
-    public void setDateModified(String dateModified) {
+    public void setDateModified(Timestamp dateModified) {
         this.dateModified = dateModified;
     }
 
@@ -202,11 +209,11 @@ public class Note implements Serializable {
         return this.pinned;
     }
 
-    public String getPinOrder() {
+    public Timestamp getPinOrder() {
         return this.pinOrder;
     }
 
-    public void setPinOrder(String pinOrder) {
+    public void setPinOrder(Timestamp pinOrder) {
         this.pinOrder = pinOrder;
     }
 

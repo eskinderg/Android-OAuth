@@ -1,6 +1,9 @@
 package app.mynote.service;
 
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.util.concurrent.TimeUnit;
 
 import app.mynote.auth.AnnotationInterceptor;
@@ -21,12 +24,14 @@ public class RetroInstance {
     static Retrofit retrofitApi;
     static Retrofit retrofitAuth;
 
+    public static Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").create();
+
     public static Retrofit getRetrofitInstance() {
         if (retrofitApi == null) {
             retrofitApi = new Retrofit.Builder()
                     .client(client)
                     .baseUrl(BASE_API_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create(gson))
                     .build();
         }
         return retrofitApi;

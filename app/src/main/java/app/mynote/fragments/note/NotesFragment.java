@@ -28,9 +28,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import app.mynote.auth.UserManager;
 import app.mynote.core.db.NoteContract;
 import app.mynote.core.db.NoteSyncAdapter;
 import app.mynote.core.utils.AppDate;
+import app.mynote.core.utils.AppTimestamp;
 import app.mynote.core.utils.GsonParser;
 import app.mynote.fragments.SwipeController;
 import app.mynote.fragments.note.NotesAdapter.OnNoteItemClickListener;
@@ -96,7 +98,7 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
                             public void onClick(int position) {
                                 Note noteItem = notesAdapter.notesList.get(position);
                                 noteItem.setPinned(!noteItem.isPinned());
-                                noteItem.setPinOrder(AppDate.Now());
+                                noteItem.setPinOrder(AppTimestamp.convertStringToTimestamp(AppDate.Now()));
                                 NoteService noteService = new NoteService(getContext());
                                 noteService.update(noteItem, false);
                                 String textMsg = noteItem.isPinned() ? "Pinned" : "Un Pinned";
@@ -114,7 +116,7 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
                             public void onClick(int position) {
                                 Note noteItem = notesAdapter.notesList.get(position);
                                 noteItem.setArchived(true);
-                                noteItem.setDateArchived(AppDate.Now());
+                                noteItem.setDateArchived(AppTimestamp.convertStringToTimestamp(AppDate.Now()));
                                 NoteService noteService = new NoteService(getContext());
                                 noteService.update(noteItem, false);
                                 String textMsg = "archived";
@@ -137,7 +139,8 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
                 Note note = new Note();
 
                 note.setId(UUID.randomUUID().toString());
-                note.setDateModified(AppDate.Now());
+                note.setOwner(UserManager.getUser(getContext()).getGivenName());
+                note.setDateModified(AppTimestamp.convertStringToTimestamp(AppDate.Now()));
                 noteService.add(note);
 
                 Bundle bundle = new Bundle();

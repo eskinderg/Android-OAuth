@@ -68,8 +68,8 @@ public class ArchivedNotesAdapter extends RecyclerView.Adapter<ArchivedNotesAdap
             holder.header.setText(noteItem.getHeader());
         }
 
-        holder.txtDateModified.setText("Last modified " + Time2Ago.covertTimeToText(noteItem.getDateModified()));
-        holder.txtDateArchived.setText("Archived " + Time2Ago.covertTimeToText(noteItem.getDateArchived()));
+        holder.txtDateModified.setText("Last modified " + Time2Ago.covertTimeToText(noteItem.getDateModified().toString()));
+        holder.txtDateArchived.setText("Archived " + Time2Ago.covertTimeToText(noteItem.getDateArchived().toString()));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

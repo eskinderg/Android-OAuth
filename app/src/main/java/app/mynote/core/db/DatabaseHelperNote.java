@@ -9,6 +9,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+import app.mynote.core.utils.AppTimestamp;
 import app.mynote.fragments.note.Note;
 
 public class DatabaseHelperNote extends SQLiteOpenHelper {
@@ -87,10 +88,10 @@ public class DatabaseHelperNote extends SQLiteOpenHelper {
         values.put(KEY_COLOUR, note.getColour());
         values.put(KEY_ACTIVE, note.isActive());
         values.put(KEY_SPELL_CHECK, note.getSpellCheck());
-        values.put(KEY_PIN_ORDER, note.getPinOrder());
+        values.put(KEY_PIN_ORDER, note.getPinOrder().toString());
         values.put(KEY_DATE_CREATED, note.getDateCreated());
-        values.put(KEY_DATE_MODIFIED, note.getDateModified());
-        values.put(KEY_DATE_ARCHIVED, note.getDateArchived());
+        values.put(KEY_DATE_MODIFIED, note.getDateModified().toString());
+        values.put(KEY_DATE_ARCHIVED, note.getDateArchived().toString());
         values.put(KEY_DATE_SYNC, note.getDateSync());
         values.put(KEY_OWNER, note.getOwner());
         values.put(KEY_TEXT, note.getText());
@@ -115,10 +116,10 @@ public class DatabaseHelperNote extends SQLiteOpenHelper {
                 note.setArchived(c.getInt(c.getColumnIndex(KEY_ARCHIVED)) > 0);
                 note.setActive(c.getInt(c.getColumnIndex(KEY_ACTIVE)) > 0);
                 note.setSpellCheck(c.getInt(c.getColumnIndex(KEY_SPELL_CHECK)) > 0);
-                note.setPinOrder(c.getString(c.getColumnIndex(KEY_PIN_ORDER)));
+                note.setPinOrder(AppTimestamp.convertStringToTimestamp(c.getString(c.getColumnIndex(KEY_PIN_ORDER))));
                 note.setDateCreated(c.getString(c.getColumnIndex(KEY_DATE_CREATED)));
-                note.setDateModified(c.getString(c.getColumnIndex(KEY_DATE_MODIFIED)));
-                note.setDateArchived(c.getString(c.getColumnIndex(KEY_DATE_ARCHIVED)));
+                note.setDateModified(AppTimestamp.convertStringToTimestamp(c.getString(c.getColumnIndex(KEY_DATE_MODIFIED))));
+                note.setDateArchived(AppTimestamp.convertStringToTimestamp(c.getString(c.getColumnIndex(KEY_DATE_ARCHIVED))));
                 note.setDateSync(c.getString(c.getColumnIndex(KEY_DATE_SYNC)));
                 note.setOwner(c.getString(c.getColumnIndex(KEY_OWNER)));
                 note.setText(c.getString(c.getColumnIndex(KEY_TEXT)));
@@ -138,10 +139,10 @@ public class DatabaseHelperNote extends SQLiteOpenHelper {
         values.put(KEY_COLOUR, note.getColour());
         values.put(KEY_ACTIVE, note.isActive());
         values.put(KEY_SPELL_CHECK, note.getSpellCheck());
-        values.put(KEY_PIN_ORDER, note.getPinOrder());
+        values.put(KEY_PIN_ORDER, note.getPinOrder().toString());
         values.put(KEY_DATE_CREATED, note.getDateCreated());
-        values.put(KEY_DATE_MODIFIED, note.getDateModified());
-        values.put(KEY_DATE_ARCHIVED, note.getDateArchived());
+        values.put(KEY_DATE_MODIFIED, note.getDateModified().toString());
+        values.put(KEY_DATE_ARCHIVED, note.getDateArchived().toString());
         values.put(KEY_DATE_SYNC, note.getDateSync());
         values.put(KEY_OWNER, note.getOwner());
         values.put(KEY_TEXT, note.getText());

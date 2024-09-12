@@ -25,6 +25,7 @@ import java.util.List;
 import app.mynote.core.db.NoteContract;
 import app.mynote.core.db.NoteSyncAdapter;
 import app.mynote.core.utils.AppDate;
+import app.mynote.core.utils.AppTimestamp;
 import app.mynote.fragments.SwipeController;
 import app.mynote.fragments.note.Note;
 import app.mynote.fragments.note.NoteService;
@@ -94,7 +95,7 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
                             public void onClick(int position) {
                                 Note noteItem = notesAdapter.notesList.get(position);
                                 noteItem.setArchived(false);
-                                noteItem.setDateArchived(AppDate.Now());
+                                noteItem.setDateArchived(AppTimestamp.convertStringToTimestamp(AppDate.Now()));
                                 NoteService noteService = new NoteService(getContext());
                                 noteService.update(noteItem, false);
                                 String textMsg = "restored";

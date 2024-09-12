@@ -22,6 +22,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import app.mynote.core.utils.AppDate;
+import app.mynote.core.utils.AppTimestamp;
 import app.mynote.core.utils.GsonParser;
 import app.mynote.fragments.note.Note;
 import app.mynote.fragments.note.NoteService;
@@ -122,7 +123,7 @@ public class PinnedNoteEditFragment extends Fragment implements MenuProvider {
 
         if(menuItem.getItemId() == R.id.action_archive){
             this.note.setArchived(true);
-            this.note.setDateArchived(AppDate.Now());
+            this.note.setDateArchived(AppTimestamp.convertStringToTimestamp(AppDate.Now()));
             this.noteService.update(note, false);
             NavController navController = NavHostFragment.findNavController(this);
             navController.navigate(R.id.action_nav_pin_edit_nav_pin);

@@ -65,7 +65,7 @@ public class PinNotesAdapter extends RecyclerView.Adapter<PinNotesAdapter.PinNot
             holder.header.setText(noteItem.getHeader());
         }
 
-        holder.description.setText("Modified " + Time2Ago.covertTimeToText(noteItem.getDateModified()));
+        holder.description.setText("Modified " + Time2Ago.covertTimeToText(noteItem.getDateModified().toString()));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -30,6 +30,7 @@ import java.util.List;
 import app.mynote.core.db.NoteContract;
 import app.mynote.core.db.NoteSyncAdapter;
 import app.mynote.core.utils.AppDate;
+import app.mynote.core.utils.AppTimestamp;
 import app.mynote.core.utils.GsonParser;
 import app.mynote.fragments.SwipeController;
 import app.mynote.fragments.note.Note;
@@ -105,7 +106,7 @@ public class PinNoteListFragment extends Fragment implements SwipeRefreshLayout.
                             public void onClick(int position) {
                                 Note noteItem = pinAdapter.notesList.get(position);
                                 noteItem.setPinned(false);
-                                noteItem.setPinOrder(AppDate.Now());
+                                noteItem.setPinOrder(AppTimestamp.convertStringToTimestamp(AppDate.Now()));
                                 NoteService noteService = new NoteService(getContext());
                                 noteService.update(noteItem, false);
                                 Toast.makeText(getContext(), "Updated", Toast.LENGTH_LONG).show();

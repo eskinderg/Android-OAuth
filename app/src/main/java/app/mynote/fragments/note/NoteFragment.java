@@ -24,6 +24,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import app.mynote.LoginActivity;
 import app.mynote.core.callback.IAppCallback;
 import app.mynote.core.utils.AppDate;
+import app.mynote.core.utils.AppTimestamp;
 import app.mynote.core.utils.GsonParser;
 import mynote.R;
 import retrofit2.Call;
@@ -136,7 +137,7 @@ public class NoteFragment extends Fragment implements IAppCallback<Note>, MenuPr
 
         if(menuItem.getItemId() == R.id.action_archive){
             this.note.setArchived(true);
-            this.note.setDateArchived(AppDate.Now());
+            this.note.setDateArchived(AppTimestamp.convertStringToTimestamp(AppDate.Now()));
             this.noteService.update(note, false);
             NavController navController = NavHostFragment.findNavController(this);
             navController.navigate(R.id.action_nav_note_to_nav_notes);

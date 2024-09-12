@@ -72,7 +72,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteRecycler
             holder.header.setText(noteItem.getHeader());
         }
 
-        holder.description.setText("Modified " + Time2Ago.covertTimeToText(noteItem.getDateModified()));
+        holder.description.setText("Modified " + Time2Ago.covertTimeToText(noteItem.getDateModified().toString()));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,7 +94,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteRecycler
         activeNotes.sort(new Comparator<Note>() {
             @Override
             public int compare(Note o1, Note o2) {
-                return o2.getDateModified().compareTo(o1.getDateModified());
+                return o2.getDateModified().toString().compareTo(o1.getDateModified().toString());
             }
         });
 

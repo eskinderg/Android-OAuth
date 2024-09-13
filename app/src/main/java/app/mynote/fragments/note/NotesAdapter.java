@@ -94,7 +94,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteRecycler
         activeNotes.sort(new Comparator<Note>() {
             @Override
             public int compare(Note o1, Note o2) {
-                return o2.getDateModified().toString().compareTo(o1.getDateModified().toString());
+                return o2.getDateModified().compareTo(o1.getDateModified());
             }
         });
 

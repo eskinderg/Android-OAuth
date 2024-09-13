@@ -88,6 +88,7 @@ public class DatabaseHelperNote extends SQLiteOpenHelper {
         values.put(KEY_COLOUR, note.getColour());
         values.put(KEY_ACTIVE, note.isActive());
         values.put(KEY_SPELL_CHECK, note.getSpellCheck());
+        values.put(KEY_FAVORITE, note.isFavorite());
         values.put(KEY_PIN_ORDER, note.getPinOrder().toString());
         values.put(KEY_DATE_CREATED, note.getDateCreated());
         values.put(KEY_DATE_MODIFIED, note.getDateModified().toString());
@@ -116,6 +117,7 @@ public class DatabaseHelperNote extends SQLiteOpenHelper {
                 note.setArchived(c.getInt(c.getColumnIndex(KEY_ARCHIVED)) > 0);
                 note.setActive(c.getInt(c.getColumnIndex(KEY_ACTIVE)) > 0);
                 note.setSpellCheck(c.getInt(c.getColumnIndex(KEY_SPELL_CHECK)) > 0);
+                note.setSpellCheck(c.getInt(c.getColumnIndex(KEY_FAVORITE)) > 0);
                 note.setPinOrder(AppTimestamp.convertStringToTimestamp(c.getString(c.getColumnIndex(KEY_PIN_ORDER))));
                 note.setDateCreated(c.getString(c.getColumnIndex(KEY_DATE_CREATED)));
                 note.setDateModified(AppTimestamp.convertStringToTimestamp(c.getString(c.getColumnIndex(KEY_DATE_MODIFIED))));

@@ -15,16 +15,20 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetroInstance {
 
+    public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
     public static final String BASE_API_URL = AuthConfig.BASE_API_URL;
+
     private static final OkHttpClient client = new OkHttpClient()
             .newBuilder()
             .addInterceptor(new AnnotationInterceptor())
             .addInterceptor(new TimeCalibrationInterceptor())
             .build();
+
     static Retrofit retrofitApi;
     static Retrofit retrofitAuth;
 
-    public static Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").create();
+
+    public static Gson gson = new GsonBuilder().setDateFormat(DATE_FORMAT).create();
 
     public static Retrofit getRetrofitInstance() {
         if (retrofitApi == null) {

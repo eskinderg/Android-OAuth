@@ -60,7 +60,7 @@ public class Note implements Serializable {
 
     @SerializedName("active")
     @Expose
-    private boolean active;
+    private boolean active = true;
 
     @SerializedName("spellCheck")
     @Expose

@@ -35,13 +35,11 @@ public class NoteFragment extends Fragment implements IAppCallback<Note>, MenuPr
     Note note;
     public EditText txtNoteText;
     public EditText txtNoteHeader;
-    public NoteService noteService;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.noteService = new NoteService(getContext());
     }
 
     @Override
@@ -75,7 +73,7 @@ public class NoteFragment extends Fragment implements IAppCallback<Note>, MenuPr
             public void onTextChanged(EditText target, Editable s) {
                 String header = txtNoteHeader.getText().toString().isEmpty() ? "" : txtNoteHeader.getText().toString();
                 note.setHeader(header);
-                NoteFragment.this.noteService.update(note, true);
+                NoteService.update(getContext(),note, true);
 
             }
         });
@@ -85,7 +83,7 @@ public class NoteFragment extends Fragment implements IAppCallback<Note>, MenuPr
             public void onTextChanged(EditText target, Editable s) {
                 String body = txtNoteText.getText().toString().isEmpty() ? "" : Html.toHtml(txtNoteText.getText(), Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV);
                 note.setText(body);
-                NoteFragment.this.noteService.update(note, true);
+                NoteService.update(getContext(), note, true);
             }
         });
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(this.note.getHeader());
@@ -138,7 +136,7 @@ public class NoteFragment extends Fragment implements IAppCallback<Note>, MenuPr
         if(menuItem.getItemId() == R.id.action_archive){
             this.note.setArchived(true);
             this.note.setDateArchived(AppTimestamp.convertStringToTimestamp(AppDate.Now()));
-            this.noteService.update(note, false);
+            NoteService.update(getContext(), note, false);
             NavController navController = NavHostFragment.findNavController(this);
             navController.navigate(R.id.action_nav_note_to_nav_notes);
             return true;

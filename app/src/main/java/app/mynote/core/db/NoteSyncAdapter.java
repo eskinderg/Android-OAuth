@@ -118,7 +118,12 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
                     assert c != null;
 
                     for (Note remoteNote : response) {
-                        networkEntries.put(remoteNote.getId() + remoteNote.getUserId(), remoteNote);
+                        if(remoteNote.getActive()) // filter out only active notes and delete the rest
+                            networkEntries.put(remoteNote.getId() + remoteNote.getUserId(), remoteNote);
+                        else
+                            batch.add(ContentProviderOperation.newDelete(NoteContract.Notes.CONTENT_URI) // delete notes that are not active locally
+                                    .withSelection(NoteContract.Notes.COL_ID + "='" + remoteNote.getId() + "'", null)
+                                    .build());
                     }
 
                     c.moveToFirst();
@@ -148,6 +153,12 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
 
                         archives(localEntries, batch, noteLocal, found);
                         pinOrder(localEntries, batch, noteLocal, found);
+
+                        if(!noteLocal.getActive())
+                            batch.add(ContentProviderOperation.newDelete(NoteContract.Notes.CONTENT_URI) // delete notes that are not active locally
+                                    .withSelection(NoteContract.Notes.COL_ID + "='" + noteLocal.getId() + "'", null)
+                                    .build());
+
 
                         if (found != null) {
                             int des = found.getDateModified().toString().compareTo(noteLocal.getDateModified().toString());

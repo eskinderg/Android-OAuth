@@ -15,15 +15,15 @@ import app.mynote.core.utils.AppTimestamp;
 
 public class NoteService {
 
-    private Context context;
-    private ContentResolver contentResolver;
+//    private Context context;
+//    private ContentResolver contentResolver;
+//
+//    public NoteService(Context c) {
+//        this.context = c;
+//        contentResolver = c.getContentResolver();
+//    }
 
-    public NoteService(Context c) {
-        this.context = c;
-        contentResolver = c.getContentResolver();
-    }
-
-    public Note add(Note note) {
+    public static Note add(Context c, Note note) {
         ContentValues values = new ContentValues();
         values.put(NoteContract.Notes.COL_ID, note.getId());
         values.put(NoteContract.Notes.COL_TEXT, note.getText());
@@ -41,11 +41,11 @@ public class NoteService {
         values.put(NoteContract.Notes.COL_DATE_ARCHIVED, note.getDateArchived().toString());
         values.put(NoteContract.Notes.COL_DATE_SYNC, note.getDateSync());
         values.put(NoteContract.Notes.COL_OWNER, note.getOwner());
-        contentResolver.insert(NoteContract.Notes.CONTENT_URI, values);
+        c.getContentResolver().insert(NoteContract.Notes.CONTENT_URI, values);
         return note;
     }
 
-    public Note update(Note note, boolean markModified) {
+    public static Note update(Context c, Note note, boolean markModified) {
         ContentValues values = new ContentValues();
         values.put(NoteContract.Notes.COL_TEXT, note.getText());
         values.put(NoteContract.Notes.COL_HEADER, note.getHeader());
@@ -66,17 +66,17 @@ public class NoteService {
         values.put(NoteContract.Notes.COL_DATE_ARCHIVED, note.getDateArchived().toString());
         values.put(NoteContract.Notes.COL_DATE_SYNC, note.getDateSync());
         values.put(NoteContract.Notes.COL_OWNER, note.getOwner());
-        contentResolver.update(NoteContract.Notes.CONTENT_URI, values, NoteContract.Notes.COL_ID + " = ?",
+        c.getContentResolver().update(NoteContract.Notes.CONTENT_URI, values, NoteContract.Notes.COL_ID + " = ?",
                 new String[]{String.valueOf(note.getId())});
         return note;
     }
 
 
-    public ArrayList<Note> getAllNotes() {
+    public static ArrayList<Note> getAllNotes(Context ctx) {
         ArrayList<Note> noteArrayList = new ArrayList<Note>();
 //        String[] where ={ NoteContract.Notes.COL_USER_ID + " = " + AuthConfig.USER.getId();
 
-        Cursor c = contentResolver.query(NoteContract.Notes.CONTENT_URI, null, NoteContract.Notes.COL_USER_ID + " = '" + AuthConfig.USER.getId() + "'", null, null, null);
+        Cursor c = ctx.getContentResolver().query(NoteContract.Notes.CONTENT_URI, null, NoteContract.Notes.COL_USER_ID + " = '" + AuthConfig.USER.getId() + "'", null, null, null);
         assert c != null;
         if (c.moveToFirst()) {
             do {
@@ -105,17 +105,17 @@ public class NoteService {
         return noteArrayList;
     }
 
-    public ArrayList<Note> getArchived() {
-        ArrayList<Note> response = getAllNotes();
-        return new ArrayList<>(response.stream().filter(n -> n.getArchived()).collect(Collectors.toList()));
+    public static ArrayList<Note> getArchived(Context c) {
+        ArrayList<Note> response = getAllNotes(c);
+        return new ArrayList<>(response.stream().filter(n -> n.getArchived() && n.getActive()).collect(Collectors.toList()));
     }
 
-    public ArrayList<Note> getPinned() {
-        ArrayList<Note> response = getAllNotes();
+    public static ArrayList<Note> getPinned(Context c) {
+        ArrayList<Note> response = getAllNotes(c);
         return new ArrayList<>(response.stream().filter(n -> n.isPinned()).collect(Collectors.toList()));
     }
 
-    public ArrayList<Note> Update(ArrayList<Note> notes) {
+    public ArrayList<Note> Update(Context c, ArrayList<Note> notes) {
         for (Note note : notes) {
             ContentValues values = new ContentValues();
             values.put(NoteContract.Notes.COL_ID, note.getId());
@@ -134,7 +134,7 @@ public class NoteService {
             values.put(NoteContract.Notes.COL_DATE_ARCHIVED, note.getDateArchived().toString());
             values.put(NoteContract.Notes.COL_DATE_SYNC, note.getDateSync());
             values.put(NoteContract.Notes.COL_OWNER, note.getOwner());
-            update(note, true);
+            update(c, note, true);
         }
         return notes;
     }

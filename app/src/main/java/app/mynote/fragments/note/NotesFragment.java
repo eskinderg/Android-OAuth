@@ -61,8 +61,7 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
         binding = FragmentNotesBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
         this.recyclerView = view.findViewById(R.id.noterecyclerview);
-        NoteService noteService = new NoteService(getContext());
-        ArrayList<Note> notes = new ArrayList<>(noteService.getAllNotes());
+        ArrayList<Note> notes = new ArrayList<>(NoteService.getAllNotes(getContext()));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         this.notesAdapter = new NotesAdapter(getContext(),notes, this);
         this.recyclerView.setAdapter(this.notesAdapter);
@@ -99,8 +98,7 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
                                 Note noteItem = notesAdapter.notesList.get(position);
                                 noteItem.setPinned(!noteItem.isPinned());
                                 noteItem.setPinOrder(AppTimestamp.convertStringToTimestamp(AppDate.Now()));
-                                NoteService noteService = new NoteService(getContext());
-                                noteService.update(noteItem, false);
+                                NoteService.update(getContext(), noteItem, false);
                                 String textMsg = noteItem.isPinned() ? "Pinned" : "Un Pinned";
                                 Toast.makeText(getContext(), "Note " + textMsg, Toast.LENGTH_LONG).show();
                                 notesAdapter.notifyItemChanged(position);
@@ -117,8 +115,7 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
                                 Note noteItem = notesAdapter.notesList.get(position);
                                 noteItem.setArchived(true);
                                 noteItem.setDateArchived(AppTimestamp.convertStringToTimestamp(AppDate.Now()));
-                                NoteService noteService = new NoteService(getContext());
-                                noteService.update(noteItem, false);
+                                NoteService.update(getContext(), noteItem, false);
                                 String textMsg = "archived";
                                 Toast.makeText(getContext(), "Note " + textMsg, Toast.LENGTH_LONG).show();
                                 notesAdapter.notesList.remove(position);
@@ -135,14 +132,13 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
         this.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                NoteService noteService = new NoteService(getContext());
                 Note note = new Note();
 
                 note.setId(UUID.randomUUID().toString());
                 note.setOwner(UserManager.getUser(getContext()).getGivenName());
                 note.setDateModified(AppTimestamp.convertStringToTimestamp(AppDate.Now()));
                 note.setDateCreated(AppTimestamp.convertStringToTimestamp(AppDate.Now()));
-                noteService.add(note);
+                NoteService.add(getContext(), note);
 
                 Bundle bundle = new Bundle();
                 String noteJsonString = GsonParser.getGsonParser().toJson(note);
@@ -203,8 +199,7 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
     }
 
     private void fetchNotes() {
-        NoteService noteService = new NoteService(getContext());
-        ArrayList<Note> notes = new ArrayList<>(noteService.getAllNotes());
+        ArrayList<Note> notes = new ArrayList<>(NoteService.getAllNotes(getContext()));
         NotesFragment.this.dataView(notes);
         setAppbarCount();
         recyclerView.getAdapter().notifyDataSetChanged();

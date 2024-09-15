@@ -34,13 +34,11 @@ public class PinnedNoteEditFragment extends Fragment implements MenuProvider {
     Note note;
     public EditText txtNoteText;
     public EditText txtNoteHeader;
-    public NoteService noteService;
 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.noteService = new NoteService(getContext());
     }
 
     @Nullable
@@ -75,7 +73,7 @@ public class PinnedNoteEditFragment extends Fragment implements MenuProvider {
             public void onTextChanged(EditText target, Editable s) {
                 String header = txtNoteHeader.getText().toString().isEmpty() ? "" : txtNoteHeader.getText().toString();
                 note.setHeader(header);
-                PinnedNoteEditFragment.this.noteService.update(note, true);
+                NoteService.update(getContext(), note, true);
 
             }
         });
@@ -85,7 +83,7 @@ public class PinnedNoteEditFragment extends Fragment implements MenuProvider {
             public void onTextChanged(EditText target, Editable s) {
                 String body = txtNoteText.getText().toString().isEmpty() ? "" : Html.toHtml(txtNoteText.getText(), Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV);
                 note.setText(body);
-                PinnedNoteEditFragment.this.noteService.update(note, true);
+                NoteService.update(getContext(), note, true);
             }
         });
 
@@ -124,7 +122,7 @@ public class PinnedNoteEditFragment extends Fragment implements MenuProvider {
         if(menuItem.getItemId() == R.id.action_archive){
             this.note.setArchived(true);
             this.note.setDateArchived(AppTimestamp.convertStringToTimestamp(AppDate.Now()));
-            this.noteService.update(note, false);
+            NoteService.update(getContext(), note, false);
             NavController navController = NavHostFragment.findNavController(this);
             navController.navigate(R.id.action_nav_pin_edit_nav_pin);
             return true;

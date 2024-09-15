@@ -58,8 +58,7 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
         recyclerView = view.findViewById(R.id.archivednoterecyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        NoteService noteService = new NoteService(getContext());
-        ArrayList<Note> notes = new ArrayList<>(noteService.getArchived());
+        ArrayList<Note> notes = new ArrayList<>(NoteService.getArchived(getContext()));
         this.notesAdapter = new ArchivedNotesAdapter(getContext(), notes, this);
         this.recyclerView.setAdapter(notesAdapter);
         this.notesAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
@@ -76,7 +75,6 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
             }
         });
 
-
         return view;
     }
 
@@ -87,6 +85,23 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
             @Override
             public void instantiateUnderlayButton(RecyclerView.ViewHolder viewHolder, List<UnderlayButton> underlayButtons) {
                 underlayButtons.add(new UnderlayButton(
+                        "Delete",
+                        SwipeController.getBitmapFromVectorDrawable(getContext(), R.drawable.ic_delete),
+                        ContextCompat.getColor(getContext(), R.color.red),
+                        new UnderlayButtonClickListener() {
+                            @Override
+                            public void onClick(int position) {
+                                Note noteItem = notesAdapter.notesList.get(position);
+                                noteItem.setActive(false);
+                                NoteService.update(getContext(), noteItem, true);
+                                Toast.makeText(getContext(), "Note deleted permanently", Toast.LENGTH_LONG).show();
+                                notesAdapter.notesList.remove(position);
+                                notesAdapter.notifyItemRemoved(position);
+                            }
+                        }
+                ));
+
+                underlayButtons.add(new UnderlayButton(
                         "Restore",
                         SwipeController.getBitmapFromVectorDrawable(getContext(), R.drawable.ic_restore_white),
                         ContextCompat.getColor(getContext(), R.color.green),
@@ -96,15 +111,13 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
                                 Note noteItem = notesAdapter.notesList.get(position);
                                 noteItem.setArchived(false);
                                 noteItem.setDateArchived(AppTimestamp.convertStringToTimestamp(AppDate.Now()));
-                                NoteService noteService = new NoteService(getContext());
-                                noteService.update(noteItem, false);
+                                NoteService.update(getContext(), noteItem, false);
                                 String textMsg = "restored";
                                 Toast.makeText(getContext(), "Note " + textMsg, Toast.LENGTH_LONG).show();
                                 notesAdapter.notesList.remove(position);
                                 notesAdapter.notifyItemRemoved(position);
                             }
                         }
-
                 ));
 
             }
@@ -154,8 +167,7 @@ public class ArchivedNotesFragment extends Fragment implements ArchivedNotesAdap
     }
 
     private void fetchNotes() {
-        NoteService noteService = new NoteService(getContext());
-        ArrayList<Note> notes = new ArrayList<>(noteService.getArchived());
+        ArrayList<Note> notes = new ArrayList<>(NoteService.getArchived(getContext()));
         ArchivedNotesFragment.this.dataView(notes);
         setAppbarCount();
         recyclerView.getAdapter().notifyDataSetChanged();

@@ -59,8 +59,7 @@ public class PinNoteListFragment extends Fragment implements SwipeRefreshLayout.
         View view = binding.getRoot();
         recyclerView = view.findViewById(R.id.noterecyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        NoteService noteService = new NoteService(getContext());
-        ArrayList<Note> notes = new ArrayList<>(noteService.getAllNotes());
+        ArrayList<Note> notes = new ArrayList<>(NoteService.getAllNotes(getContext()));
         this.pinAdapter = new PinNotesAdapter(getContext(), notes, this);
         recyclerView.setAdapter(pinAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -107,8 +106,7 @@ public class PinNoteListFragment extends Fragment implements SwipeRefreshLayout.
                                 Note noteItem = pinAdapter.notesList.get(position);
                                 noteItem.setPinned(false);
                                 noteItem.setPinOrder(AppTimestamp.convertStringToTimestamp(AppDate.Now()));
-                                NoteService noteService = new NoteService(getContext());
-                                noteService.update(noteItem, false);
+                                NoteService.update(getContext(), noteItem, false);
                                 Toast.makeText(getContext(), "Updated", Toast.LENGTH_LONG).show();
                                 pinAdapter.notesList.remove(position);
                                 pinAdapter.notifyItemRemoved(position);
@@ -152,8 +150,7 @@ public class PinNoteListFragment extends Fragment implements SwipeRefreshLayout.
     }
 
     private void fetchNotes() {
-        NoteService noteService = new NoteService(getContext());
-        ArrayList<Note> notes = new ArrayList<>(noteService.getPinned());
+        ArrayList<Note> notes = new ArrayList<>(NoteService.getPinned(getContext()));
         PinNoteListFragment.this.dataView(notes);
         setAppbarCount();
         recyclerView.getAdapter().notifyDataSetChanged();

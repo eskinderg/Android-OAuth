@@ -72,7 +72,7 @@ public class Note implements Serializable {
 
     @SerializedName("dateCreated")
     @Expose
-    private String dateCreated;
+    private Timestamp dateCreated;
 
     @SerializedName("dateModified")
     @Expose
@@ -157,11 +157,11 @@ public class Note implements Serializable {
 
     }
 
-    public String getDateCreated() {
+    public Timestamp getDateCreated() {
         return dateCreated;
     }
 
-    public void setDateCreated(String dateCreated) {
+    public void setDateCreated(Timestamp dateCreated) {
         this.dateCreated = dateCreated;
     }
 

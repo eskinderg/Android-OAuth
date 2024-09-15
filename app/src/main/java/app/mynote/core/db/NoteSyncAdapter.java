@@ -137,7 +137,7 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
                         noteLocal.setActive(c.getInt(c.getColumnIndex(NoteContract.Notes.COL_ACTIVE)) > 0);
                         noteLocal.setSpellCheck(c.getInt(c.getColumnIndex(NoteContract.Notes.COL_SPELL_CHECK)) > 0);
                         noteLocal.setPinOrder(AppTimestamp.convertStringToTimestamp(c.getString(c.getColumnIndex(NoteContract.Notes.COL_PIN_ORDER))));
-                        noteLocal.setDateCreated(c.getString(c.getColumnIndex(NoteContract.Notes.COL_DATE_CREATED)));
+                        noteLocal.setDateCreated(AppTimestamp.convertStringToTimestamp(c.getString(c.getColumnIndex(NoteContract.Notes.COL_DATE_CREATED))));
                         noteLocal.setDateModified(AppTimestamp.convertStringToTimestamp(c.getString(c.getColumnIndex(NoteContract.Notes.COL_DATE_MODIFIED))));
                         noteLocal.setDateArchived(AppTimestamp.convertStringToTimestamp(c.getString(c.getColumnIndex(NoteContract.Notes.COL_DATE_ARCHIVED))));
                         noteLocal.setDateSync(c.getString(c.getColumnIndex(NoteContract.Notes.COL_DATE_SYNC)));
@@ -166,7 +166,7 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
                                         .withValue(NoteContract.Notes.COL_ACTIVE, found.getActive())
                                         .withValue(NoteContract.Notes.COL_SPELL_CHECK, found.getSpellCheck())
                                         .withValue(NoteContract.Notes.COL_PIN_ORDER, found.getPinOrder().toString())
-                                        .withValue(NoteContract.Notes.COL_DATE_CREATED, found.getDateCreated())
+                                        .withValue(NoteContract.Notes.COL_DATE_CREATED, found.getDateCreated().toString())
                                         .withValue(NoteContract.Notes.COL_DATE_ARCHIVED, found.getDateArchived().toString())
                                         .withValue(NoteContract.Notes.COL_DATE_MODIFIED, found.getDateModified().toString())
                                         .withValue(NoteContract.Notes.COL_DATE_SYNC, found.getDateSync())
@@ -224,7 +224,7 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
                                 .withValue(NoteContract.Notes.COL_ACTIVE, note.getActive())
                                 .withValue(NoteContract.Notes.COL_SPELL_CHECK, note.getSpellCheck())
                                 .withValue(NoteContract.Notes.COL_PIN_ORDER, note.getPinOrder().toString())
-                                .withValue(NoteContract.Notes.COL_DATE_CREATED, note.getDateCreated())
+                                .withValue(NoteContract.Notes.COL_DATE_CREATED, note.getDateCreated().toString())
                                 .withValue(NoteContract.Notes.COL_DATE_ARCHIVED, note.getDateArchived().toString())
                                 .withValue(NoteContract.Notes.COL_DATE_MODIFIED, note.getDateModified().toString())
                                 .withValue(NoteContract.Notes.COL_DATE_SYNC, note.getDateSync())
@@ -257,7 +257,7 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
                                                 .withValue(NoteContract.Notes.COL_ACTIVE, note.getActive())
                                                 .withValue(NoteContract.Notes.COL_SPELL_CHECK, note.getSpellCheck())
                                                 .withValue(NoteContract.Notes.COL_PIN_ORDER, note.getPinOrder().toString())
-                                                .withValue(NoteContract.Notes.COL_DATE_CREATED, note.getDateCreated())
+                                                .withValue(NoteContract.Notes.COL_DATE_CREATED, note.getDateCreated().toString())
                                                 .withValue(NoteContract.Notes.COL_DATE_ARCHIVED, note.getDateArchived().toString())
                                                 .withValue(NoteContract.Notes.COL_DATE_MODIFIED, note.getDateModified().toString())
                                                 .withValue(NoteContract.Notes.COL_DATE_SYNC, note.getDateSync())
@@ -322,7 +322,7 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
                             .withValue(NoteContract.Notes.COL_ACTIVE, remoteNote.getActive())
                             .withValue(NoteContract.Notes.COL_SPELL_CHECK, remoteNote.getSpellCheck())
                             .withValue(NoteContract.Notes.COL_PIN_ORDER, remoteNote.getPinOrder().toString())
-                            .withValue(NoteContract.Notes.COL_DATE_CREATED, remoteNote.getDateCreated())
+                            .withValue(NoteContract.Notes.COL_DATE_CREATED, remoteNote.getDateCreated().toString())
                             .withValue(NoteContract.Notes.COL_DATE_ARCHIVED, remoteNote.getDateArchived().toString())
                             .withValue(NoteContract.Notes.COL_DATE_MODIFIED, remoteNote.getDateModified().toString())
                             .withValue(NoteContract.Notes.COL_DATE_SYNC, remoteNote.getDateSync())
@@ -353,7 +353,7 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
                         .withValue(NoteContract.Notes.COL_ACTIVE, remoteNote.getActive())
                         .withValue(NoteContract.Notes.COL_SPELL_CHECK, remoteNote.getSpellCheck())
                         .withValue(NoteContract.Notes.COL_PIN_ORDER, remoteNote.getPinOrder().toString())
-                        .withValue(NoteContract.Notes.COL_DATE_CREATED, remoteNote.getDateCreated())
+                        .withValue(NoteContract.Notes.COL_DATE_CREATED, remoteNote.getDateCreated().toString())
                         .withValue(NoteContract.Notes.COL_DATE_ARCHIVED, remoteNote.getDateArchived().toString())
                         .withValue(NoteContract.Notes.COL_DATE_MODIFIED, remoteNote.getDateModified().toString())
                         .withValue(NoteContract.Notes.COL_DATE_SYNC, remoteNote.getDateSync())
@@ -381,7 +381,7 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
                             .withValue(NoteContract.Notes.COL_ACTIVE, remoteNote.getActive())
                             .withValue(NoteContract.Notes.COL_SPELL_CHECK, remoteNote.getSpellCheck())
                             .withValue(NoteContract.Notes.COL_PIN_ORDER, remoteNote.getPinOrder().toString())
-                            .withValue(NoteContract.Notes.COL_DATE_CREATED, remoteNote.getDateCreated())
+                            .withValue(NoteContract.Notes.COL_DATE_CREATED, remoteNote.getDateCreated().toString())
                             .withValue(NoteContract.Notes.COL_DATE_ARCHIVED, remoteNote.getDateArchived().toString())
                             .withValue(NoteContract.Notes.COL_DATE_MODIFIED, remoteNote.getDateModified().toString())
                             .withValue(NoteContract.Notes.COL_DATE_SYNC, remoteNote.getDateSync())
@@ -412,7 +412,7 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
                         .withValue(NoteContract.Notes.COL_ACTIVE, remoteNote.getActive())
                         .withValue(NoteContract.Notes.COL_SPELL_CHECK, remoteNote.getSpellCheck())
                         .withValue(NoteContract.Notes.COL_PIN_ORDER, remoteNote.getPinOrder().toString())
-                        .withValue(NoteContract.Notes.COL_DATE_CREATED, remoteNote.getDateCreated())
+                        .withValue(NoteContract.Notes.COL_DATE_CREATED, remoteNote.getDateCreated().toString())
                         .withValue(NoteContract.Notes.COL_DATE_ARCHIVED, remoteNote.getDateArchived().toString())
                         .withValue(NoteContract.Notes.COL_DATE_MODIFIED, remoteNote.getDateModified().toString())
                         .withValue(NoteContract.Notes.COL_DATE_SYNC, remoteNote.getDateSync())

@@ -36,7 +36,7 @@ public class NoteService {
         values.put(NoteContract.Notes.COL_ACTIVE, note.isActive());
         values.put(NoteContract.Notes.COL_SPELL_CHECK, note.getSpellCheck());
         values.put(NoteContract.Notes.COL_PIN_ORDER, note.getPinOrder().toString());
-        values.put(NoteContract.Notes.COL_DATE_CREATED, note.getDateCreated());
+        values.put(NoteContract.Notes.COL_DATE_CREATED, note.getDateCreated().toString());
         values.put(NoteContract.Notes.COL_DATE_MODIFIED, note.getDateModified().toString());
         values.put(NoteContract.Notes.COL_DATE_ARCHIVED, note.getDateArchived().toString());
         values.put(NoteContract.Notes.COL_DATE_SYNC, note.getDateSync());
@@ -57,7 +57,7 @@ public class NoteService {
         values.put(NoteContract.Notes.COL_ACTIVE, note.isActive());
         values.put(NoteContract.Notes.COL_SPELL_CHECK, note.getSpellCheck());
         values.put(NoteContract.Notes.COL_PIN_ORDER, note.getPinOrder().toString());
-        values.put(NoteContract.Notes.COL_DATE_CREATED, note.getDateCreated());
+        values.put(NoteContract.Notes.COL_DATE_CREATED, note.getDateCreated().toString());
         if(markModified){
             values.put(NoteContract.Notes.COL_DATE_MODIFIED, AppDate.Now());
         }else{
@@ -92,7 +92,7 @@ public class NoteService {
                 note.setActive(c.getInt(c.getColumnIndex(NoteContract.Notes.COL_ACTIVE)) > 0);
                 note.setSpellCheck(c.getInt(c.getColumnIndex(NoteContract.Notes.COL_SPELL_CHECK)) > 0);
                 note.setPinOrder(AppTimestamp.convertStringToTimestamp(c.getString(c.getColumnIndex(NoteContract.Notes.COL_PIN_ORDER))));
-                note.setDateCreated(c.getString(c.getColumnIndex(NoteContract.Notes.COL_DATE_CREATED)));
+                note.setDateCreated(AppTimestamp.convertStringToTimestamp(c.getString(c.getColumnIndex(NoteContract.Notes.COL_DATE_CREATED))));
                 note.setDateModified(AppTimestamp.convertStringToTimestamp(c.getString(c.getColumnIndex(NoteContract.Notes.COL_DATE_MODIFIED))));
                 note.setDateArchived(AppTimestamp.convertStringToTimestamp(c.getString(c.getColumnIndex(NoteContract.Notes.COL_DATE_ARCHIVED))));
                 note.setDateSync(c.getString(c.getColumnIndex(NoteContract.Notes.COL_DATE_SYNC)));
@@ -129,7 +129,7 @@ public class NoteService {
             values.put(NoteContract.Notes.COL_ACTIVE, note.isActive());
             values.put(NoteContract.Notes.COL_SPELL_CHECK, note.getSpellCheck());
             values.put(NoteContract.Notes.COL_PIN_ORDER, note.getPinOrder().toString());
-            values.put(NoteContract.Notes.COL_DATE_CREATED, note.getDateCreated());
+            values.put(NoteContract.Notes.COL_DATE_CREATED, note.getDateCreated().toString());
             values.put(NoteContract.Notes.COL_DATE_MODIFIED, note.getDateModified().toString());
             values.put(NoteContract.Notes.COL_DATE_ARCHIVED, note.getDateArchived().toString());
             values.put(NoteContract.Notes.COL_DATE_SYNC, note.getDateSync());

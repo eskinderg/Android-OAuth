@@ -90,7 +90,7 @@ public class DatabaseHelperNote extends SQLiteOpenHelper {
         values.put(KEY_SPELL_CHECK, note.getSpellCheck());
         values.put(KEY_FAVORITE, note.isFavorite());
         values.put(KEY_PIN_ORDER, note.getPinOrder().toString());
-        values.put(KEY_DATE_CREATED, note.getDateCreated());
+        values.put(KEY_DATE_CREATED, note.getDateCreated().toString());
         values.put(KEY_DATE_MODIFIED, note.getDateModified().toString());
         values.put(KEY_DATE_ARCHIVED, note.getDateArchived().toString());
         values.put(KEY_DATE_SYNC, note.getDateSync());
@@ -119,7 +119,7 @@ public class DatabaseHelperNote extends SQLiteOpenHelper {
                 note.setSpellCheck(c.getInt(c.getColumnIndex(KEY_SPELL_CHECK)) > 0);
                 note.setSpellCheck(c.getInt(c.getColumnIndex(KEY_FAVORITE)) > 0);
                 note.setPinOrder(AppTimestamp.convertStringToTimestamp(c.getString(c.getColumnIndex(KEY_PIN_ORDER))));
-                note.setDateCreated(c.getString(c.getColumnIndex(KEY_DATE_CREATED)));
+                note.setDateCreated(AppTimestamp.convertStringToTimestamp(c.getString(c.getColumnIndex(KEY_DATE_CREATED))));
                 note.setDateModified(AppTimestamp.convertStringToTimestamp(c.getString(c.getColumnIndex(KEY_DATE_MODIFIED))));
                 note.setDateArchived(AppTimestamp.convertStringToTimestamp(c.getString(c.getColumnIndex(KEY_DATE_ARCHIVED))));
                 note.setDateSync(c.getString(c.getColumnIndex(KEY_DATE_SYNC)));
@@ -142,7 +142,7 @@ public class DatabaseHelperNote extends SQLiteOpenHelper {
         values.put(KEY_ACTIVE, note.isActive());
         values.put(KEY_SPELL_CHECK, note.getSpellCheck());
         values.put(KEY_PIN_ORDER, note.getPinOrder().toString());
-        values.put(KEY_DATE_CREATED, note.getDateCreated());
+        values.put(KEY_DATE_CREATED, note.getDateCreated().toString());
         values.put(KEY_DATE_MODIFIED, note.getDateModified().toString());
         values.put(KEY_DATE_ARCHIVED, note.getDateArchived().toString());
         values.put(KEY_DATE_SYNC, note.getDateSync());

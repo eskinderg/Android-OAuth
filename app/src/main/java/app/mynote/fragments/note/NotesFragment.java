@@ -141,6 +141,7 @@ public class NotesFragment extends Fragment implements OnNoteItemClickListener, 
                 note.setId(UUID.randomUUID().toString());
                 note.setOwner(UserManager.getUser(getContext()).getGivenName());
                 note.setDateModified(AppTimestamp.convertStringToTimestamp(AppDate.Now()));
+                note.setDateCreated(AppTimestamp.convertStringToTimestamp(AppDate.Now()));
                 noteService.add(note);
 
                 Bundle bundle = new Bundle();

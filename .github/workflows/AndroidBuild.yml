@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on : macOS-latest //or ubunto-latest or windows-latest
+    runs-on : ubuntu-latest //macOS-latest //or ubunto-latest or windows-latest
 
     steps:
       - name: Checkout code

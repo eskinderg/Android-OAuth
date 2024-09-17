@@ -1,6 +1,5 @@
 package app.mynote.fragments.note;
 
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -14,14 +13,6 @@ import app.mynote.core.utils.AppDate;
 import app.mynote.core.utils.AppTimestamp;
 
 public class NoteService {
-
-//    private Context context;
-//    private ContentResolver contentResolver;
-//
-//    public NoteService(Context c) {
-//        this.context = c;
-//        contentResolver = c.getContentResolver();
-//    }
 
     public static Note add(Context c, Note note) {
         ContentValues values = new ContentValues();
@@ -80,29 +71,35 @@ public class NoteService {
         assert c != null;
         if (c.moveToFirst()) {
             do {
-                Note note = new Note();
-                note.setId(c.getString(c.getColumnIndex(NoteContract.Notes.COL_ID)));
-                note.setHeader(c.getString(c.getColumnIndex(NoteContract.Notes.COL_HEADER)));
-                note.setUserId(c.getString(c.getColumnIndex(NoteContract.Notes.COL_USER_ID)));
-                note.setText(c.getString(c.getColumnIndex(NoteContract.Notes.COL_TEXT)));
-                note.setSelection(c.getString(c.getColumnIndex(NoteContract.Notes.COL_SELECTION)));
-                note.setColour(c.getString(c.getColumnIndex(NoteContract.Notes.COL_COLOUR)));
-                note.setArchived(c.getInt(c.getColumnIndex(NoteContract.Notes.COL_ARCHIVED)) > 0);
-                note.setPinned(c.getInt(c.getColumnIndex(NoteContract.Notes.COL_PINNED)) > 0);
-                note.setActive(c.getInt(c.getColumnIndex(NoteContract.Notes.COL_ACTIVE)) > 0);
-                note.setSpellCheck(c.getInt(c.getColumnIndex(NoteContract.Notes.COL_SPELL_CHECK)) > 0);
-                note.setPinOrder(AppTimestamp.convertStringToTimestamp(c.getString(c.getColumnIndex(NoteContract.Notes.COL_PIN_ORDER))));
-                note.setDateCreated(AppTimestamp.convertStringToTimestamp(c.getString(c.getColumnIndex(NoteContract.Notes.COL_DATE_CREATED))));
-                note.setDateModified(AppTimestamp.convertStringToTimestamp(c.getString(c.getColumnIndex(NoteContract.Notes.COL_DATE_MODIFIED))));
-                note.setDateArchived(AppTimestamp.convertStringToTimestamp(c.getString(c.getColumnIndex(NoteContract.Notes.COL_DATE_ARCHIVED))));
-                note.setDateSync(c.getString(c.getColumnIndex(NoteContract.Notes.COL_DATE_SYNC)));
-                note.setOwner(c.getString(c.getColumnIndex(NoteContract.Notes.COL_OWNER)));
+                Note note = noteMapper(c);
                 // adding to list
                 noteArrayList.add(note);
             } while (c.moveToNext());
         }
         c.close();
         return noteArrayList;
+    }
+
+    public static Note noteMapper(Cursor c) {
+        Note note = new Note();
+        note.setId(c.getString(c.getColumnIndexOrThrow(NoteContract.Notes.COL_ID)));
+        note.setHeader(c.getString(c.getColumnIndexOrThrow(NoteContract.Notes.COL_HEADER)));
+        note.setUserId(c.getString(c.getColumnIndexOrThrow(NoteContract.Notes.COL_USER_ID)));
+        note.setText(c.getString(c.getColumnIndexOrThrow(NoteContract.Notes.COL_TEXT)));
+        note.setSelection(c.getString(c.getColumnIndexOrThrow(NoteContract.Notes.COL_SELECTION)));
+        note.setColour(c.getString(c.getColumnIndexOrThrow(NoteContract.Notes.COL_COLOUR)));
+        note.setArchived(c.getInt(c.getColumnIndexOrThrow(NoteContract.Notes.COL_ARCHIVED)) > 0);
+        note.setPinned(c.getInt(c.getColumnIndexOrThrow(NoteContract.Notes.COL_PINNED)) > 0);
+        note.setActive(c.getInt(c.getColumnIndexOrThrow(NoteContract.Notes.COL_ACTIVE)) > 0);
+        note.setFavorite(c.getInt(c.getColumnIndexOrThrow(NoteContract.Notes.COL_FAVORITE)) > 0);
+        note.setSpellCheck(c.getInt(c.getColumnIndexOrThrow(NoteContract.Notes.COL_SPELL_CHECK)) > 0);
+        note.setPinOrder(AppTimestamp.convertStringToTimestamp(c.getString(c.getColumnIndexOrThrow(NoteContract.Notes.COL_PIN_ORDER))));
+        note.setDateCreated(AppTimestamp.convertStringToTimestamp(c.getString(c.getColumnIndexOrThrow(NoteContract.Notes.COL_DATE_CREATED))));
+        note.setDateModified(AppTimestamp.convertStringToTimestamp(c.getString(c.getColumnIndexOrThrow(NoteContract.Notes.COL_DATE_MODIFIED))));
+        note.setDateArchived(AppTimestamp.convertStringToTimestamp(c.getString(c.getColumnIndexOrThrow(NoteContract.Notes.COL_DATE_ARCHIVED))));
+        note.setDateSync(c.getString(c.getColumnIndexOrThrow(NoteContract.Notes.COL_DATE_SYNC)));
+        note.setOwner(c.getString(c.getColumnIndexOrThrow(NoteContract.Notes.COL_OWNER)));
+        return note;
     }
 
     public static ArrayList<Note> getArchived(Context c) {

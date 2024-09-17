@@ -1,6 +1,7 @@
 package app.mynote.fragments.event;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,6 +69,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventRecyc
 
                     @Override
                     public void onFailure(Throwable throwable) {
+                        Log.e("Events", throwable.getMessage());
                     }
                 });
             }

@@ -15,12 +15,7 @@ import android.util.Log;
 
 import org.json.JSONException;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,8 +23,8 @@ import java.util.Map;
 import app.mynote.auth.AuthConfig;
 import app.mynote.core.callback.AppCallback;
 import app.mynote.core.db.auth.AccountGeneral;
-import app.mynote.core.utils.AppTimestamp;
 import app.mynote.fragments.note.Note;
+import app.mynote.fragments.note.NoteService;
 import app.mynote.fragments.note.NotesDataService;
 import app.mynote.service.RetroInstance;
 import retrofit2.Call;
@@ -69,7 +64,7 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
 
-        if( AuthConfig.USER != null) {
+        if (AuthConfig.USER != null) {
 
             Log.i(TAG, "Starting synchronization...");
 
@@ -116,30 +111,26 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
                     Cursor c = resolver.query(NoteContract.Notes.CONTENT_URI, null, NoteContract.Notes.COL_USER_ID + " = '" + AuthConfig.USER.getId() + "'", null, null, null);
                     assert c != null;
 
-                    for (Note remoteNote : response)
+                    for (Note remoteNote : response) {
                         networkEntries.put(remoteNote.getId() + remoteNote.getUserId(), remoteNote);
+                        if (!remoteNote.getActive()) {
+                            batch.add(ContentProviderOperation.newDelete(NoteContract.Notes.CONTENT_URI) // delete notes locally  that are not active on the server
+                                    .withSelection(NoteContract.Notes.COL_ID + "='" + remoteNote.getId() + "'", null)
+                                    .build());
+                        }
+                    }
 
                     c.moveToFirst();
 
                     for (int i = 0; i < c.getCount(); i++) {
                         syncResult.stats.numEntries++;
-                        Note noteLocal = new Note();
-                        noteLocal.setId(c.getString(c.getColumnIndex(NoteContract.Notes.COL_ID)));
-                        noteLocal.setHeader(c.getString(c.getColumnIndex(NoteContract.Notes.COL_HEADER)));
-                        noteLocal.setText(c.getString(c.getColumnIndex(NoteContract.Notes.COL_TEXT)));
-                        noteLocal.setUserId(c.getString(c.getColumnIndex(NoteContract.Notes.COL_USER_ID)));
-                        noteLocal.setSelection(c.getString(c.getColumnIndex(NoteContract.Notes.COL_SELECTION)));
-                        noteLocal.setColour(c.getString(c.getColumnIndex(NoteContract.Notes.COL_COLOUR)));
-                        noteLocal.setArchived(c.getInt(c.getColumnIndex(NoteContract.Notes.COL_ARCHIVED)) > 0);
-                        noteLocal.setPinned(c.getInt(c.getColumnIndex(NoteContract.Notes.COL_PINNED)) > 0);
-                        noteLocal.setActive(c.getInt(c.getColumnIndex(NoteContract.Notes.COL_ACTIVE)) > 0);
-                        noteLocal.setSpellCheck(c.getInt(c.getColumnIndex(NoteContract.Notes.COL_SPELL_CHECK)) > 0);
-                        noteLocal.setPinOrder(AppTimestamp.convertStringToTimestamp(c.getString(c.getColumnIndex(NoteContract.Notes.COL_PIN_ORDER))));
-                        noteLocal.setDateCreated(AppTimestamp.convertStringToTimestamp(c.getString(c.getColumnIndex(NoteContract.Notes.COL_DATE_CREATED))));
-                        noteLocal.setDateModified(AppTimestamp.convertStringToTimestamp(c.getString(c.getColumnIndex(NoteContract.Notes.COL_DATE_MODIFIED))));
-                        noteLocal.setDateArchived(AppTimestamp.convertStringToTimestamp(c.getString(c.getColumnIndex(NoteContract.Notes.COL_DATE_ARCHIVED))));
-                        noteLocal.setDateSync(c.getString(c.getColumnIndex(NoteContract.Notes.COL_DATE_SYNC)));
-                        noteLocal.setOwner(c.getString(c.getColumnIndex(NoteContract.Notes.COL_OWNER)));
+                        Note noteLocal = NoteService.noteMapper(c);
+
+                        if (!noteLocal.getActive()) {
+                            batch.add(ContentProviderOperation.newDelete(NoteContract.Notes.CONTENT_URI) // delete notes that are not active locally
+                                    .withSelection(NoteContract.Notes.COL_ID + "='" + noteLocal.getId() + "'", null)
+                                    .build());
+                        }
 
                         // Try to retrieve the local entry from network entries
                         found = networkEntries.get(noteLocal.getId() + noteLocal.getUserId());
@@ -147,39 +138,14 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
                         archives(localEntries, batch, noteLocal, found);
                         pinOrder(localEntries, batch, noteLocal, found);
 
-                        if(!noteLocal.getActive()) {
-                            batch.add(ContentProviderOperation.newDelete(NoteContract.Notes.CONTENT_URI) // delete notes that are not active locally
-                                    .withSelection(NoteContract.Notes.COL_ID + "='" + noteLocal.getId() + "'", null)
-                                    .build());
-                        }
-
-
-                        if (found != null) {
-                            int des = found.getDateModified().toString().compareTo(noteLocal.getDateModified().toString());
+                        if (!(found == null)) {
+                            int des = found.getDateModified().compareTo(noteLocal.getDateModified());
 
                             if (des > 0) {
-                                batch.add(ContentProviderOperation.newUpdate(NoteContract.Notes.CONTENT_URI)
-                                        .withSelection(NoteContract.Notes.COL_ID + "='" + found.getId() + "'", null)
-                                        .withValue(NoteContract.Notes.COL_ID, found.getId())
-                                        .withValue(NoteContract.Notes.COL_HEADER, found.getHeader())
-                                        .withValue(NoteContract.Notes.COL_TEXT, found.getText())
-                                        .withValue(NoteContract.Notes.COL_USER_ID, found.getUserId())
-                                        .withValue(NoteContract.Notes.COL_COLOUR, found.getColour())
-                                        .withValue(NoteContract.Notes.COL_SELECTION, found.getSelection())
-                                        .withValue(NoteContract.Notes.COL_ARCHIVED, found.getArchived())
-                                        .withValue(NoteContract.Notes.COL_PINNED, found.getPinned())
-                                        .withValue(NoteContract.Notes.COL_ACTIVE, found.getActive())
-                                        .withValue(NoteContract.Notes.COL_SPELL_CHECK, found.getSpellCheck())
-                                        .withValue(NoteContract.Notes.COL_PIN_ORDER, found.getPinOrder().toString())
-                                        .withValue(NoteContract.Notes.COL_DATE_CREATED, found.getDateCreated().toString())
-                                        .withValue(NoteContract.Notes.COL_DATE_ARCHIVED, found.getDateArchived().toString())
-                                        .withValue(NoteContract.Notes.COL_DATE_MODIFIED, found.getDateModified().toString())
-                                        .withValue(NoteContract.Notes.COL_DATE_SYNC, found.getDateSync())
-                                        .withValue(NoteContract.Notes.COL_OWNER, found.getOwner())
-                                        .build());
+                                addOperation(batch, ContentProviderOperation.newUpdate(NoteContract.Notes.CONTENT_URI), found);
 
                             } else if (des < 0) {
-                                Log.i("SERVER", found.getHeader() + "New update found and Need to be sent to the server");
+                                Log.i(TAG, found.getHeader() + ": New update found and Need to be sent to the server");
                                 localEntries.put(noteLocal.getId() + noteLocal.getUserId(), noteLocal);
                             } else {
 //                                Log.w("Eskinder", found.getHeader() + "=0");
@@ -196,7 +162,7 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
                     }
                     c.close();
 
-                    if (pushEntries.size() > 0) {
+                    if (!pushEntries.isEmpty()) {
                         Retrofit localToRemoteRetrofit = RetroInstance.getRetrofitInstance();
                         NotesDataService localToRemoteNotesApi = localToRemoteRetrofit.create(NotesDataService.class);
                         Call<Note[]> callLocalToRemote = localToRemoteNotesApi.insert(new ArrayList<>(pushEntries.values()));
@@ -217,7 +183,7 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
                     // Add all the new entries
                     for (Note note : networkEntries.values()) {
                         Log.i(TAG, "Scheduling insert: " + note.getHeader());
-                        if(note.getActive()) {
+                        if (note.getActive()) {
                             batch.add(ContentProviderOperation.newInsert(NoteContract.Notes.CONTENT_URI)
                                     .withValue(NoteContract.Notes.COL_ID, note.getId())
                                     .withValue(NoteContract.Notes.COL_HEADER, note.getHeader())
@@ -240,7 +206,7 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
                         }
                     }
 
-                    if (localEntries.size() > 0) {
+                    if (!localEntries.isEmpty()) {
                         Retrofit remoteRetrofit = RetroInstance.getRetrofitInstance();
                         NotesDataService remoteNotesApi = remoteRetrofit.create(NotesDataService.class);
                         Call<Note[]> callRemote = remoteNotesApi.updateNote(new ArrayList<>(localEntries.values()));
@@ -250,26 +216,8 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
                                 try {
                                     ArrayList<ContentProviderOperation> responseBatch = new ArrayList<>();
 
-                                    for(Note note: response) {
-                                        responseBatch.add(ContentProviderOperation.newUpdate(NoteContract.Notes.CONTENT_URI)
-                                                .withSelection(NoteContract.Notes.COL_ID + "='" + note.getId() + "'", null)
-                                                .withValue(NoteContract.Notes.COL_ID, note.getId())
-                                                .withValue(NoteContract.Notes.COL_HEADER, note.getHeader())
-                                                .withValue(NoteContract.Notes.COL_TEXT, note.getText())
-                                                .withValue(NoteContract.Notes.COL_USER_ID, note.getUserId())
-                                                .withValue(NoteContract.Notes.COL_COLOUR, note.getColour())
-                                                .withValue(NoteContract.Notes.COL_SELECTION, note.getSelection())
-                                                .withValue(NoteContract.Notes.COL_ARCHIVED, note.getArchived())
-                                                .withValue(NoteContract.Notes.COL_PINNED, note.getPinned())
-                                                .withValue(NoteContract.Notes.COL_ACTIVE, note.getActive())
-                                                .withValue(NoteContract.Notes.COL_SPELL_CHECK, note.getSpellCheck())
-                                                .withValue(NoteContract.Notes.COL_PIN_ORDER, note.getPinOrder().toString())
-                                                .withValue(NoteContract.Notes.COL_DATE_CREATED, note.getDateCreated().toString())
-                                                .withValue(NoteContract.Notes.COL_DATE_ARCHIVED, note.getDateArchived().toString())
-                                                .withValue(NoteContract.Notes.COL_DATE_MODIFIED, note.getDateModified().toString())
-                                                .withValue(NoteContract.Notes.COL_DATE_SYNC, note.getDateSync())
-                                                .withValue(NoteContract.Notes.COL_OWNER, note.getOwner())
-                                                .build());
+                                    for (Note note : response) {
+                                        addOperation(responseBatch, ContentProviderOperation.newUpdate(NoteContract.Notes.CONTENT_URI), note);
                                     }
 
                                     resolver.applyBatch(NoteContract.CONTENT_AUTHORITY, responseBatch);
@@ -278,18 +226,17 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
                                             ContentResolver.NOTIFY_UPDATE); // IMPORTANT: Do not sync to network
 
                                 } catch (Exception ex) {
-                                   Log.e(TAG, "Error updating local data", ex) ;
+                                    Log.e(TAG, "Error updating local data", ex);
                                 }
-                                Log.i("SERVER", String.valueOf(response.length) + " Items updated and synced successfully");
+                                Log.i("SERVER", response.length + " Items updated and synced successfully");
                             }
 
                             @Override
                             public void onFailure(Throwable throwable) {
-                                ;
+                                Log.e(TAG, "Error happend");
                             }
                         });
                     }
-
 
                     Log.i(TAG, "Merge solution ready, applying batch update...");
                     resolver.applyBatch(NoteContract.CONTENT_AUTHORITY, batch);
@@ -307,6 +254,7 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
 
             @Override
             public void onFailure(Throwable throwable) {
+                Log.e(TAG, "Error on sync operation " + throwable.getMessage());
             }
         });
     }
@@ -315,157 +263,63 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
         if (remoteNote != null) {
             if (localNote.getDateArchived() != null && remoteNote.getDateArchived() != null) {
                 int comp = localNote.getDateArchived().compareTo(remoteNote.getDateArchived());
-                if (comp < 0) {
-                    batch.add(ContentProviderOperation.newUpdate(NoteContract.Notes.CONTENT_URI)
-                            .withSelection(NoteContract.Notes.COL_ID + "='" + remoteNote.getId() + "'", null)
-                            .withValue(NoteContract.Notes.COL_ID, remoteNote.getId())
-                            .withValue(NoteContract.Notes.COL_HEADER, remoteNote.getHeader())
-                            .withValue(NoteContract.Notes.COL_TEXT, remoteNote.getText())
-                            .withValue(NoteContract.Notes.COL_USER_ID, remoteNote.getUserId())
-                            .withValue(NoteContract.Notes.COL_COLOUR, remoteNote.getColour())
-                            .withValue(NoteContract.Notes.COL_SELECTION, remoteNote.getSelection())
-                            .withValue(NoteContract.Notes.COL_ARCHIVED, remoteNote.getArchived())
-                            .withValue(NoteContract.Notes.COL_PINNED, remoteNote.getPinned())
-                            .withValue(NoteContract.Notes.COL_ACTIVE, remoteNote.getActive())
-                            .withValue(NoteContract.Notes.COL_SPELL_CHECK, remoteNote.getSpellCheck())
-                            .withValue(NoteContract.Notes.COL_PIN_ORDER, remoteNote.getPinOrder().toString())
-                            .withValue(NoteContract.Notes.COL_DATE_CREATED, remoteNote.getDateCreated().toString())
-                            .withValue(NoteContract.Notes.COL_DATE_ARCHIVED, remoteNote.getDateArchived().toString())
-                            .withValue(NoteContract.Notes.COL_DATE_MODIFIED, remoteNote.getDateModified().toString())
-                            .withValue(NoteContract.Notes.COL_DATE_SYNC, remoteNote.getDateSync())
-                            .withValue(NoteContract.Notes.COL_OWNER, remoteNote.getOwner())
-                            .build());
-                }
 
-                if (comp > 0) {
+                if (comp < 0)
+                    addOperation(batch, ContentProviderOperation.newUpdate(NoteContract.Notes.CONTENT_URI), remoteNote);
+
+                if (comp > 0)
                     localEntries.put(localNote.getId() + localNote.getUserId(), localNote);
-                }
             }
 
-            if (localNote.getDateArchived() != null && remoteNote.getDateArchived() == null) {
+            if (localNote.getDateArchived() != null && remoteNote.getDateArchived() == null)
                 localEntries.put(localNote.getId() + localNote.getUserId(), localNote);
-            }
 
-            if (localNote.getDateArchived() == null && remoteNote.getDateArchived() != null) {
-                batch.add(ContentProviderOperation.newUpdate(NoteContract.Notes.CONTENT_URI)
-                        .withSelection(NoteContract.Notes.COL_ID + "='" + remoteNote.getId() + "'", null)
-                        .withValue(NoteContract.Notes.COL_ID, remoteNote.getId())
-                        .withValue(NoteContract.Notes.COL_HEADER, remoteNote.getHeader())
-                        .withValue(NoteContract.Notes.COL_TEXT, remoteNote.getText())
-                        .withValue(NoteContract.Notes.COL_USER_ID, remoteNote.getUserId())
-                        .withValue(NoteContract.Notes.COL_COLOUR, remoteNote.getColour())
-                        .withValue(NoteContract.Notes.COL_SELECTION, remoteNote.getSelection())
-                        .withValue(NoteContract.Notes.COL_ARCHIVED, remoteNote.getArchived())
-                        .withValue(NoteContract.Notes.COL_PINNED, remoteNote.getPinned())
-                        .withValue(NoteContract.Notes.COL_ACTIVE, remoteNote.getActive())
-                        .withValue(NoteContract.Notes.COL_SPELL_CHECK, remoteNote.getSpellCheck())
-                        .withValue(NoteContract.Notes.COL_PIN_ORDER, remoteNote.getPinOrder().toString())
-                        .withValue(NoteContract.Notes.COL_DATE_CREATED, remoteNote.getDateCreated().toString())
-                        .withValue(NoteContract.Notes.COL_DATE_ARCHIVED, remoteNote.getDateArchived().toString())
-                        .withValue(NoteContract.Notes.COL_DATE_MODIFIED, remoteNote.getDateModified().toString())
-                        .withValue(NoteContract.Notes.COL_DATE_SYNC, remoteNote.getDateSync())
-                        .withValue(NoteContract.Notes.COL_OWNER, remoteNote.getOwner())
-                        .build());
-            }
+
+            if (localNote.getDateArchived() == null && remoteNote.getDateArchived() != null)
+                addOperation(batch, ContentProviderOperation.newUpdate(NoteContract.Notes.CONTENT_URI), remoteNote);
         }
     }
 
     private void pinOrder(Map<String, Note> localEntries, ArrayList<ContentProviderOperation> batch, Note localNote, Note remoteNote) {
         if (remoteNote != null) {
             if (localNote.getPinOrder() != null && remoteNote.getPinOrder() != null) {
+
                 int comp = localNote.getPinOrder().compareTo(remoteNote.getPinOrder());
-                if (comp < 0) {
-                    batch.add(ContentProviderOperation.newUpdate(NoteContract.Notes.CONTENT_URI)
-                            .withSelection(NoteContract.Notes.COL_ID + "='" + remoteNote.getId() + "'", null)
-                            .withValue(NoteContract.Notes.COL_ID, remoteNote.getId())
-                            .withValue(NoteContract.Notes.COL_HEADER, remoteNote.getHeader())
-                            .withValue(NoteContract.Notes.COL_TEXT, remoteNote.getText())
-                            .withValue(NoteContract.Notes.COL_USER_ID, remoteNote.getUserId())
-                            .withValue(NoteContract.Notes.COL_COLOUR, remoteNote.getColour())
-                            .withValue(NoteContract.Notes.COL_SELECTION, remoteNote.getSelection())
-                            .withValue(NoteContract.Notes.COL_ARCHIVED, remoteNote.getArchived())
-                            .withValue(NoteContract.Notes.COL_PINNED, remoteNote.getPinned())
-                            .withValue(NoteContract.Notes.COL_ACTIVE, remoteNote.getActive())
-                            .withValue(NoteContract.Notes.COL_SPELL_CHECK, remoteNote.getSpellCheck())
-                            .withValue(NoteContract.Notes.COL_PIN_ORDER, remoteNote.getPinOrder().toString())
-                            .withValue(NoteContract.Notes.COL_DATE_CREATED, remoteNote.getDateCreated().toString())
-                            .withValue(NoteContract.Notes.COL_DATE_ARCHIVED, remoteNote.getDateArchived().toString())
-                            .withValue(NoteContract.Notes.COL_DATE_MODIFIED, remoteNote.getDateModified().toString())
-                            .withValue(NoteContract.Notes.COL_DATE_SYNC, remoteNote.getDateSync())
-                            .withValue(NoteContract.Notes.COL_OWNER, remoteNote.getOwner())
-                            .build());
-                }
 
-                if (comp > 0) {
+                if (comp < 0)
+                    addOperation(batch, ContentProviderOperation.newUpdate(NoteContract.Notes.CONTENT_URI), remoteNote);
+
+                if (comp > 0)
                     localEntries.put(localNote.getId() + localNote.getUserId(), localNote);
-                }
             }
 
-            if (localNote.getPinOrder() != null && remoteNote.getPinOrder() == null) {
+            if (localNote.getPinOrder() != null && remoteNote.getPinOrder() == null)
                 localEntries.put(localNote.getId() + localNote.getUserId(), localNote);
-            }
 
-            if (localNote.getPinOrder() == null && remoteNote.getPinOrder() != null) {
-                batch.add(ContentProviderOperation.newUpdate(NoteContract.Notes.CONTENT_URI)
-                        .withSelection(NoteContract.Notes.COL_ID + "='" + remoteNote.getId() + "'", null)
-                        .withValue(NoteContract.Notes.COL_ID, remoteNote.getId())
-                        .withValue(NoteContract.Notes.COL_HEADER, remoteNote.getHeader())
-                        .withValue(NoteContract.Notes.COL_TEXT, remoteNote.getText())
-                        .withValue(NoteContract.Notes.COL_USER_ID, remoteNote.getUserId())
-                        .withValue(NoteContract.Notes.COL_COLOUR, remoteNote.getColour())
-                        .withValue(NoteContract.Notes.COL_SELECTION, remoteNote.getSelection())
-                        .withValue(NoteContract.Notes.COL_ARCHIVED, remoteNote.getArchived())
-                        .withValue(NoteContract.Notes.COL_PINNED, remoteNote.getPinned())
-                        .withValue(NoteContract.Notes.COL_ACTIVE, remoteNote.getActive())
-                        .withValue(NoteContract.Notes.COL_SPELL_CHECK, remoteNote.getSpellCheck())
-                        .withValue(NoteContract.Notes.COL_PIN_ORDER, remoteNote.getPinOrder().toString())
-                        .withValue(NoteContract.Notes.COL_DATE_CREATED, remoteNote.getDateCreated().toString())
-                        .withValue(NoteContract.Notes.COL_DATE_ARCHIVED, remoteNote.getDateArchived().toString())
-                        .withValue(NoteContract.Notes.COL_DATE_MODIFIED, remoteNote.getDateModified().toString())
-                        .withValue(NoteContract.Notes.COL_DATE_SYNC, remoteNote.getDateSync())
-                        .withValue(NoteContract.Notes.COL_OWNER, remoteNote.getOwner())
-                        .build());
-            }
+            if (localNote.getPinOrder() == null && remoteNote.getPinOrder() != null)
+                addOperation(batch, ContentProviderOperation.newUpdate(NoteContract.Notes.CONTENT_URI), remoteNote);
         }
     }
 
-    /**
-     * A blocking method to stream the server's content and build it into a string.
-     *
-     * @param url API call
-     * @return String response
-     */
-    private String download(String url) throws IOException {
-        // Ensure we ALWAYS close these!
-        HttpURLConnection client = null;
-        InputStream is = null;
-
-        try {
-            // Connect to the server using GET protocol
-            URL server = new URL(url);
-            client = (HttpURLConnection) server.openConnection();
-            client.connect();
-
-            // Check for valid response code from the server
-            int status = client.getResponseCode();
-            is = (status == HttpURLConnection.HTTP_OK)
-                    ? client.getInputStream() : client.getErrorStream();
-
-            // Build the response or error as a string
-            BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            StringBuilder sb = new StringBuilder();
-            for (String temp; ((temp = br.readLine()) != null); ) {
-                sb.append(temp);
-            }
-
-            return sb.toString();
-        } finally {
-            if (is != null) {
-                is.close();
-            }
-            if (client != null) {
-                client.disconnect();
-            }
-        }
+    private void addOperation(ArrayList<ContentProviderOperation> batch, ContentProviderOperation.Builder operation, Note note) {
+        batch.add(operation
+                .withSelection(NoteContract.Notes.COL_ID + "='" + note.getId() + "'", null)
+                .withValue(NoteContract.Notes.COL_ID, note.getId())
+                .withValue(NoteContract.Notes.COL_HEADER, note.getHeader())
+                .withValue(NoteContract.Notes.COL_TEXT, note.getText())
+                .withValue(NoteContract.Notes.COL_USER_ID, note.getUserId())
+                .withValue(NoteContract.Notes.COL_COLOUR, note.getColour())
+                .withValue(NoteContract.Notes.COL_SELECTION, note.getSelection())
+                .withValue(NoteContract.Notes.COL_ARCHIVED, note.getArchived())
+                .withValue(NoteContract.Notes.COL_PINNED, note.getPinned())
+                .withValue(NoteContract.Notes.COL_ACTIVE, note.getActive())
+                .withValue(NoteContract.Notes.COL_SPELL_CHECK, note.getSpellCheck())
+                .withValue(NoteContract.Notes.COL_PIN_ORDER, note.getPinOrder().toString())
+                .withValue(NoteContract.Notes.COL_DATE_CREATED, note.getDateCreated().toString())
+                .withValue(NoteContract.Notes.COL_DATE_ARCHIVED, note.getDateArchived().toString())
+                .withValue(NoteContract.Notes.COL_DATE_MODIFIED, note.getDateModified().toString())
+                .withValue(NoteContract.Notes.COL_DATE_SYNC, note.getDateSync())
+                .withValue(NoteContract.Notes.COL_OWNER, note.getOwner())
+                .build());
     }
 }

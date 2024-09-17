@@ -20,6 +20,7 @@ public class RetroInstance {
 
     private static final OkHttpClient client = new OkHttpClient()
             .newBuilder()
+            .connectTimeout(2000, TimeUnit.MILLISECONDS)
             .addInterceptor(new AnnotationInterceptor())
             .addInterceptor(new TimeCalibrationInterceptor())
             .build();

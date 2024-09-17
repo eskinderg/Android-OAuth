@@ -62,7 +62,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteRecycler
 
         if (noteItem.getPinned()) {
             holder.header.setTypeface(Typeface.DEFAULT_BOLD);
-            holder.imgPinned.setColorFilter(ContextCompat.getColor(context, R.color.primary), PorterDuff.Mode.MULTIPLY);
+//            holder.imgPinned.setColorFilter(ContextCompat.getColor(context, R.color.primary), PorterDuff.Mode.MULTIPLY);
             holder.imgPinned.setVisibility(View.VISIBLE);
         }
 

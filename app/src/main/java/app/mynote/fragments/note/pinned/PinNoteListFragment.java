@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -99,7 +100,7 @@ public class PinNoteListFragment extends Fragment implements SwipeRefreshLayout.
                 underlayButtons.add(new UnderlayButton(
                         "Un Pin",
                         SwipeController.getBitmapFromVectorDrawable(getContext(), R.drawable.ic_pin_white),
-                        Color.GRAY,
+                        ContextCompat.getColor(getContext(),R.color.primary),
                         new UnderlayButtonClickListener() {
                             @Override
                             public void onClick(int position) {

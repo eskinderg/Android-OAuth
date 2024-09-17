@@ -5,6 +5,7 @@ import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -59,6 +60,8 @@ public class PinNotesAdapter extends RecyclerView.Adapter<PinNotesAdapter.PinNot
 
         holder.header.setTypeface(Typeface.DEFAULT_BOLD);
 
+        holder.imgPinned.setVisibility(View.VISIBLE);
+
         if (noteItem.getHeader() == null || noteItem.getHeader().isEmpty()) {
             holder.header.setText("");
         } else {
@@ -101,12 +104,14 @@ public class PinNotesAdapter extends RecyclerView.Adapter<PinNotesAdapter.PinNot
         TextView header;
         TextView description;
         CardView card;
+        ImageView imgPinned;
 
         public PinNoteRecyclerViewHolder(@NonNull View itemView) {
             super(itemView);
             header = itemView.findViewById(R.id.header);
             description = itemView.findViewById(R.id.description);
             card = itemView.findViewById(R.id.card);
+            imgPinned = itemView.findViewById(R.id.imgPinned);
         }
     }
 }

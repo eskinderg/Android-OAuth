@@ -5,6 +5,7 @@
     android:id="@+id/card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:backgroundTint="@color/backgroundColor"
     android:layout_margin="4dp"
     app:cardCornerRadius="8dp"
     app:cardElevation="4dp"
@@ -23,6 +24,7 @@
             android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            android:textColor="@color/textColor"
             tools:text="Title" />
 
         <TextView
@@ -33,6 +35,7 @@
             android:textStyle="italic"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/header"
+            android:textColor="@color/textColor"
             tools:text="Description" />
 
         <ImageView

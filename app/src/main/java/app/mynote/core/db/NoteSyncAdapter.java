@@ -157,7 +157,6 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
                             pushEntries.put(noteLocal.getId() + noteLocal.getUserId(), noteLocal);
                         }
 
-
                         c.moveToNext();
                     }
                     c.close();

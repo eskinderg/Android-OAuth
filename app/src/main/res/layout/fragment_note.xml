@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:autofillHints="E-Mail"
         android:maxLines="1"
-        android:inputType="text"
+        android:inputType="text|textVisiblePassword|textNoSuggestions"
         android:background="@color/backgroundColor"
         android:textColor="@color/textColor"
         android:hint="Header"
@@ -26,12 +26,15 @@
     <EditText
         android:id="@+id/txtNoteText"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:gravity="top"
         android:background="@color/backgroundColor"
         android:textColor="@color/textColor"
-        android:inputType="textMultiLine"
+        android:inputType="textVisiblePassword|textNoSuggestions|textMultiLine"
         android:padding="10dp"
-        app:layout_constraintTop_toBottomOf="@+id/txtNoteHeader" />
+        app:layout_constraintTop_toBottomOf="@+id/txtNoteHeader"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

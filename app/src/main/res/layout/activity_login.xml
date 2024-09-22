@@ -19,7 +19,7 @@
         android:layout_marginTop="96dp"
         android:autofillHints="E-Mail"
         android:hint="Email"
-        android:text="sample@mail.com"
+        android:text="esk"
         android:textColor="@color/textColor"
         android:inputType="textEmailAddress"
         android:selectAllOnFocus="true"

@@ -1,6 +1,7 @@
 package app.mynote.fragments.note.pinned;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -63,7 +64,8 @@ public class PinNotesAdapter extends RecyclerView.Adapter<PinNotesAdapter.PinNot
         holder.imgPinned.setVisibility(View.VISIBLE);
 
         if (noteItem.getHeader() == null || noteItem.getHeader().isEmpty()) {
-            holder.header.setText("");
+            holder.header.setText("Untitled");
+            holder.header.setTextColor(Color.GRAY);
         } else {
             holder.header.setText(noteItem.getHeader());
         }

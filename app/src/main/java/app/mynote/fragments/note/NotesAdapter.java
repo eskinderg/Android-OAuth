@@ -1,6 +1,7 @@
 package app.mynote.fragments.note;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
@@ -67,7 +68,8 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteRecycler
         }
 
         if (noteItem.getHeader() == null || noteItem.getHeader().isEmpty()) {
-            holder.header.setText("");
+            holder.header.setText("Untitled");
+            holder.header.setTextColor(Color.GRAY);
         } else {
             holder.header.setText(noteItem.getHeader());
         }

@@ -19,7 +19,7 @@ public final class AccountGeneral {
     /**
      * This is the name that appears in the Android 'Accounts' settings.
      */
-    private static final String ACCOUNT_NAME = "Example Sync";
+    private static final String ACCOUNT_NAME = "Note Sync";
 
 
     /**

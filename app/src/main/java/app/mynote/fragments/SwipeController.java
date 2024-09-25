@@ -32,7 +32,7 @@ import mynote.R;
 
 public abstract class SwipeController extends ItemTouchHelper.SimpleCallback {
 
-    public static final int BUTTON_WIDTH = 220;
+    public static final int BUTTON_WIDTH = 190;
     private static RecyclerView recyclerView;
     private final GestureDetector gestureDetector;
     private final Map<Integer, List<UnderlayButton>> buttonsBuffer;
